@@ -1,0 +1,1675 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NORDLUXE | Scandinavian Luxury</title>
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCLqR3N_V_0U_2bTcchgsDFqjqSTCahxYs",
+    authDomain: "nordluxe-e30a4.firebaseapp.com",
+    projectId: "nordluxe-e30a4",
+    storageBucket: "nordluxe-e30a4.firebasestorage.app",
+    messagingSenderId: "997971219569",
+    appId: "1:997971219569:web:f1dcdbace510e38745f7d0",
+    measurementId: "G-7LY6QMJ488"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // expose for non-module functions
+  window.auth = auth;
+  window.provider = provider;
+    window.signInWithPopup = signInWithPopup;
+  window.onAuthStateChanged = onAuthStateChanged;
+  window.firebaseAuth = auth;
+  window.firebaseCreateUser = createUserWithEmailAndPassword;
+  window.firebaseSignIn = signInWithEmailAndPassword;
+    window.firebaseSendPasswordReset = sendPasswordResetEmail;
+    window.firebaseSignOut = signOut;
+
+  window.loginWithGoogle = async function() {
+      const backendBase = window.location.hostname ? `${window.location.protocol}//${window.location.hostname}:3001` : 'http://localhost:3001';
+      window.location.href = `${backendBase}/auth/google`;
+  };
+
+  window.logout = async function() {
+    try {
+      await signOut(auth);
+      localStorage.removeItem('nordluxeUser');
+      window.location.reload();
+    } catch (err) {
+      console.error('Logout failed', err);
+    }
+  };
+
+  window.onAuthStateChanged(auth, (user) => {
+    const userBtn = document.getElementById('userBtn');
+    const userStatus = document.getElementById('userStatus');
+        const quickLogoutBtn = document.getElementById('quickLogoutBtn');
+    const loginLink = document.getElementById('loginLink');
+    const logoutOption = document.getElementById('logoutOption');
+    const profileOption = document.getElementById('profileOption');
+    if (!userBtn || !userStatus) return;
+
+    if (user) {
+      const displayName = user.displayName || user.email;
+      const photoURL = user.photoURL || 'https://www.gravatar.com/avatar?d=mp';
+      userBtn.innerHTML = `<img src="${photoURL}" alt="Avatar" style="width:36px; height:36px; border-radius:50%;">`;
+      userBtn.style.width = '44px';
+      userBtn.style.height = '44px';
+      userStatus.style.display = 'inline-block';
+      userStatus.textContent = displayName;
+    if (quickLogoutBtn) quickLogoutBtn.style.display = 'inline-block';
+      loginLink.style.display = 'none';
+      logoutOption.style.display = 'block';
+      profileOption.style.display = 'block';
+      localStorage.setItem('nordluxeUser', JSON.stringify({ uid: user.uid, email: user.email, displayName, photoURL, provider: user.providerData[0]?.providerId }));
+    } else {
+      userBtn.innerHTML = '👤';
+      userBtn.style.width = '40px';
+      userBtn.style.height = '40px';
+      userStatus.style.display = 'none';
+      userStatus.textContent = '';
+    if (quickLogoutBtn) quickLogoutBtn.style.display = 'none';
+      loginLink.style.display = 'block';
+      logoutOption.style.display = 'none';
+      profileOption.style.display = 'none';
+      localStorage.removeItem('nordluxeUser');
+    }
+  });
+</script>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Montserrat', sans-serif;
+scroll-behavior:smooth;
+}
+
+body{
+background:linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+color:#e0e0e0;
+min-height:100vh;
+}
+
+/* NAVBAR */
+
+nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:25px 60px;
+background:linear-gradient(135deg, rgba(10,10,10,0.95) 0%, rgba(26,26,46,0.95) 100%);
+backdrop-filter:blur(20px);
+border-bottom:1px solid rgba(209,155,72,0.3);
+position:sticky;
+top:0;
+z-index:1000;
+box-shadow:0 0 30px rgba(209,155,72,0.1);
+}
+
+.logo img{
+height:45px;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+filter:drop-shadow(0 0 10px rgba(209,155,72,0.5));
+}
+
+.logo img:hover{
+transform:scale(1.05);
+filter:drop-shadow(0 0 20px rgba(209,155,72,0.8));
+}
+
+nav a{
+color:#e0e0e0;
+text-decoration:none;
+margin-left:30px;
+font-size:15px;
+letter-spacing:1px;
+font-weight:500;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+position:relative;
+}
+
+nav a::before{
+content:'';
+position:absolute;
+bottom:-5px;
+left:0;
+width:0;
+height:2px;
+background:linear-gradient(90deg, #d19b48, #ffd700);
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+nav a:hover{
+color:#ffd700;
+transform:translateY(-2px);
+}
+
+nav a:hover::before{
+width:100%;
+}
+
+.cart-btn{
+background:linear-gradient(135deg, #d19b48 0%, #ffd700 100%) !important;
+color:#000 !important;
+padding:10px 20px !important;
+border-radius:25px !important;
+font-weight:600 !important;
+font-size:14px !important;
+letter-spacing:0.5px !important;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+box-shadow:0 4px 15px rgba(209,155,72,0.3) !important;
+border:1px solid rgba(255,215,0,0.2) !important;
+}
+
+.cart-btn:hover{
+background:linear-gradient(135deg, #ffd700 0%, #d19b48 100%) !important;
+transform:scale(1.05) translateY(-2px) !important;
+box-shadow:0 8px 25px rgba(209,155,72,0.5) !important;
+}
+
+.quick-logout-btn{
+background:transparent;
+border:1px solid rgba(255,215,0,0.5);
+color:#ffd700;
+padding:8px 14px;
+border-radius:20px;
+font-size:12px;
+font-weight:600;
+cursor:pointer;
+display:none;
+transition:all 0.3s ease;
+}
+
+.quick-logout-btn:hover{
+background:#ffd700;
+color:#000;
+}
+
+/* HERO */
+
+.hero{
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+background:linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+position:relative;
+overflow:hidden;
+}
+
+.hero-content{
+position:relative;
+z-index:2;
+padding:0 20px;
+max-width:960px;
+}
+.hero-subtitle{
+font-size:20px;
+letter-spacing:2px;
+color:rgba(255,215,0,0.9);
+margin-top:10px;
+margin-bottom:18px;
+text-shadow:0 0 20px rgba(255,215,0,0.4);
+opacity:0.9;
+animation:fadeInUp 1.5s ease-out 0.2s both;
+}
+
+.hero::before{
+content:'';
+position:absolute;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:radial-gradient(circle at 30% 40%, rgba(209,155,72,0.1) 0%, transparent 50%),
+radial-gradient(circle at 70% 60%, rgba(255,215,0,0.05) 0%, transparent 50%);
+animation:pulse 8s ease-in-out infinite;
+}
+
+.hero h1{
+font-size:72px;
+letter-spacing:4px;
+color:#fff;
+margin-bottom:20px;
+font-weight:800;
+text-shadow:0 0 30px rgba(209,155,72,0.5);
+animation:fadeInUp 1.5s ease-out;
+}
+
+.hero p{
+max-width:700px;
+line-height:1.8;
+opacity:.9;
+font-size:18px;
+font-weight:300;
+color:#e0e0e0;
+animation:fadeInUp 1.5s ease-out 0.3s both;
+}
+
+.hero button{
+margin-top:40px;
+padding:18px 40px;
+background:linear-gradient(135deg, #d19b48 0%, #ffd700 100%);
+border:none;
+color:#000;
+font-weight:600;
+font-size:16px;
+cursor:pointer;
+border-radius:30px;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+box-shadow:0 8px 25px rgba(209,155,72,0.4);
+position:relative;
+overflow:hidden;
+}
+
+.hero button::before{
+content:'';
+position:absolute;
+top:0;
+left:-100%;
+width:100%;
+height:100%;
+background:linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+transition:all 0.5s;
+}
+
+.hero button:hover{
+transform:scale(1.05) translateY(-3px);
+box-shadow:0 12px 35px rgba(209,155,72,0.6);
+}
+
+.hero button:hover::before{
+left:100%;
+}
+
+/* SECTION TITLE */
+
+.section-title{
+text-align:center;
+font-size:36px;
+margin:100px 0 60px 0;
+letter-spacing:2px;
+color:#fff;
+font-weight:700;
+text-shadow:0 0 20px rgba(209,155,72,0.3);
+position:relative;
+}
+
+.section-title::after{
+content:'';
+position:absolute;
+bottom:-10px;
+left:50%;
+transform:translateX(-50%);
+width:80px;
+height:3px;
+background:linear-gradient(90deg, #d19b48, #ffd700);
+border-radius:2px;
+}
+
+/* PRODUCTS */
+
+.product-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:40px;
+padding:0 60px 100px;
+}
+
+.product{
+background:linear-gradient(135deg, rgba(26,26,46,0.9) 0%, rgba(22,33,62,0.9) 100%);
+border-radius:20px;
+overflow:hidden;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+border:1px solid rgba(209,155,72,0.2);
+box-shadow:0 8px 25px rgba(0,0,0,0.3);
+position:relative;
+}
+
+.product::before{
+content:'';
+position:absolute;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:linear-gradient(135deg, rgba(209,155,72,0.05) 0%, transparent 50%);
+opacity:0;
+transition:all 0.3s ease;
+}
+
+.product:hover{
+transform:translateY(-15px) scale(1.02);
+box-shadow:0 20px 40px rgba(209,155,72,0.2);
+border-color:rgba(209,155,72,0.5);
+}
+
+.product:hover::before{
+opacity:1;
+}
+
+.product img{
+width:100%;
+height:340px;
+object-fit:cover;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product:hover img{
+transform:scale(1.05);
+}
+
+.product-info{
+padding:25px;
+}
+
+.product-info h3{
+margin-bottom:15px;
+color:#fff;
+font-weight:600;
+font-size:20px;
+}
+
+.price{
+color:#ffd700;
+margin-bottom:20px;
+font-size:18px;
+font-weight:700;
+text-shadow:0 0 10px rgba(255,215,0,0.5);
+}
+
+.product button{
+width:100%;
+padding:15px;
+background:linear-gradient(135deg, #d19b48 0%, #ffd700 100%);
+border:1px solid rgba(255,215,0,0.2);
+color:#000;
+cursor:pointer;
+font-weight:600;
+font-size:15px;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+border-radius:25px;
+position:relative;
+overflow:hidden;
+}
+
+.product button::before{
+content:'';
+position:absolute;
+top:0;
+left:-100%;
+width:100%;
+height:100%;
+background:linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+transition:all 0.5s;
+}
+
+.product button:hover{
+background:linear-gradient(135deg, #ffd700 0%, #d19b48 100%);
+transform:translateY(-2px);
+box-shadow:0 8px 20px rgba(209,155,72,0.4);
+}
+
+.product button:hover::before{
+left:100%;
+}
+
+/* CART ANIMATION */
+
+@keyframes cartBounce {
+0% { transform: scale(1); }
+50% { transform: scale(1.1); }
+100% { transform: scale(1); }
+}
+
+.cart-animation {
+animation: cartBounce 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* FLYING CART ANIMATION */
+
+.flying-cart {
+position: fixed;
+width: 30px;
+height: 30px;
+background: linear-gradient(135deg, #d19b48 0%, #ffd700 100%);
+border-radius: 50%;
+z-index: 9999;
+pointer-events: none;
+animation: flyToCart 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+box-shadow: 0 4px 15px rgba(209,155,72, 0.6);
+}
+
+.flying-cart::before {
+content: '🛒';
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+font-size: 16px;
+}
+
+@keyframes flyToCart {
+0% {
+transform: scale(1) rotate(0deg);
+opacity: 1;
+}
+20% {
+transform: scale(1.2) rotate(90deg);
+}
+60% {
+transform: scale(0.8) rotate(180deg);
+opacity: 0.8;
+}
+100% {
+transform: scale(0.3) rotate(360deg);
+opacity: 0;
+}
+}
+
+.cart-icon-bounce {
+animation: cartIconBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes cartIconBounce {
+0% { transform: scale(1); }
+25% { transform: scale(1.3) rotate(-10deg); }
+50% { transform: scale(1.1) rotate(10deg); }
+75% { transform: scale(1.2) rotate(-5deg); }
+100% { transform: scale(1); }
+}
+
+@keyframes pulse {
+0%, 100% { opacity: 0.5; }
+50% { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+0% {
+opacity: 0;
+transform: translateY(30px);
+}
+100% {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+/* ABOUT */
+
+.about{
+display:flex;
+flex-wrap:wrap;
+gap:60px;
+padding:100px 60px;
+align-items:center;
+justify-content:center;
+background:linear-gradient(135deg, rgba(26,26,46,0.3) 0%, rgba(22,33,62,0.3) 100%);
+backdrop-filter:blur(10px);
+border-top:1px solid rgba(209,155,72,0.1);
+border-bottom:1px solid rgba(209,155,72,0.1);
+}
+
+.about img{
+width:300px;
+border-radius:50%;
+border:3px solid #d19b48;
+box-shadow:0 0 30px rgba(209,155,72,0.3);
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.about img:hover{
+transform:scale(1.05);
+box-shadow:0 0 40px rgba(209,155,72,0.5);
+}
+
+.about-text{
+max-width:550px;
+line-height:1.8;
+color:#e0e0e0;
+}
+
+.about-text h2{
+font-size:36px;
+margin-bottom:30px;
+color:#fff;
+font-weight:700;
+text-shadow:0 0 20px rgba(209,155,72,0.3);
+}
+
+/* CONTACT */
+
+.contact{
+padding:100px 60px;
+text-align:center;
+background:linear-gradient(135deg, rgba(10,10,10,0.5) 0%, rgba(26,26,46,0.5) 100%);
+border-top:1px solid rgba(209,155,72,0.1);
+}
+
+.contact h2{
+font-size:36px;
+margin-bottom:60px;
+color:#fff;
+font-weight:700;
+text-shadow:0 0 20px rgba(209,155,72,0.3);
+}
+
+.contact p{
+margin-top:15px;
+opacity:.9;
+font-size:20px;
+color:#e0e0e0;
+font-weight:300;
+transition:all 0.3s ease;
+}
+
+.contact p:hover{
+color:#ffd700;
+transform:translateY(-2px);
+}
+
+/* STORY */
+
+.story{
+padding:100px 60px;
+text-align:center;
+max-width:900px;
+margin:0 auto;
+background:linear-gradient(135deg, rgba(22,33,62,0.3) 0%, rgba(26,26,46,0.3) 100%);
+border-top:1px solid rgba(209,155,72,0.1);
+border-bottom:1px solid rgba(209,155,72,0.1);
+}
+
+.story h2{
+font-size:36px;
+margin-bottom:60px;
+color:#fff;
+font-weight:700;
+text-shadow:0 0 20px rgba(209,155,72,0.3);
+}
+
+.story p{
+margin-bottom:35px;
+line-height:1.8;
+opacity:.9;
+font-size:18px;
+color:#e0e0e0;
+font-weight:300;
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:50px;
+background:linear-gradient(135deg, rgba(10,10,10,0.95) 0%, rgba(26,26,46,0.95) 100%);
+border-top:1px solid rgba(209,155,72,0.3);
+position:relative;
+}
+
+footer p{
+margin-bottom:15px;
+color:#e0e0e0;
+font-weight:300;
+}
+
+footer a{
+color:#d19b48;
+text-decoration:none;
+font-weight:500;
+transition:all 0.3s ease;
+}
+
+footer a:hover{
+color:#ffd700;
+transform:translateY(-2px);
+}
+
+footer a{
+color:#d19b48;
+text-decoration:none;
+}
+
+/* Product link hover effects */
+.product-link {
+    text-decoration: none;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.product-link:hover {
+    transform: translateY(-5px);
+}
+
+.product-link .product {
+    transition: box-shadow 0.3s ease;
+}
+
+.product-link:hover .product {
+    box-shadow: 0 10px 30px rgba(209,155,72,0.3);
+}
+
+/* USER MENU */
+.user-menu {
+    position: relative;
+}
+
+.user-btn {
+    background: linear-gradient(135deg, #d19b48 0%, #ffd700 100%);
+    color: #000;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(209,155,72,0.3);
+}
+
+.user-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(209,155,72,0.5);
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: rgba(10,10,10,0.98);
+    border: 1px solid rgba(209,155,72,0.3);
+    border-radius: 8px;
+    min-width: 180px;
+    display: none;
+    flex-direction: column;
+    z-index: 1001;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+}
+
+.user-dropdown.open {
+    display: flex;
+}
+
+.user-dropdown a {
+    color: #e0e0e0;
+    text-decoration: none;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(209,155,72,0.2);
+    transition: all 0.3s ease;
+}
+
+.user-dropdown a:last-child {
+    border-bottom: none;
+}
+
+.user-dropdown a:hover {
+    background: rgba(209,155,72,0.2);
+    color: #ffd700;
+    padding-left: 20px;
+}
+
+/* LOGIN MODAL */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, rgba(26,26,46,0.98) 0%, rgba(16,21,62,0.98) 100%);
+    border: 1px solid rgba(209,155,72,0.3);
+    border-radius: 12px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.modal-header h2 {
+    color: #ffd700;
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #e0e0e0;
+    font-size: 28px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+    color: #ffd700;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px;
+    background: rgba(209,155,72,0.1);
+    border: 1px solid rgba(209,155,72,0.3);
+    color: #e0e0e0;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #d19b48 0%, #ffd700 100%);
+    color: #000;
+    border-color: #ffd700;
+}
+
+.tab-btn:hover {
+    background: rgba(209,155,72,0.2);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    color: #e0e0e0;
+    margin-bottom: 7px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    background: rgba(209,155,72,0.1);
+    border: 1px solid rgba(209,155,72,0.3);
+    border-radius: 6px;
+    color: #e0e0e0;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    background: rgba(209,155,72,0.15);
+    border-color: #ffd700;
+    box-shadow: 0 0 10px rgba(255,215,0,0.2);
+}
+
+.form-group input.input-error {
+    border-color: #ff4d4f !important;
+    box-shadow: 0 0 10px rgba(255,77,79,0.35) !important;
+    background: rgba(255,77,79,0.12) !important;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #d19b48 0%, #ffd700 100%);
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 15px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(209,155,72,0.4);
+}
+
+.auth-divider {
+    text-align: center;
+    margin: 20px 0;
+    color: rgba(224,224,224,0.5);
+    font-size: 14px;
+}
+
+.social-auth {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.social-btn {
+    padding: 12px;
+    background: rgba(209,155,72,0.1);
+    border: 1px solid rgba(209,155,72,0.3);
+    border-radius: 6px;
+    color: #e0e0e0;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s ease;
+}
+
+.social-btn:hover {
+    background: rgba(209,155,72,0.2);
+    transform: translateY(-2px);
+}
+
+.error-msg {
+    color: #ff6b6b;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+.success-msg {
+    color: #51cf66;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+</style>
+<link rel="stylesheet" href="/assets/css/theme-overrides.css">
+</head>
+
+<body>
+
+<!-- NAV -->
+
+<nav>
+
+<div class="logo">
+<a href="index.html"><img src="/assets/images/sa.jpg" alt="Nordluxe Logo"></a>
+</div>
+
+<div style="display:flex; align-items:center; gap:20px;">
+<a href="index.html">Home</a>
+<a href="collections.html">Collection</a>
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
+<a href="story.html">Story</a>
+<a href="cart.html" class="cart-btn">🛒 Cart</a>
+<span id="userStatus" style="display:none; font-weight:600; margin-left:12px; color:#ffd700;"></span>
+<button id="quickLogoutBtn" class="quick-logout-btn" onclick="logout()">Logout</button>
+<div class="user-menu" id="userMenuContainer">
+<button class="user-btn" id="userBtn" onclick="toggleUserMenu()">👤</button>
+<div class="user-dropdown" id="userDropdown">
+<a href="login.html" id="loginLink">Login/Signup</a>
+<a href="#" onclick="logout(); return false;" id="logoutOption" style="display:none;">Logout</a>
+<a href="#" onclick="goToProfile(); return false;" id="profileOption" style="display:none;">My Profile</a>
+</div>
+</div>
+</div>
+
+</nav>
+
+<!-- HERO -->
+
+<section class="hero" id="home">
+
+<div class="hero-content" data-aos="fade-up">
+<h1 data-aos="fade-up" data-aos-delay="200">NORDLUXE</h1>
+<h2 class="hero-subtitle" data-aos="fade-up" data-aos-delay="400">Scandinavian Luxury — Nordic Heritage. Future Wears.</h2>
+<p data-aos="fade-up" data-aos-delay="600">
+Luxury Scandinavian fashion crafted with minimalist elegance and premium materials.
+</p>
+
+<button onclick="scrollToCollection()" data-aos="fade-up" data-aos-delay="800">Explore Collection</button>
+</div>
+
+</section>
+
+<!-- COLLECTION -->
+
+<h2 class="section-title" id="collection" data-aos="fade-up">NORDLUXE Collection</h2>
+
+<div class="product-grid">
+
+<a href="/html/product.html?id=nordic-parka" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="100">
+<img src="/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_15_39%20PM.png">
+<div class="product-info">
+<h3>Nordic Parka</h3>
+<div class="price">$890</div>
+<button onclick="event.preventDefault(); addCart('Nordic Parka', this, '$890')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+<a href="/html/product.html?id=heritage-sweater" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="200">
+<img src="/assets/images/heritage-sweater.png">
+<div class="product-info">
+<h3>Heritage Sweater</h3>
+<div class="price">$450</div>
+<button onclick="event.preventDefault(); addCart('Heritage Sweater', this, '$450')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+<a href="/html/product.html?id=arctic-boots" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="300">
+<img src="/assets/images/arctic-boots.png">
+<div class="product-info">
+<h3>Arctic Boots</h3>
+<div class="price">$620</div>
+<button onclick="event.preventDefault(); addCart('Arctic Boots', this, '$620')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+<a href="/html/product.html?id=wool-scarf" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="400">
+<img src="/assets/images/wool-scarf.png">
+<div class="product-info">
+<h3>Wool Scarf</h3>
+<div class="price">$180</div>
+<button onclick="event.preventDefault(); addCart('Wool Scarf', this, '$180')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+<a href="/html/product.html?id=minimalist-coat" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="500">
+<img src="/assets/images/minimalist-coat.png">
+<div class="product-info">
+<h3>Minimalist Coat</h3>
+<div class="price">$980</div>
+<button onclick="event.preventDefault(); addCart('Minimalist Coat', this, '$980')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+<a href="/html/product.html?id=nordluxe-hoodie" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="600">
+<img src="/assets/images/nordluxe-hoodie.png">
+<div class="product-info">
+<h3>Nordluxe Hoodie</h3>
+<div class="price">$390</div>
+<button onclick="event.preventDefault(); addCart('Nordluxe Hoodie', this, '$390')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+</div>
+
+<!-- ABOUT -->
+
+<section class="about" id="about" data-aos="fade-up">
+
+<img src="/assets/images/about-image.png" data-aos="fade-right" data-aos-delay="200">
+
+<div class="about-text" data-aos="fade-left" data-aos-delay="400">
+
+<h2>About NORDLUXE</h2>
+
+<p>
+NORDLUXE is a luxury Scandinavian-inspired fashion house built on minimalism,
+timeless design, and premium craftsmanship. Our mission is to create elegant
+pieces that blend simplicity with bold identity.
+</p>
+
+</div>
+
+</section>
+
+<!-- CONTACT -->
+
+<section class="contact" id="contact" data-aos="fade-up">
+
+<h2 class="section-title">Contact</h2>
+
+<p data-aos="fade-up" data-aos-delay="200">Email: nord.luxe@gmail.com</p>
+<p data-aos="fade-up" data-aos-delay="300">Instagram: @nordluxe</p>
+
+</section>
+
+<!-- STORY -->
+
+<section class="story" id="story" data-aos="fade-up">
+
+<h2 class="section-title">Our Story</h2>
+
+<p data-aos="fade-up" data-aos-delay="200">
+Founded in the heart of Scandinavia, NORDLUXE emerged from a vision to redefine luxury fashion.
+What started as a small atelier in Stockholm has grown into a global brand, but our core values remain unchanged.
+</p>
+
+<p data-aos="fade-up" data-aos-delay="400">
+We believe in the power of simplicity, the beauty of natural materials, and the importance of sustainable practices.
+Every piece in our collection tells a story of craftsmanship, innovation, and timeless elegance.
+</p>
+
+</section>
+
+<footer>
+
+<p>© 2026 NORDLUXE</p>
+<p><a href="#">Instagram</a></p>
+
+</footer>
+
+<script>
+
+AOS.init({
+  duration: 800,
+  easing: 'ease-in-out',
+  once: true,
+  mirror: false
+});
+
+function addCart(product, button, price){
+alert(product + " added to cart");
+
+// Add animation to the clicked button
+if(button){
+button.classList.add('cart-animation');
+setTimeout(() => {
+button.classList.remove('cart-animation');
+}, 600);
+}
+
+// Create flying cart animation
+if(button){
+const buttonRect = button.getBoundingClientRect();
+const cartIcon = document.querySelector('.cart-btn');
+const cartRect = cartIcon.getBoundingClientRect();
+
+// Create flying element
+const flyingCart = document.createElement('div');
+flyingCart.className = 'flying-cart';
+flyingCart.style.left = buttonRect.left + buttonRect.width / 2 - 15 + 'px';
+flyingCart.style.top = buttonRect.top + buttonRect.height / 2 - 15 + 'px';
+document.body.appendChild(flyingCart);
+
+// Animate cart icon
+if(cartIcon){
+cartIcon.classList.add('cart-icon-bounce');
+setTimeout(() => {
+cartIcon.classList.remove('cart-icon-bounce');
+}, 800);
+}
+
+// Remove flying element after animation
+setTimeout(() => {
+if(flyingCart.parentNode){
+flyingCart.parentNode.removeChild(flyingCart);
+}
+}, 1200);
+}
+
+// Add to cart storage
+let cart = JSON.parse(localStorage.getItem('nordluxeCart') || '[]');
+cart.push({name: product, price: price, date: new Date().toISOString()});
+localStorage.setItem('nordluxeCart', JSON.stringify(cart));
+}
+
+function scrollToCollection(){
+document.getElementById("collection").scrollIntoView({behavior:"smooth"});
+}
+
+// AUTHENTICATION SYSTEM
+function toggleUserMenu() {
+    const dropdown = document.getElementById('userDropdown');
+    dropdown.classList.toggle('open');
+}
+
+function openLoginModal() {
+    document.getElementById('loginModal').classList.add('show');
+    document.getElementById('userDropdown').classList.remove('open');
+    document.querySelector('.tab-btn.active').click();
+}
+
+function closeLoginModal() {
+    document.getElementById('loginModal').classList.remove('show');
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('loginModal');
+    if (event.target === modal) {
+        closeLoginModal();
+    }
+});
+
+function switchTab(tabName, sourceEvent) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remove active class from buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName).classList.add('active');
+    const evt = sourceEvent || window.event;
+    if (evt && evt.target) {
+        evt.target.classList.add('active');
+    }
+}
+
+function handleEmailSignup() {
+    const name = document.getElementById('signupName').value;
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    applyPasswordMatchState();
+
+    if (!name || !email || !password || !confirmPassword) {
+        showError('signupError', 'Fill all fields');
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        showError('signupError', 'Passwords do not match');
+        return;
+    }
+
+    if (password.length < 6) {
+        showError('signupError', 'Password must be at least 6 characters');
+        return;
+    }
+
+    window.firebaseCreateUser(window.firebaseAuth, email, password)
+    .then((userCredential) => {
+        const user = {
+            id: userCredential.user.uid,
+            name: name,
+            email: email,
+            provider: 'email'
+        };
+
+        localStorage.setItem('nordluxeUser', JSON.stringify(user));
+        localStorage.setItem('nordluxeLoggedIn', 'true');
+
+        showSuccess('signupSuccess', 'Account created!');
+
+        setTimeout(() => {
+            closeLoginModal();
+            updateUserUI();
+        }, 1000);
+    })
+    .catch((error) => {
+        if (error.code === 'auth/email-already-in-use') {
+            showError('signupError', 'This email is already registered. Try logging in instead.');
+        } else if (error.code === 'auth/invalid-email') {
+            showError('signupError', 'Invalid email address.');
+        } else if (error.code === 'auth/weak-password') {
+            showError('signupError', 'Password is too weak. Use at least 6 characters.');
+        } else {
+            showError('signupError', error.message);
+        }
+    });
+}
+
+function applyPasswordMatchState() {
+    const passwordInput = document.getElementById('signupPassword');
+    const confirmInput = document.getElementById('confirmPassword');
+    const signupBtn = document.getElementById('signupSubmitBtn');
+    if (!passwordInput || !confirmInput || !signupBtn) return;
+
+    const password = passwordInput.value;
+    const confirmPassword = confirmInput.value;
+    const hasMismatch = confirmPassword.length > 0 && password !== confirmPassword;
+
+    passwordInput.classList.toggle('input-error', hasMismatch);
+    confirmInput.classList.toggle('input-error', hasMismatch);
+
+    if (hasMismatch) {
+        signupBtn.disabled = true;
+        signupBtn.style.opacity = '0.6';
+        showError('signupError', 'Passwords do not match');
+    } else {
+        signupBtn.disabled = false;
+        signupBtn.style.opacity = '1';
+    }
+}
+
+function handleEmailLogin() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    if (!email || !password) {
+        showError('loginError', 'Fill all fields');
+        return;
+    }
+
+    window.firebaseSignIn(window.firebaseAuth, email, password)
+    .then((userCredential) => {
+        const user = {
+            id: userCredential.user.uid,
+            email: userCredential.user.email,
+            provider: 'email'
+        };
+
+        localStorage.setItem('nordluxeUser', JSON.stringify(user));
+        localStorage.setItem('nordluxeLoggedIn', 'true');
+
+        showSuccess('loginSuccess', 'Welcome back!');
+
+        setTimeout(() => {
+            closeLoginModal();
+            updateUserUI();
+        }, 1000);
+    })
+    .catch((error) => {
+        alert(error.message);
+    });
+}
+
+async function sendLoginOTP() {
+    const email = document.getElementById('loginEmail').value.trim();
+    if (!email) {
+        showError('loginError', 'Enter your email first to receive OTP.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/auth/email/send-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+            showError('loginError', data.message || 'Failed to send OTP');
+            return;
+        }
+
+        document.getElementById('otpLoginWrap').style.display = 'block';
+        showSuccess('loginSuccess', 'OTP sent. Check your email and enter the code.');
+    } catch (error) {
+        showError('loginError', 'Failed to send OTP');
+    }
+}
+
+async function verifyLoginOTP() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const otp = document.getElementById('loginOtpCode').value.trim();
+
+    if (!email || !otp) {
+        showError('loginError', 'Enter both email and OTP.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/auth/email/verify-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, otp })
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+            showError('loginError', data.message || 'Invalid OTP');
+            return;
+        }
+
+        localStorage.setItem('nordluxeUser', JSON.stringify({
+            id: email,
+            email: email,
+            provider: 'otp-email'
+        }));
+        localStorage.setItem('nordluxeLoggedIn', 'true');
+
+        showSuccess('loginSuccess', 'Logged in successfully with OTP!');
+        setTimeout(() => {
+            closeLoginModal();
+            updateUserUI();
+        }, 800);
+    } catch (error) {
+        showError('loginError', 'OTP verification failed');
+    }
+}
+
+function handleGoogleAuth() {
+    signInWithPopup(auth, provider)
+    .then((result) => {
+        console.log(result);
+
+        const user = {
+            id: result.user.uid,
+            name: result.user.displayName,
+            email: result.user.email,
+            provider: 'google',
+            profilePic: result.user.photoURL
+        };
+
+        localStorage.setItem('nordluxeUser', JSON.stringify(user));
+        localStorage.setItem('nordluxeLoggedIn', 'true');
+
+        closeLoginModal();
+        updateUserUI();
+    })
+    .catch((error) => {
+        console.error("FULL ERROR:", error);
+        alert(error.message); // THIS IS IMPORTANT
+    });
+}
+
+function handleAppleAuth() {
+    showError('loginError', 'Apple sign in is coming soon. Use Google or Email for now.');
+}
+
+function handleEmailOption() {
+    switchTab('login');
+    const otpWrap = document.getElementById('otpLoginWrap');
+    if (otpWrap) otpWrap.style.display = 'block';
+    sendLoginOTP();
+}
+
+function handleForgotPassword(source) {
+    const isSignup = source === 'signup';
+    const emailInputId = isSignup ? 'signupEmail' : 'loginEmail';
+    const errorTarget = isSignup ? 'signupError' : 'loginError';
+    const successTarget = isSignup ? 'signupSuccess' : 'loginSuccess';
+    const email = document.getElementById(emailInputId).value.trim();
+
+    if (!email) {
+        showError(errorTarget, 'Enter your email first, then tap Forgot password.');
+        return;
+    }
+
+    window.firebaseSendPasswordReset(window.firebaseAuth, email)
+    .then(() => {
+        showSuccess(successTarget, 'Password reset link sent to your email.');
+    })
+    .catch((error) => {
+        showError(errorTarget, error.message);
+    });
+}
+
+function showError(elementId, message) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = message;
+        element.style.display = 'block';
+    }
+}
+
+function showSuccess(elementId, message) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = message;
+        element.style.display = 'block';
+    }
+}
+
+async function logout() {
+    try {
+        await window.firebaseSignOut(window.firebaseAuth);
+    } catch (error) {
+        console.error('Logout failed', error);
+    }
+
+    localStorage.removeItem('nordluxeLoggedIn');
+    localStorage.removeItem('nordluxeUser');
+    updateUserUI();
+    alert('You have been logged out');
+}
+
+function goToProfile() {
+    alert('Profile page coming soon!');
+}
+
+function updateUserUI() {
+    const isLoggedIn = localStorage.getItem('nordluxeLoggedIn') === 'true';
+    const user = JSON.parse(localStorage.getItem('nordluxeUser') || '{}');
+
+    const loginLink = document.getElementById('loginLink');
+    const logoutLink = document.getElementById('logoutOption');
+    const profileLink = document.getElementById('profileOption');
+    const userBtn = document.getElementById('userBtn');
+    const userStatus = document.getElementById('userStatus');
+    const quickLogoutBtn = document.getElementById('quickLogoutBtn');
+
+    if (!loginLink || !logoutLink || !profileLink || !userBtn) return;
+
+    const displayName = user.name || user.displayName || user.email;
+    const photo = user.photoURL || user.profilePic;
+    const hasSession = isLoggedIn && (displayName || user.uid || user.id);
+
+    if (hasSession) {
+        loginLink.style.display = 'none';
+        logoutLink.style.display = 'block';
+        profileLink.style.display = 'block';
+
+        if (userStatus) {
+            userStatus.style.display = 'inline-block';
+            userStatus.textContent = displayName || 'Signed in';
+        }
+        if (quickLogoutBtn) {
+            quickLogoutBtn.style.display = 'inline-block';
+        }
+
+        if (photo) {
+            userBtn.innerHTML = `<img src="${photo}" alt="Avatar" style="width:36px; height:36px; border-radius:50%;">`;
+            userBtn.style.width = '44px';
+            userBtn.style.height = '44px';
+        } else {
+            userBtn.textContent = '✓👤';
+        }
+        userBtn.title = `Logged in as: ${displayName || 'User'}`;
+    } else {
+        loginLink.style.display = 'block';
+        logoutLink.style.display = 'none';
+        profileLink.style.display = 'none';
+
+        if (userStatus) {
+            userStatus.style.display = 'none';
+            userStatus.textContent = '';
+        }
+        if (quickLogoutBtn) {
+            quickLogoutBtn.style.display = 'none';
+        }
+
+        userBtn.textContent = '👤';
+        userBtn.style.width = '40px';
+        userBtn.style.height = '40px';
+        userBtn.title = 'Login/Signup';
+    }
+}
+
+// Check if user is logged in on page load
+window.addEventListener('DOMContentLoaded', function() {
+    updateUserUI();
+    const passwordInput = document.getElementById('signupPassword');
+    const confirmInput = document.getElementById('confirmPassword');
+    if (passwordInput) passwordInput.addEventListener('input', applyPasswordMatchState);
+    if (confirmInput) confirmInput.addEventListener('input', applyPasswordMatchState);
+});
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const userMenu = document.getElementById('userMenuContainer');
+    if (!userMenu.contains(event.target)) {
+        document.getElementById('userDropdown').classList.remove('open');
+    }
+});
+
+</script>
+
+<!-- LOGIN/SIGNUP MODAL -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>NORDLUXE Account</h2>
+            <button class="close-btn" onclick="closeLoginModal()">&times;</button>
+        </div>
+        
+        <div class="auth-tabs">
+            <button class="tab-btn active" onclick="switchTab('login'); event.preventDefault();">Login</button>
+            <button class="tab-btn" onclick="switchTab('signup'); event.preventDefault();">Sign Up</button>
+        </div>
+        
+        <!-- LOGIN TAB -->
+        <div id="login" class="tab-content active">
+            <div class="social-auth">
+                <button class="social-btn" onclick="handleGoogleAuth()" title="Login with Google"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg></button>
+                <button class="social-btn" onclick="handleAppleAuth()" title="Login with Apple"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg></button>
+                <button class="social-btn" onclick="handleEmailOption()" title="Login with Email"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+            </div>
+            
+            <div class="auth-divider">OR USE EMAIL</div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="your@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="••••••••">
+            </div>
+            
+            <button class="submit-btn" onclick="handleEmailLogin()">Login</button>
+
+            <div class="auth-divider">OR SIGN IN WITH OTP</div>
+            <button class="submit-btn" onclick="sendLoginOTP()">Send OTP to Email</button>
+            <div id="otpLoginWrap" style="display:none;">
+                <div class="form-group">
+                    <label>Enter OTP</label>
+                    <input type="text" id="loginOtpCode" placeholder="6-digit OTP" maxlength="6">
+                </div>
+                <button class="submit-btn" onclick="verifyLoginOTP()">Verify OTP & Login</button>
+            </div>
+
+            <div id="loginError" class="error-msg"></div>
+            <div id="loginSuccess" class="success-msg"></div>
+
+            <div class="auth-divider">OR CONTINUE WITH</div>
+            <div class="social-auth" style="margin-top:10px;">
+                <button class="social-btn" onclick="handleEmailOption()" title="Login with Email"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+                <button class="social-btn" onclick="handleAppleAuth()" title="Login with Apple"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg></button>
+                <button class="social-btn" onclick="handleGoogleAuth()" title="Login with Google"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg></button>
+            </div>
+            
+            <div style="text-align:center; color:#a0a0a0; font-size:13px; margin-top:15px;">
+                Don't have an account? <a href="#" onclick="switchTab('signup'); return false;" style="color:#ffd700; text-decoration:underline;">Sign up here</a>
+            </div>
+        </div>
+        
+        <!-- SIGNUP TAB -->
+        <div id="signup" class="tab-content">
+            <div class="social-auth">
+                <button class="social-btn" onclick="handleGoogleAuth()" title="Sign up with Google"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg></button>
+                <button class="social-btn" onclick="handleAppleAuth()" title="Sign up with Apple"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg></button>
+                <button class="social-btn" onclick="handleEmailOption()" title="Sign up with Email"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+            </div>
+            
+            <div class="auth-divider">OR CREATE ACCOUNT WITH EMAIL</div>
+            
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="signupName" placeholder="John Doe">
+            </div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="signupEmail" placeholder="your@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="signupPassword" placeholder="••••••••">
+            </div>
+            
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="confirmPassword" placeholder="Confirm Password">
+            </div>
+
+            <div style="text-align:right; margin-top:-6px; margin-bottom:12px;">
+                <a href="#" onclick="handleForgotPassword('signup'); return false;" style="color:#ffd700; font-size:13px; text-decoration:underline;">Forgot password?</a>
+            </div>
+            
+            <button class="submit-btn" id="signupSubmitBtn" onclick="handleEmailSignup()">Create Account</button>
+            <div id="signupError" class="error-msg"></div>
+            <div id="signupSuccess" class="success-msg"></div>
+
+            <div class="auth-divider">OR CONTINUE WITH</div>
+            <div class="social-auth" style="margin-top:10px;">
+                <button class="social-btn" onclick="handleEmailOption()" title="Sign up with Email"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+                <button class="social-btn" onclick="handleAppleAuth()" title="Sign up with Apple"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg></button>
+                <button class="social-btn" onclick="handleGoogleAuth()" title="Sign up with Google"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg></button>
+            </div>
+            
+            <div style="text-align:center; color:#a0a0a0; font-size:13px; margin-top:15px;">
+                Already have an account? <a href="#" onclick="switchTab('login'); return false;" style="color:#ffd700; text-decoration:underline;">Login here</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/assets/js/site-nav.js"></script>
+</body>
+</html>
+```

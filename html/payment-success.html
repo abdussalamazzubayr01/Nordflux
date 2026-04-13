@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NORDLUXE | Payment Success</title>
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Montserrat', sans-serif;
+scroll-behavior:smooth;
+}
+
+body{
+background:#ffffff;
+color:#000000;
+min-height:100vh;
+display:flex;
+flex-direction:column;
+}
+
+/* NAVBAR */
+
+nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:25px 60px;
+background:#ffffff;
+border-bottom:1px solid #d19b48;
+position:sticky;
+top:0;
+z-index:1000;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.logo img{
+height:45px;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+nav a{
+color:#000000;
+text-decoration:none;
+margin-left:30px;
+font-size:15px;
+letter-spacing:1px;
+font-weight:500;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+position:relative;
+}
+
+nav a::before{
+content:'';
+position:absolute;
+bottom:-5px;
+left:0;
+width:0;
+height:2px;
+background:#d19b48;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+nav a:hover{
+color:#d19b48;
+transform:translateY(-2px);
+}
+
+nav a:hover::before{
+width:100%;
+}
+
+.cart-btn{
+background:#d19b48 !important;
+color:#ffffff !important;
+padding:10px 20px !important;
+border-radius:25px !important;
+font-weight:600 !important;
+font-size:14px !important;
+letter-spacing:0.5px !important;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+box-shadow:0 4px 15px rgba(209,155,72,0.3) !important;
+border:1px solid #d19b48 !important;
+}
+
+.cart-btn:hover{
+background:#ffd700 !important;
+transform:scale(1.05) translateY(-2px) !important;
+box-shadow:0 8px 25px rgba(209,155,72,0.5) !important;
+}
+
+/* SUCCESS PAGE */
+
+.success-container{
+flex:1;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:100px 20px;
+text-align:center;
+}
+
+.success-card{
+background:#ffffff;
+padding:60px;
+border-radius:20px;
+box-shadow:0 20px 50px rgba(0,0,0,0.1);
+border:1px solid #d19b48;
+max-width:600px;
+width:100%;
+}
+
+.success-icon{
+font-size:80px;
+margin-bottom:30px;
+display:block;
+}
+
+.success-title{
+font-size:36px;
+color:#000000;
+margin-bottom:20px;
+font-weight:700;
+}
+
+.success-message{
+font-size:18px;
+color:#666;
+margin-bottom:40px;
+line-height:1.6;
+}
+
+.order-details{
+background:#f9f9f9;
+padding:30px;
+border-radius:15px;
+margin-bottom:40px;
+text-align:left;
+}
+
+.order-details h3{
+color:#d19b48;
+margin-bottom:20px;
+font-size:22px;
+}
+
+.order-details p{
+margin-bottom:10px;
+color:#000000;
+}
+
+.success-actions{
+display:flex;
+gap:20px;
+justify-content:center;
+flex-wrap:wrap;
+}
+
+.success-btn{
+padding:15px 30px;
+border-radius:30px;
+font-weight:600;
+font-size:16px;
+cursor:pointer;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+text-decoration:none;
+display:inline-block;
+text-align:center;
+min-width:150px;
+}
+
+.primary-btn{
+background:#d19b48;
+color:#ffffff;
+border:1px solid #d19b48;
+box-shadow:0 4px 15px rgba(209,155,72,0.3);
+}
+
+.primary-btn:hover{
+background:#ffd700;
+transform:translateY(-2px);
+box-shadow:0 8px 25px rgba(209,155,72,0.5);
+}
+
+.secondary-btn{
+background:#ffffff;
+color:#d19b48;
+border:1px solid #d19b48;
+}
+
+.secondary-btn:hover{
+background:#d19b48;
+color:#ffffff;
+transform:translateY(-2px);
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:40px;
+background:#000000;
+border-top:1px solid #d19b48;
+}
+
+footer p{
+margin-bottom:15px;
+color:#ffffff;
+font-weight:300;
+}
+
+footer a{
+color:#d19b48;
+text-decoration:none;
+font-weight:500;
+transition:all 0.3s ease;
+}
+
+footer a:hover{
+color:#ffd700;
+transform:translateY(-2px);
+}
+
+</style>
+<link rel="stylesheet" href="/assets/css/theme-overrides.css">
+</head>
+<body>
+
+<!-- NAV -->
+
+<nav>
+<div class="logo">
+<a href="index.html"><img src="/assets/images/sa.jpg" alt="Nordluxe Logo"></a>
+</div>
+<div>
+<a href="index.html">Home</a>
+<a href="collections.html">Collection</a>
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
+<a href="story.html">Story</a>
+<a href="cart.html" class="cart-btn">🛒 Cart</a>
+</div>
+</nav>
+
+<!-- SUCCESS PAGE -->
+
+<div class="success-container" data-aos="fade-up">
+<div class="success-card" data-aos="zoom-in" data-aos-delay="300">
+
+<span class="success-icon">✅</span>
+
+<h1 class="success-title">Payment Successful!</h1>
+
+<div class="success-message">
+Thank you for your purchase! Your order has been successfully processed and you will receive a confirmation email shortly.
+</div>
+
+<div class="order-details" data-aos="fade-up" data-aos-delay="500">
+<h3>What's Next?</h3>
+<p>📧 <strong>Order Confirmation:</strong> Check your email for order details and tracking information</p>
+<p>📦 <strong>Shipping:</strong> Your items will be carefully packaged and shipped within 2-3 business days</p>
+<p>🚚 <strong>Tracking:</strong> You'll receive a tracking number once your order ships</p>
+<p>💬 <strong>Support:</strong> Contact us anytime if you have questions about your order</p>
+</div>
+
+<div class="success-actions" data-aos="fade-up" data-aos-delay="700">
+<a href="collections.html" class="success-btn primary-btn">Continue Shopping</a>
+<a href="index.html" class="success-btn secondary-btn">Back to Home</a>
+</div>
+
+</div>
+</div>
+
+<footer>
+<p>© 2026 NORDLUXE</p>
+<p><a href="#">Instagram</a></p>
+</footer>
+
+<script>
+
+// Initialize AOS
+AOS.init({
+  duration: 800,
+  easing: 'ease-in-out',
+  once: true,
+  mirror: false
+});
+
+// Redirect to the new thank you page
+window.location.href = 'thank-you.html' + window.location.search;
+
+</script>
+
+<script src="/assets/js/site-nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NORDLUXE | Customer Profile</title>
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+body {
+  background:
+    radial-gradient(circle at 8% 8%, rgba(209,155,72,0.12) 0%, transparent 38%),
+    radial-gradient(circle at 92% 20%, rgba(0,0,0,0.06) 0%, transparent 34%),
+    #f8f7f3;
+  color: #111;
+  min-height: 100vh;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 60px;
+  background: #fff;
+  border-bottom: 1px solid #d19b48;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+}
+
+.logo img {
+  height: 45px;
+}
+
+nav a {
+  color: #111;
+  text-decoration: none;
+  margin-left: 26px;
+  font-size: 14px;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+}
+
+.container {
+  max-width: 1180px;
+  margin: 40px auto;
+  padding: 0 20px 40px;
+}
+
+.hero {
+  background: linear-gradient(115deg, #111 0%, #2b2b2b 55%, #4a3b20 100%);
+  border-radius: 20px;
+  color: #fff;
+  padding: 34px 28px;
+  box-shadow: 0 14px 34px rgba(0,0,0,0.22);
+}
+
+.hero h1 {
+  font-size: 30px;
+  margin-bottom: 10px;
+  letter-spacing: 0.4px;
+}
+
+.hero p {
+  opacity: 0.9;
+  max-width: 720px;
+  line-height: 1.6;
+}
+
+.stats {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.stat {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.stat strong {
+  font-size: 20px;
+}
+
+.grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid #e8ddc8;
+  border-radius: 16px;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 16px 18px;
+  border-bottom: 1px solid #eee5d5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, #fff, #fff9ed);
+}
+
+.panel-header h2 {
+  font-size: 16px;
+  letter-spacing: 0.3px;
+}
+
+.panel-body {
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.list-item {
+  padding: 12px 18px;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.item-title {
+  font-weight: 600;
+  color: #111;
+}
+
+.item-meta {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #666;
+}
+
+.badge {
+  display: inline-block;
+  background: #fff2d5;
+  color: #7e560f;
+  border: 1px solid #e5c27a;
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-size: 11px;
+  margin-right: 6px;
+}
+
+.empty {
+  padding: 22px 18px;
+  color: #777;
+  font-size: 14px;
+}
+
+.actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: 1px solid #d19b48;
+  background: #d19b48;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn.secondary {
+  background: #fff;
+  color: #7e560f;
+}
+
+@media (max-width: 900px) {
+  nav {
+    padding: 18px 18px;
+  }
+
+  nav a {
+    margin-left: 14px;
+    font-size: 13px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+}
+</style>
+<link rel="stylesheet" href="/assets/css/theme-overrides.css">
+</head>
+<body>
+<nav>
+  <div class="logo"><a href="index.html"><img src="/assets/images/sa.jpg" alt="Nordluxe Logo"></a></div>
+  <div>
+    <a href="index.html">Home</a>
+    <a href="collections.html">Collection</a>
+    <a href="cart.html">Cart</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</nav>
+
+<div class="container">
+  <section class="hero" data-aos="fade-up">
+    <h1 id="profileName">Customer Profile</h1>
+    <p>Track your journey with NORDLUXE in one place: what you searched, what you ordered, and your account activity timeline.</p>
+    <div class="stats">
+      <div class="stat"><div>Searches</div><strong id="searchCount">0</strong></div>
+      <div class="stat"><div>Orders</div><strong id="orderCount">0</strong></div>
+      <div class="stat"><div>Activities</div><strong id="activityCount">0</strong></div>
+      <div class="stat"><div>Cart Items</div><strong id="cartCount">0</strong></div>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="panel" data-aos="fade-up" data-aos-delay="100">
+      <div class="panel-header">
+        <h2>Recent Searches</h2>
+      </div>
+      <div class="panel-body" id="searchList"></div>
+    </div>
+
+    <div class="panel" data-aos="fade-up" data-aos-delay="150">
+      <div class="panel-header">
+        <h2>Order History</h2>
+      </div>
+      <div class="panel-body" id="orderList"></div>
+    </div>
+
+    <div class="panel" data-aos="fade-up" data-aos-delay="200" style="grid-column: 1 / -1;">
+      <div class="panel-header">
+        <h2>Customer Activity</h2>
+      </div>
+      <div class="panel-body" id="activityList"></div>
+    </div>
+  </section>
+
+  <div class="actions" data-aos="fade-up" data-aos-delay="250">
+    <a class="btn" href="collections.html">Continue Shopping</a>
+    <button class="btn secondary" type="button" id="clearActivityBtn">Clear Activity Log</button>
+  </div>
+</div>
+
+<script>
+function readJson(key, fallback) {
+  try {
+    return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+  } catch (e) {
+    return fallback;
+  }
+}
+
+function formatDate(value) {
+  if (!value) return 'No date';
+  const dt = new Date(value);
+  if (Number.isNaN(dt.getTime())) return value;
+  return dt.toLocaleString();
+}
+
+function renderList(containerId, items, renderItem, emptyText) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  if (!items || items.length === 0) {
+    container.innerHTML = `<div class="empty">${emptyText}</div>`;
+    return;
+  }
+
+  container.innerHTML = items.map(renderItem).join('');
+}
+
+function initProfile() {
+  const user = readJson('nordluxeUser', {});
+  const searches = readJson('nordluxeSearchHistory', []);
+  const orders = readJson('nordluxeOrderHistory', []);
+  const activities = readJson('nordluxeActivityLog', []);
+  const cart = readJson('nordluxeCart', []);
+
+  const displayName = user.name || user.displayName || user.email || 'Customer Profile';
+  document.getElementById('profileName').textContent = displayName;
+  document.getElementById('searchCount').textContent = String(searches.length);
+  document.getElementById('orderCount').textContent = String(orders.length);
+  document.getElementById('activityCount').textContent = String(activities.length);
+  document.getElementById('cartCount').textContent = String(cart.length);
+
+  renderList(
+    'searchList',
+    searches.slice(0, 25),
+    function (entry) {
+      const term = entry.term || entry.query || 'Unknown search';
+      const source = entry.source || 'site';
+      return `<div class="list-item"><div class="item-title"><span class="badge">${source}</span>${term}</div><div class="item-meta">${formatDate(entry.at)}</div></div>`;
+    },
+    'No search activity yet. Start exploring collections and products.'
+  );
+
+  renderList(
+    'orderList',
+    orders.slice(0, 25),
+    function (order) {
+      const total = typeof order.total === 'number' ? `$${order.total.toFixed(2)}` : (order.totalLabel || 'N/A');
+      const itemCount = Array.isArray(order.items) ? order.items.length : 0;
+      const orderRef = order.orderRef || order.txRef || order.transactionId || 'Pending reference';
+      return `<div class="list-item"><div class="item-title"><span class="badge">${total}</span>${itemCount} item(s)</div><div class="item-meta">Ref: ${orderRef} • ${formatDate(order.createdAt || order.completedAt || order.at)}</div></div>`;
+    },
+    'No orders yet. Your completed orders will show here.'
+  );
+
+  renderList(
+    'activityList',
+    activities.slice(0, 60),
+    function (activity) {
+      const title = activity.title || activity.type || 'Activity';
+      const details = activity.details || activity.path || '';
+      return `<div class="list-item"><div class="item-title"><span class="badge">${activity.type || 'event'}</span>${title}</div><div class="item-meta">${details} ${details ? '•' : ''} ${formatDate(activity.at)}</div></div>`;
+    },
+    'No activity recorded yet.'
+  );
+}
+
+document.getElementById('clearActivityBtn').addEventListener('click', function () {
+  localStorage.removeItem('nordluxeActivityLog');
+  localStorage.removeItem('nordluxeSearchHistory');
+  initProfile();
+});
+
+window.addEventListener('DOMContentLoaded', function () {
+  if (window.AOS) {
+    AOS.init({ duration: 700, once: true });
+  }
+  initProfile();
+});
+</script>
+
+<script src="/assets/js/site-nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NORDLUXE | Collection</title>
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Montserrat', sans-serif;
+scroll-behavior:smooth;
+}
+
+body{
+background:#ffffff;
+color:#000000;
+min-height:100vh;
+}
+
+/* NAVBAR */
+
+nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:25px 60px;
+background:#ffffff;
+border-bottom:1px solid #d19b48;
+position:sticky;
+top:0;
+z-index:1000;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.logo img{
+height:45px;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+nav a{
+color:#000000;
+text-decoration:none;
+margin-left:30px;
+font-size:15px;
+letter-spacing:1px;
+font-weight:500;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+position:relative;
+}
+
+nav a::before{
+content:'';
+position:absolute;
+bottom:-5px;
+left:0;
+width:0;
+height:2px;
+background:#d19b48;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+nav a:hover{
+color:#d19b48;
+transform:translateY(-2px);
+}
+
+nav a:hover::before{
+width:100%;
+}
+
+.cart-btn{
+background:#d19b48 !important;
+color:#ffffff !important;
+padding:10px 20px !important;
+border-radius:25px !important;
+font-weight:600 !important;
+font-size:14px !important;
+letter-spacing:0.5px !important;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+box-shadow:0 4px 15px rgba(209,155,72,0.3) !important;
+border:1px solid #d19b48 !important;
+}
+
+.cart-btn:hover{
+background:#ffd700 !important;
+transform:scale(1.05) translateY(-2px) !important;
+box-shadow:0 8px 25px rgba(209,155,72,0.5) !important;
+}
+
+/* SECTION TITLE */
+
+.section-title{
+text-align:center;
+font-size:36px;
+margin:90px 0 50px 0;
+letter-spacing:3px;
+color:#000000;
+font-weight:700;
+position:relative;
+}
+
+.section-title::after{
+content:'';
+position:absolute;
+bottom:-10px;
+left:50%;
+transform:translateX(-50%);
+width:80px;
+height:3px;
+background:#d19b48;
+border-radius:2px;
+}
+
+/* CATEGORY TITLE */
+
+.category-title{
+text-align:center;
+font-size:28px;
+margin:80px 0 40px 0;
+letter-spacing:2px;
+color:#000000;
+font-weight:600;
+position:relative;
+}
+
+.category-title::after{
+content:'';
+position:absolute;
+bottom:-8px;
+left:50%;
+transform:translateX(-50%);
+width:60px;
+height:2px;
+background:#d19b48;
+border-radius:1px;
+}
+
+/* PRODUCTS */
+
+.product-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:40px;
+padding:0 60px 80px;
+}
+
+.product{
+background:#ffffff;
+border-radius:20px;
+overflow:hidden;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+border:1px solid #d19b48;
+box-shadow:0 8px 25px rgba(0,0,0,0.1);
+position:relative;
+}
+
+.product-link{
+text-decoration:none;
+color:#000000;
+display:block;
+}
+
+.product-link:hover .product{
+transform:translateY(-15px) scale(1.02);
+box-shadow:0 20px 40px rgba(0,0,0,0.2);
+border-color:#ffd700;
+}
+
+.product img{
+width:100%;
+height:320px;
+object-fit:cover;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product:hover img{
+transform:scale(1.05);
+}
+
+.product-info{
+padding:20px;
+}
+
+.product-info h3{
+margin-bottom:10px;
+color:#000000;
+font-weight:600;
+}
+
+.price{
+color:#d19b48;
+margin-bottom:15px;
+font-weight:700;
+}
+
+.product button{
+width:100%;
+padding:12px;
+background:#d19b48;
+border:1px solid #d19b48;
+color:#ffffff;
+cursor:pointer;
+transition:.3s;
+border-radius:25px;
+font-weight:600;
+position:relative;
+overflow:hidden;
+}
+
+.product button::before{
+content:'';
+position:absolute;
+top:0;
+left:-100%;
+width:100%;
+height:100%;
+background:linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+transition:all 0.5s;
+}
+
+.product button:hover{
+background:#ffd700;
+transform:translateY(-2px);
+box-shadow:0 8px 20px rgba(209,155,72,0.4);
+}
+
+.product button:hover::before{
+left:100%;
+}
+
+/* CART ANIMATION */
+
+@keyframes cartBounce {
+0% { transform: scale(1); }
+50% { transform: scale(1.1); }
+100% { transform: scale(1); }
+}
+
+.cart-animation {
+animation: cartBounce 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* FLYING CART ANIMATION */
+
+.flying-cart {
+position: fixed;
+width: 30px;
+height: 30px;
+background: #d19b48;
+border-radius: 50%;
+z-index: 9999;
+pointer-events: none;
+animation: flyToCart 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+box-shadow: 0 4px 15px rgba(209,155,72, 0.6);
+}
+
+.flying-cart::before {
+content: '🛒';
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+font-size: 16px;
+}
+
+@keyframes flyToCart {
+0% {
+transform: scale(1) rotate(0deg);
+opacity: 1;
+}
+20% {
+transform: scale(1.2) rotate(90deg);
+}
+60% {
+transform: scale(0.8) rotate(180deg);
+opacity: 0.8;
+}
+100% {
+transform: scale(0.3) rotate(360deg);
+opacity: 0;
+}
+}
+
+.cart-icon-bounce {
+animation: cartIconBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes cartIconBounce {
+0% { transform: scale(1); }
+25% { transform: scale(1.3) rotate(-10deg); }
+50% { transform: scale(1.1) rotate(10deg); }
+75% { transform: scale(1.2) rotate(-5deg); }
+100% { transform: scale(1); }
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:40px;
+background:#000000;
+border-top:1px solid #d19b48;
+}
+
+footer p{
+margin-bottom:15px;
+color:#ffffff;
+font-weight:300;
+}
+
+footer a{
+color:#d19b48;
+text-decoration:none;
+font-weight:500;
+transition:all 0.3s ease;
+}
+
+footer a:hover{
+color:#ffd700;
+transform:translateY(-2px);
+}
+
+/* Product link hover effects */
+.product-link {
+    text-decoration: none;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.product-link:hover {
+    transform: translateY(-5px);
+}
+
+.product-link .product {
+    transition: box-shadow 0.3s ease;
+}
+
+.product-link:hover .product {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* USER MENU - Collections Page */
+.user-menu {
+    position: relative;
+}
+
+.user-btn {
+    background: #d19b48;
+    color: #ffffff;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(209,155,72,0.3);
+}
+
+.user-btn:hover {
+    transform: scale(1.1);
+    background: #ffd700;
+    color: #000;
+    box-shadow: 0 6px 20px rgba(209,155,72,0.5);
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: #ffffff;
+    border: 1px solid #d19b48;
+    border-radius: 8px;
+    min-width: 180px;
+    display: none;
+    flex-direction: column;
+    z-index: 1001;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.user-dropdown.open {
+    display: flex;
+}
+
+.user-dropdown a {
+    color: #000000;
+    text-decoration: none;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.user-dropdown a:last-child {
+    border-bottom: none;
+}
+
+.user-dropdown a:hover {
+    background: #f5f5f5;
+    color: #d19b48;
+    padding-left: 20px;
+}
+
+/* LOGIN MODAL - Collections Page */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: #ffffff;
+    border: 1px solid #d19b48;
+    border-radius: 12px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.modal-header h2 {
+    color: #d19b48;
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #000000;
+    font-size: 28px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+    color: #d19b48;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px;
+    background: #f5f5f5;
+    border: 1px solid #d19b48;
+    color: #000000;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.tab-btn.active {
+    background: #d19b48;
+    color: #ffffff;
+    border-color: #d19b48;
+}
+
+.tab-btn:hover {
+    background: #e8e8e8;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    color: #000000;
+    margin-bottom: 7px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    background: #f9f9f9;
+    border: 1px solid #d19b48;
+    border-radius: 6px;
+    color: #000000;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    background: #ffffff;
+    border-color: #ffd700;
+    box-shadow: 0 0 10px rgba(209,155,72,0.2);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: #d19b48;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 15px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    background: #ffd700;
+    color: #000000;
+    box-shadow: 0 8px 20px rgba(209,155,72,0.4);
+}
+
+.auth-divider {
+    text-align: center;
+    margin: 20px 0;
+    color: #999999;
+    font-size: 14px;
+}
+
+.social-auth {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.social-btn {
+    padding: 12px;
+    background: #f5f5f5;
+    border: 1px solid #d19b48;
+    border-radius: 6px;
+    color: #000000;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s ease;
+}
+
+.social-btn:hover {
+    background: #e8e8e8;
+    transform: translateY(-2px);
+}
+
+.error-msg {
+    color: #ff6b6b;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+.success-msg {
+    color: #51cf66;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+</style>
+<link rel="stylesheet" href="/assets/css/theme-overrides.css">
+</head>
+<body>
+
+<!-- NAV -->
+
+<nav>
+<div class="logo">
+<a href="index.html"><img src="/assets/images/sa.jpg" alt="Nordluxe Logo"></a>
+</div>
+<div>
+<a href="index.html">Home</a>
+<a href="collections.html">Collection</a>
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
+<a href="story.html">Story</a>
+<a href="cart.html" class="cart-btn">🛒 Cart</a>
+<div class="user-menu" id="userMenuContainer">
+<button class="user-btn" id="userBtn" onclick="toggleUserMenu()">👤</button>
+<div class="user-dropdown" id="userDropdown">
+<a href="#" onclick="openLoginModal(); return false;">Login/Signup</a>
+<a href="#" onclick="logout(); return false;" id="logoutOption" style="display:none;">Logout</a>
+<a href="#" onclick="goToProfile(); return false;" id="profileOption" style="display:none;">My Profile</a>
+</div>
+</div>
+</div>
+</nav>
+
+<!-- COLLECTION -->
+
+<h2 class="section-title" data-aos="fade-up">NORDLUXE Collection</h2>
+
+<!-- OUTERWEAR -->
+<h3 class="category-title" data-aos="fade-up">Outerwear</h3>
+<div class="product-grid">
+
+<a href="/html/product.html?id=nordic-parka" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="100">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_15_39 PM.png">
+<div class="product-info">
+<h3>Nordic Parka</h3>
+<div class="price">$890</div>
+<button onclick="event.preventDefault(); addCart('Nordic Parka', this, '$890')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+<a href="/html/product.html?id=minimalist-coat" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="200">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Minimalist Coat</h3>
+<div class="price">$980</div>
+<button onclick="event.preventDefault(); addCart('Minimalist Coat', this, '$980')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+<a href="/html/product.html?id=wool-coat" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="300">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Wool Coat</h3>
+<div class="price">$750</div>
+<button onclick="event.preventDefault(); addCart('Wool Coat', this, '$750')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+<a href="/html/product.html?id=leather-jacket" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="400">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Leather Jacket</h3>
+<div class="price">$890</div>
+<button onclick="event.preventDefault(); addCart('Leather Jacket', this, '$890')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+</div>
+
+<!-- TOPS -->
+<h3 class="category-title" data-aos="fade-up">Tops & Shirts</h3>
+<div class="product-grid">
+
+<a href="/html/product.html?id=nordluxe-hoodie" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="500">
+<img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b">
+<div class="product-info">
+<h3>Nordluxe Hoodie</h3>
+<div class="price">$390</div>
+<button onclick="event.preventDefault(); addCart('Nordluxe Hoodie', this, '$390')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+<a href="/html/product.html?id=heritage-sweater" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="600">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Heritage Sweater</h3>
+<div class="price">$450</div>
+<button onclick="event.preventDefault(); addCart('Heritage Sweater', this, '$450')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+<div class="product" data-aos="fade-up" data-aos-delay="700">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Silk Shirt</h3>
+<div class="price">$320</div>
+<button onclick="event.preventDefault(); addCart('Silk Shirt', this, '$320')">Add to Cart</button>
+</div>
+</div>
+
+<div class="product" data-aos="fade-up" data-aos-delay="800">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Cashmere Sweater</h3>
+<div class="price">$520</div>
+<button onclick="event.preventDefault(); addCart('Cashmere Sweater', this, '$520')">Add to Cart</button>
+</div>
+</div>
+
+</div>
+
+<!-- BOTTOMS -->
+<h3 class="category-title" data-aos="fade-up">Bottoms & Trousers</h3>
+<div class="product-grid">
+
+<a href="/html/product.html?id=premium-trousers" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="900">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Premium Trousers</h3>
+<div class="price">$450</div>
+<button onclick="event.preventDefault(); addCart('Premium Trousers', this, '$450')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+<a href="/html/product.html?id=linen-pants" class="product-link">   
+<div class="product" data-aos="fade-up" data-aos-delay="1000">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Linen Pants</h3>
+<div class="price">$290</div>
+<button onclick="event.preventDefault(); addCart('Linen Pants', this, '$290')">Add to Cart</button>
+</div>
+</div>
+
+<div class="product" data-aos="fade-up" data-aos-delay="1100">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Designer Skirt</h3>
+<div class="price">$380</div>
+<button onclick="event.preventDefault(); addCart('Designer Skirt', this, '$380')">Add to Cart</button>
+</div>
+</div>
+
+<div class="product" data-aos="fade-up" data-aos-delay="1200">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Tulle Skirt</h3>
+<div class="price">$350</div>
+<button onclick="event.preventDefault(); addCart('Tulle Skirt', this, '$350')">Add to Cart</button>
+</div>
+</div>
+
+</div>
+
+<!-- DRESSES -->
+<h3 class="category-title" data-aos="fade-up">Dresses & Full Wear</h3>
+<div class="product-grid">
+
+<a href="/html/product.html?id=designer-dress" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="1300">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Designer Dress</h3>
+<div class="price">$780</div>
+<button onclick="event.preventDefault(); addCart('Designer Dress', this, '$780')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+<div class="product" data-aos="fade-up" data-aos-delay="1400">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Evening Gown</h3>
+<div class="price">$1200</div>
+<button onclick="event.preventDefault(); addCart('Evening Gown', this, '$1200')">Add to Cart</button>
+</div>
+</div>
+
+<a href="/html/product.html?id=luxury-blazer" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="1500">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Luxury Blazer</h3>
+<div class="price">$650</div>
+<button onclick="event.preventDefault(); addCart('Luxury Blazer', this, '$650')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+<div class="product" data-aos="fade-up" data-aos-delay="1600">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Denim Jacket</h3>
+<div class="price">$420</div>
+<button onclick="event.preventDefault(); addCart('Denim Jacket', this, '$420')">Add to Cart</button>
+</div>
+</div>
+
+</div>
+
+<!-- ACCESSORIES -->
+<h3 class="category-title" data-aos="fade-up">Accessories</h3>
+<div class="product-grid">
+
+<a href="/html/product.html?id=wool-scarf" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="1700">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_19_35 PM.png">
+<div class="product-info">
+<h3>Wool Scarf</h3>
+<div class="price">$180</div>
+<button onclick="event.preventDefault(); addCart('Wool Scarf', this, '$180')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+<div class="product" data-aos="fade-up" data-aos-delay="1800">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_19_35 PM.png">
+<div class="product-info">
+<h3>Premium Belt</h3>
+<div class="price">$180</div>
+<button onclick="event.preventDefault(); addCart('Premium Belt', this, '$180')">Add to Cart</button>
+</div>
+</div>
+
+<a href="/html/product.html?id=arctic-boots" class="product-link">
+<div class="product" data-aos="fade-up" data-aos-delay="1900">
+<img src="/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_19_23%20PM.png">
+<div class="product-info">
+<h3>Arctic Boots</h3>
+<div class="price">$620</div>
+<button onclick="event.preventDefault(); addCart('Arctic Boots', this, '$620')">Add to Cart</button>
+</div>
+</div>
+</a>
+
+<div class="product" data-aos="fade-up" data-aos-delay="2000">
+<img src="/assets/images/photo-1584464491033-06628f3a6b7b.png">
+<div class="product-info">
+<h3>Merino Wool Cardigan</h3>
+<div class="price">$480</div>
+<button onclick="event.preventDefault(); addCart('Merino Wool Cardigan', this, '$480')">Add to Cart</button>
+</div>
+</div>
+
+</div>
+
+<footer>
+<p>© 2026 NORDLUXE</p>
+<p><a href="#">Instagram</a></p>
+</footer>
+
+<script>
+
+AOS.init({
+  duration: 800,
+  easing: 'ease-in-out',
+  once: true,
+  mirror: false
+});
+
+function addCart(product, button, price){
+alert(product + " added to cart");
+
+// Add animation to the clicked button
+if(button){
+button.classList.add('cart-animation');
+setTimeout(() => {
+button.classList.remove('cart-animation');
+}, 600);
+}
+
+// Create flying cart animation
+if(button){
+const buttonRect = button.getBoundingClientRect();
+const cartIcon = document.querySelector('.cart-btn');
+const cartRect = cartIcon.getBoundingClientRect();
+
+// Create flying element
+const flyingCart = document.createElement('div');
+flyingCart.className = 'flying-cart';
+flyingCart.style.left = buttonRect.left + buttonRect.width / 2 - 15 + 'px';
+flyingCart.style.top = buttonRect.top + buttonRect.height / 2 - 15 + 'px';
+document.body.appendChild(flyingCart);
+
+// Animate cart icon
+if(cartIcon){
+cartIcon.classList.add('cart-icon-bounce');
+setTimeout(() => {
+cartIcon.classList.remove('cart-icon-bounce');
+}, 800);
+}
+
+// Remove flying element after animation
+setTimeout(() => {
+if(flyingCart.parentNode){
+flyingCart.parentNode.removeChild(flyingCart);
+}
+}, 1200);
+}
+
+// Add to cart storage
+let cart = JSON.parse(localStorage.getItem('nordluxeCart') || '[]');
+cart.push({name: product, price: price, date: new Date().toISOString()});
+localStorage.setItem('nordluxeCart', JSON.stringify(cart));
+}
+
+// AUTHENTICATION SYSTEM
+function toggleUserMenu() {
+    const dropdown = document.getElementById('userDropdown');
+    dropdown.classList.toggle('open');
+}
+
+function openLoginModal() {
+    document.getElementById('loginModal').classList.add('show');
+    document.getElementById('userDropdown').classList.remove('open');
+    document.querySelector('.tab-btn.active').click();
+}
+
+function closeLoginModal() {
+    document.getElementById('loginModal').classList.remove('show');
+}
+
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('loginModal');
+    if (event.target === modal) {
+        closeLoginModal();
+    }
+});
+
+function switchTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+}
+
+function handleEmailSignup() {
+    const name = document.getElementById('signupName').value;
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (!name || !email || !password || !confirmPassword) {
+        showError('signupError', 'Please fill in all fields');
+        return;
+    }
+    
+    if (password !== confirmPassword) {
+        showError('signupError', 'Passwords do not match');
+        return;
+    }
+    
+    if (password.length < 6) {
+        showError('signupError', 'Password must be at least 6 characters');
+        return;
+    }
+    
+    const user = {
+        id: Date.now(),
+        name: name,
+        email: email,
+        password: btoa(password),
+        provider: 'email',
+        createdAt: new Date().toISOString()
+    };
+    
+    localStorage.setItem('nordluxeUser', JSON.stringify(user));
+    localStorage.setItem('nordluxeLoggedIn', 'true');
+    
+    showSuccess('signupSuccess', 'Account created! Welcome to NORDLUXE');
+    setTimeout(() => {
+        closeLoginModal();
+        updateUserUI();
+    }, 1500);
+}
+
+function handleEmailLogin() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    if (!email || !password) {
+        showError('loginError', 'Please fill in all fields');
+        return;
+    }
+    
+    const user = JSON.parse(localStorage.getItem('nordluxeUser') || '{}');
+    
+    if (user.email === email && user.password === btoa(password)) {
+        localStorage.setItem('nordluxeLoggedIn', 'true');
+        showSuccess('loginSuccess', 'Welcome back!');
+        setTimeout(() => {
+            closeLoginModal();
+            updateUserUI();
+        }, 1000);
+    } else {
+        showError('loginError', 'Invalid email or password');
+    }
+}
+
+function handleGoogleAuth() {
+    const backendBase = window.location.hostname ? `${window.location.protocol}//${window.location.hostname}:3001` : 'http://localhost:3001';
+    window.location.href = `${backendBase}/auth/google`;
+}
+
+function handleAppleAuth() {
+    const user = {
+        id: Date.now(),
+        name: 'Apple User',
+        email: 'user@icloud.com',
+        provider: 'apple',
+        profilePic: '👤',
+        createdAt: new Date().toISOString()
+    };
+    
+    localStorage.setItem('nordluxeUser', JSON.stringify(user));
+    localStorage.setItem('nordluxeLoggedIn', 'true');
+    
+    showSuccess('socialSuccess', 'Logged in with Apple!');
+    setTimeout(() => {
+        closeLoginModal();
+        updateUserUI();
+    }, 1000);
+}
+
+function handleEmailOption() {
+    switchTab('login');
+}
+
+function showError(elementId, message) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = message;
+        element.style.display = 'block';
+    }
+}
+
+function showSuccess(elementId, message) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = message;
+        element.style.display = 'block';
+    }
+}
+
+function logout() {
+    localStorage.removeItem('nordluxeLoggedIn');
+    localStorage.removeItem('nordluxeUser');
+    updateUserUI();
+    alert('You have been logged out');
+}
+
+function goToProfile() {
+    alert('Profile page coming soon!');
+}
+
+function updateUserUI() {
+    const isLoggedIn = localStorage.getItem('nordluxeLoggedIn') === 'true';
+    const user = JSON.parse(localStorage.getItem('nordluxeUser') || '{}');
+    
+    const loginLink = document.querySelector('[onclick="openLoginModal(); return false;"]').parentElement;
+    const logoutLink = document.getElementById('logoutOption');
+    const profileLink = document.getElementById('profileOption');
+    const userBtn = document.getElementById('userBtn');
+    
+    if (isLoggedIn && user.name) {
+        loginLink.style.display = 'none';
+        logoutLink.style.display = 'block';
+        profileLink.style.display = 'block';
+        userBtn.textContent = '✓👤';
+        userBtn.title = `Logged in as: ${user.name}`;
+    } else {
+        loginLink.style.display = 'block';
+        logoutLink.style.display = 'none';
+        profileLink.style.display = 'none';
+        userBtn.textContent = '👤';
+        userBtn.title = 'Login/Signup';
+    }
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+    updateUserUI();
+});
+
+document.addEventListener('click', function(event) {
+    const userMenu = document.getElementById('userMenuContainer');
+    if (userMenu && !userMenu.contains(event.target)) {
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown) dropdown.classList.remove('open');
+    }
+});
+
+</script>
+
+<!-- LOGIN/SIGNUP MODAL -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>NORDLUXE Account</h2>
+            <button class="close-btn" onclick="closeLoginModal()">&times;</button>
+        </div>
+        
+        <div class="auth-tabs">
+            <button class="tab-btn active" onclick="switchTab('login'); event.preventDefault();">Login</button>
+            <button class="tab-btn" onclick="switchTab('signup'); event.preventDefault();">Sign Up</button>
+        </div>
+        
+        <div id="login" class="tab-content active">
+            <div class="social-auth">
+                <button class="social-btn" onclick="handleGoogleAuth()" title="Login with Google"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg></button>
+                <button class="social-btn" onclick="handleAppleAuth()" title="Login with Apple"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg></button>
+                <button class="social-btn" onclick="handleEmailOption()" title="Login with Email"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+            </div>
+            
+            <div class="auth-divider">OR USE EMAIL</div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="your@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="••••••••">
+            </div>
+            
+            <button class="submit-btn" onclick="handleEmailLogin()">Login</button>
+            <div id="loginError" class="error-msg"></div>
+            <div id="loginSuccess" class="success-msg"></div>
+            
+            <div style="text-align:center; color:#999999; font-size:13px; margin-top:15px;">
+                Don't have an account? <a href="#" onclick="switchTab('signup'); return false;" style="color:#d19b48; text-decoration:underline;">Sign up here</a>
+            </div>
+        </div>
+        
+        <div id="signup" class="tab-content">
+            <div class="social-auth">
+                <button class="social-btn" onclick="handleGoogleAuth()" title="Sign up with Google"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg></button>
+                <button class="social-btn" onclick="handleAppleAuth()" title="Sign up with Apple"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg></button>
+                <button class="social-btn" onclick="handleEmailOption()" title="Sign up with Email"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+            </div>
+            
+            <div class="auth-divider">OR CREATE ACCOUNT WITH EMAIL</div>
+            
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="signupName" placeholder="John Doe">
+            </div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="signupEmail" placeholder="your@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="signupPassword" placeholder="••••••••">
+            </div>
+            
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="confirmPassword" placeholder="••••••••">
+            </div>
+            
+            <button class="submit-btn" onclick="handleEmailSignup()">Create Account</button>
+            <div id="signupError" class="error-msg"></div>
+            <div id="signupSuccess" class="success-msg"></div>
+            
+            <div style="text-align:center; color:#999999; font-size:13px; margin-top:15px;">
+                Already have an account? <a href="#" onclick="switchTab('login'); return false;" style="color:#d19b48; text-decoration:underline;">Login here</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/assets/js/site-nav.js"></script>
+</body>
+</html>

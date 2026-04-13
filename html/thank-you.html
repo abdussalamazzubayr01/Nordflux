@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NORDLUXE | Thank You for Your Purchase</title>
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Montserrat', sans-serif;
+scroll-behavior:smooth;
+}
+
+body{
+background:#ffffff;
+color:#000000;
+min-height:100vh;
+display:flex;
+flex-direction:column;
+}
+
+/* NAVBAR */
+
+nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:25px 60px;
+background:#ffffff;
+border-bottom:1px solid #d19b48;
+position:sticky;
+top:0;
+z-index:1000;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.logo img{
+height:45px;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+nav a{
+color:#000000;
+text-decoration:none;
+margin-left:30px;
+font-size:15px;
+letter-spacing:1px;
+font-weight:500;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+position:relative;
+}
+
+nav a::before{
+content:'';
+position:absolute;
+bottom:-5px;
+left:0;
+width:0;
+height:2px;
+background:#d19b48;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+nav a:hover{
+color:#d19b48;
+transform:translateY(-2px);
+}
+
+nav a:hover::before{
+width:100%;
+}
+
+.cart-btn{
+background:#d19b48 !important;
+color:#ffffff !important;
+padding:10px 20px !important;
+border-radius:25px !important;
+font-weight:600 !important;
+font-size:14px !important;
+letter-spacing:0.5px !important;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+box-shadow:0 4px 15px rgba(209,155,72,0.3) !important;
+border:1px solid #d19b48 !important;
+}
+
+.cart-btn:hover{
+background:#ffd700 !important;
+transform:scale(1.05) translateY(-2px) !important;
+box-shadow:0 8px 25px rgba(209,155,72,0.5) !important;
+}
+
+/* THANK YOU PAGE */
+
+.thank-you-container{
+flex:1;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:80px 20px;
+background:linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+}
+
+.thank-you-card{
+background:#ffffff;
+padding:60px;
+border-radius:25px;
+box-shadow:0 25px 60px rgba(0,0,0,0.1);
+border:1px solid #d19b48;
+max-width:700px;
+width:100%;
+text-align:center;
+position:relative;
+overflow:hidden;
+}
+
+.thank-you-card::before{
+content:'';
+position:absolute;
+top:0;
+left:0;
+right:0;
+height:4px;
+background:linear-gradient(90deg, #d19b48, #ffd700, #d19b48);
+}
+
+.thank-you-icon{
+font-size:100px;
+margin-bottom:30px;
+display:block;
+animation: heartPulse 2s infinite;
+}
+
+@keyframes heartPulse {
+0%, 100% { transform: scale(1); }
+50% { transform: scale(1.1); }
+}
+
+.thank-you-title{
+font-size:42px;
+color:#000000;
+margin-bottom:20px;
+font-weight:700;
+letter-spacing:2px;
+}
+
+.thank-you-subtitle{
+font-size:20px;
+color:#d19b48;
+margin-bottom:30px;
+font-weight:600;
+font-style:italic;
+}
+
+.thank-you-message{
+font-size:18px;
+color:#666;
+margin-bottom:50px;
+line-height:1.7;
+max-width:500px;
+margin-left:auto;
+margin-right:auto;
+}
+
+.customer-appreciation{
+background:linear-gradient(135deg, #f9f9f9, #ffffff);
+padding:40px;
+border-radius:20px;
+margin:40px 0;
+border:1px solid #d19b48;
+}
+
+.appreciation-title{
+color:#d19b48;
+font-size:24px;
+margin-bottom:20px;
+font-weight:600;
+}
+
+.appreciation-text{
+font-size:16px;
+color:#000000;
+line-height:1.6;
+margin-bottom:0;
+}
+
+.next-steps{
+margin:50px 0;
+}
+
+.next-steps h3{
+color:#000000;
+font-size:28px;
+margin-bottom:30px;
+font-weight:600;
+}
+
+.steps-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:30px;
+margin-bottom:40px;
+}
+
+.step{
+background:#ffffff;
+padding:30px 20px;
+border-radius:15px;
+border:1px solid #d19b48;
+transition:all 0.3s ease;
+}
+
+.step:hover{
+transform:translateY(-5px);
+box-shadow:0 10px 25px rgba(209,155,72,0.2);
+}
+
+.step-icon{
+font-size:40px;
+margin-bottom:15px;
+display:block;
+}
+
+.step-title{
+color:#d19b48;
+font-size:18px;
+font-weight:600;
+margin-bottom:10px;
+}
+
+.step-description{
+color:#666;
+font-size:14px;
+line-height:1.5;
+}
+
+.social-proof{
+background:#000000;
+color:#ffffff;
+padding:40px;
+border-radius:20px;
+margin:40px 0;
+}
+
+.social-proof h3{
+color:#d19b48;
+font-size:24px;
+margin-bottom:20px;
+}
+
+.social-proof p{
+font-size:16px;
+line-height:1.6;
+margin-bottom:0;
+}
+
+.thank-you-actions{
+display:flex;
+gap:20px;
+justify-content:center;
+flex-wrap:wrap;
+margin-top:50px;
+}
+
+.thank-you-btn{
+padding:18px 35px;
+border-radius:30px;
+font-weight:600;
+font-size:16px;
+cursor:pointer;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+text-decoration:none;
+display:inline-block;
+text-align:center;
+min-width:180px;
+position:relative;
+overflow:hidden;
+}
+
+.thank-you-btn::before{
+content:'';
+position:absolute;
+top:0;
+left:-100%;
+width:100%;
+height:100%;
+background:linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+transition:all 0.5s;
+}
+
+.primary-btn{
+background:#d19b48;
+color:#ffffff;
+border:1px solid #d19b48;
+box-shadow:0 6px 20px rgba(209,155,72,0.4);
+}
+
+.primary-btn:hover{
+background:#ffd700;
+transform:translateY(-3px);
+box-shadow:0 12px 30px rgba(209,155,72,0.6);
+}
+
+.primary-btn:hover::before{
+left:100%;
+}
+
+.secondary-btn{
+background:#ffffff;
+color:#d19b48;
+border:1px solid #d19b48;
+}
+
+.secondary-btn:hover{
+background:#d19b48;
+color:#ffffff;
+transform:translateY(-3px);
+}
+
+.tertiary-btn{
+background:#000000;
+color:#d19b48;
+border:1px solid #d19b48;
+}
+
+.tertiary-btn:hover{
+background:#d19b48;
+color:#ffffff;
+transform:translateY(-3px);
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:40px;
+background:#000000;
+border-top:1px solid #d19b48;
+position:relative;
+}
+
+footer p{
+margin-bottom:15px;
+color:#ffffff;
+font-weight:300;
+}
+
+footer a{
+color:#d19b48;
+text-decoration:none;
+font-weight:500;
+transition:all 0.3s ease;
+}
+
+footer a:hover{
+color:#ffd700;
+transform:translateY(-2px);
+}
+
+/* RESPONSIVE */
+
+@media (max-width:768px){
+.thank-you-card{
+padding:40px 30px;
+}
+
+.thank-you-title{
+font-size:32px;
+}
+
+.steps-grid{
+grid-template-columns:1fr;
+gap:20px;
+}
+
+.thank-you-actions{
+flex-direction:column;
+align-items:center;
+}
+
+.thank-you-btn{
+min-width:250px;
+}
+}
+
+</style>
+<link rel="stylesheet" href="/assets/css/theme-overrides.css">
+</head>
+<body>
+
+<!-- NAV -->
+
+<nav>
+<div class="logo">
+<a href="index.html"><img src="/assets/images/sa.jpg" alt="Nordluxe Logo"></a>
+</div>
+<div>
+<a href="index.html">Home</a>
+<a href="collections.html">Collection</a>
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
+<a href="story.html">Story</a>
+<a href="cart.html" class="cart-btn">🛒 Cart</a>
+</div>
+</nav>
+
+<!-- THANK YOU PAGE -->
+
+<div class="thank-you-container" data-aos="fade-up">
+<div class="thank-you-card" data-aos="zoom-in" data-aos-delay="300">
+
+<div class="thank-you-icon">💝</div>
+
+<h1 class="thank-you-title">Thank You for Your Purchase!</h1>
+
+<p class="thank-you-subtitle">Your NORDLUXE journey begins now</p>
+
+<div class="thank-you-message">
+We are absolutely delighted that you've chosen NORDLUXE for your luxury fashion needs. Your order has been successfully processed and is being prepared with the utmost care and attention to detail.
+</div>
+
+<div class="customer-appreciation" data-aos="fade-up" data-aos-delay="500">
+<h2 class="appreciation-title">A Special Thank You</h2>
+<p class="appreciation-text">
+Dear Valued Customer,<br><br>
+
+Thank you for choosing NORDLUXE and trusting us with your style. Each piece in our collection is crafted with Scandinavian precision and timeless elegance. We're honored to be part of your journey towards exceptional fashion.<br><br>
+
+Your support allows us to continue creating pieces that blend Nordic heritage with contemporary luxury. Welcome to the NORDLUXE family!
+</p>
+</div>
+
+<div class="next-steps" data-aos="fade-up" data-aos-delay="700">
+<h3>What Happens Next?</h3>
+
+<div class="steps-grid">
+<div class="step" data-aos="fade-up" data-aos-delay="800">
+<span class="step-icon">📧</span>
+<h4 class="step-title">Order Confirmation</h4>
+<p class="step-description">You'll receive a detailed email confirmation with your order summary and tracking information within the next few minutes.</p>
+</div>
+
+<div class="step" data-aos="fade-up" data-aos-delay="900">
+<span class="step-icon">🎨</span>
+<h4 class="step-title">Careful Preparation</h4>
+<p class="step-description">Our artisans are carefully preparing your NORDLUXE pieces with premium packaging and quality assurance.</p>
+</div>
+
+<div class="step" data-aos="fade-up" data-aos-delay="1000">
+<span class="step-icon">🚚</span>
+<h4 class="step-title">Swift Shipping</h4>
+<p class="step-description">Your order will be shipped within 2-3 business days with full tracking information provided.</p>
+</div>
+
+<div class="step" data-aos="fade-up" data-aos-delay="1100">
+<span class="step-icon">✨</span>
+<h4 class="step-title">Luxury Experience</h4>
+<p class="step-description">Expect nothing less than perfection. Each NORDLUXE piece arrives ready to elevate your wardrobe.</p>
+</div>
+</div>
+</div>
+
+<div class="social-proof" data-aos="fade-up" data-aos-delay="1200">
+<h3>Join Our Community</h3>
+<p>Follow us on social media to stay updated with new arrivals, styling tips, and exclusive NORDLUXE content. Your journey with Scandinavian luxury fashion is just beginning!</p>
+</div>
+
+<div class="thank-you-actions" data-aos="fade-up" data-aos-delay="1300">
+<a href="collections.html" class="thank-you-btn primary-btn">Continue Shopping</a>
+<a href="story.html" class="thank-you-btn secondary-btn">Our Story</a>
+<a href="contact.html" class="thank-you-btn tertiary-btn">Contact Us</a>
+</div>
+
+</div>
+</div>
+
+<footer>
+<p>© 2026 NORDLUXE</p>
+<p><a href="https://instagram.com/nordluxe" target="_blank">Instagram</a> | <a href="mailto:hello@nordluxe.com">Email</a></p>
+</footer>
+
+<script>
+
+// Initialize AOS
+AOS.init({
+  duration: 800,
+  easing: 'ease-in-out',
+  once: true,
+  mirror: false
+});
+
+// Get payment details from URL parameters (if available)
+const urlParams = new URLSearchParams(window.location.search);
+const transactionId = urlParams.get('transaction_id');
+const txRef = urlParams.get('tx_ref');
+
+function readList(key) {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function writeList(key, items, maxItems) {
+  localStorage.setItem(key, JSON.stringify(items.slice(0, maxItems || 60)));
+}
+
+function saveCompletedOrder() {
+  let pendingOrder = null;
+  try {
+    pendingOrder = JSON.parse(localStorage.getItem('nordluxePendingOrder') || 'null');
+  } catch (error) {
+    pendingOrder = null;
+  }
+
+  if (!pendingOrder) {
+    localStorage.removeItem('nordluxeCart');
+    return;
+  }
+
+  const orderRef = transactionId || txRef || pendingOrder.txRef || `manual-${Date.now()}`;
+  const orderHistory = readList('nordluxeOrderHistory');
+  const alreadySaved = orderHistory.some(order => (order.orderRef || order.txRef || order.transactionId) === orderRef);
+
+  if (!alreadySaved) {
+    const completedOrder = Object.assign({}, pendingOrder, {
+      orderRef,
+      transactionId: transactionId || null,
+      txRef: txRef || pendingOrder.txRef || null,
+      completedAt: new Date().toISOString(),
+      status: 'paid'
+    });
+
+    orderHistory.unshift(completedOrder);
+    writeList('nordluxeOrderHistory', orderHistory, 80);
+
+    const activity = readList('nordluxeActivityLog');
+    activity.unshift({
+      type: 'order',
+      title: 'Order completed',
+      details: `Ref: ${orderRef}`,
+      at: new Date().toISOString()
+    });
+    writeList('nordluxeActivityLog', activity, 120);
+  }
+
+  localStorage.removeItem('nordluxePendingOrder');
+  localStorage.removeItem('nordluxeCart');
+}
+
+saveCompletedOrder();
+
+if (transactionId) {
+  // Verify payment with backend
+  fetch(`http://localhost:3001/api/verify-payment/${transactionId}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        console.log('Payment verified successfully');
+        // Could add additional success animations or confetti here
+      } else {
+        console.log('Payment verification failed');
+      }
+    })
+    .catch(error => {
+      console.error('Verification error:', error);
+    });
+}
+
+// Add some celebratory effects
+document.addEventListener('DOMContentLoaded', function() {
+  // Add subtle animation to the thank you icon
+  const icon = document.querySelector('.thank-you-icon');
+  setTimeout(() => {
+    icon.style.animation = 'heartPulse 3s infinite';
+  }, 1000);
+
+  // Add confetti effect (optional)
+  createConfetti();
+});
+
+function createConfetti() {
+  const colors = ['#d19b48', '#ffd700', '#f6e6c8', '#ffffff'];
+
+  for (let i = 0; i < 50; i++) {
+    setTimeout(() => {
+      const confetti = document.createElement('div');
+      confetti.style.position = 'fixed';
+      confetti.style.width = '10px';
+      confetti.style.height = '10px';
+      confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.left = Math.random() * 100 + 'vw';
+      confetti.style.top = '-10px';
+      confetti.style.zIndex = '9999';
+      confetti.style.borderRadius = '50%';
+      confetti.style.pointerEvents = 'none';
+      confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
+
+      document.body.appendChild(confetti);
+
+      setTimeout(() => {
+        confetti.remove();
+      }, 5000);
+    }, i * 100);
+  }
+}
+
+// Add keyframes for confetti animation
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes fall {
+    to {
+      transform: translateY(100vh) rotate(360deg);
+      opacity: 0;
+    }
+  }
+`;
+document.head.appendChild(style);
+
+</script>
+
+<script src="/assets/js/site-nav.js"></script>
+</body>
+</html>

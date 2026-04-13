@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login - NORDLUXE | Scandinavian Luxury</title>
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<!-- Firebase SDK -->
+<script type="module">
+  // ✅ IMPORT EVERYTHING HERE
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword
+  } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+  // ✅ YOUR CONFIG (leave as is)
+  const firebaseConfig = {
+    apiKey: "AIzaSyCLqR3N_V_0U_2bTcchgsDFqjqSTCahxYs",
+    authDomain: "nordluxe-e30a4.firebaseapp.com",
+    projectId: "nordluxe-e30a4",
+    storageBucket: "nordluxe-e30a4.firebasestorage.app",
+    messagingSenderId: "997971219569",
+    appId: "1:997971219569:web:b29fd19a59ec3fb345f7d0"
+  };
+
+  // ✅ INIT
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // Keep email auth helpers available to the classic script below
+  window.firebaseAuth = auth;
+  window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+  window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+
+  // 🔥 GOOGLE LOGIN (REAL)
+  window.handleGoogleAuth = function () {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const user = {
+          id: result.user.uid,
+          name: result.user.displayName,
+          email: result.user.email,
+          profilePic: result.user.photoURL
+        };
+
+        localStorage.setItem('nordluxeUser', JSON.stringify(user));
+        localStorage.setItem('nordluxeLoggedIn', 'true');
+
+        alert('Login successful');
+        location.reload();
+      })
+      .catch((error) => {
+        console.error(error);
+        alert(error.message);
+      });
+  };
+
+  // Existing buttons call loginWithGoogle(), so map it to the popup handler
+  window.loginWithGoogle = window.handleGoogleAuth;
+</script>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Montserrat', sans-serif;
+scroll-behavior:smooth;
+}
+
+body{
+background:#ffffff;
+color:#000000;
+min-height:100vh;
+display:flex;
+flex-direction:column;
+}
+
+/* NAVBAR */
+
+nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:25px 60px;
+background:#ffffff;
+border-bottom:1px solid #d19b48;
+position:sticky;
+top:0;
+z-index:1000;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.nav-left{
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+
+.nav-right{
+  display:flex;
+  align-items:center;
+}
+
+.logo img{
+height:45px;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+nav a{
+color:#000000;
+text-decoration:none;
+margin-left:30px;
+font-size:15px;
+letter-spacing:1px;
+font-weight:500;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+position:relative;
+}
+
+nav a::before{
+content:'';
+position:absolute;
+bottom:-5px;
+left:0;
+width:0;
+height:2px;
+background:#d19b48;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+nav a:hover{
+color:#d19b48;
+transform:translateY(-2px);
+}
+
+nav a:hover::before{
+width:100%;
+}
+
+.cart-btn{
+background:#d19b48 !important;
+color:#ffffff !important;
+padding:10px 20px !important;
+border-radius:25px !important;
+font-weight:600 !important;
+font-size:14px !important;
+letter-spacing:0.5px !important;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+box-shadow:0 4px 15px rgba(209,155,72,0.3) !important;
+border:1px solid #d19b48 !important;
+}
+
+.cart-btn:hover{
+background:#ffd700 !important;
+transform:scale(1.05) translateY(-2px) !important;
+box-shadow:0 8px 25px rgba(209,155,72,0.5) !important;
+}
+
+/* LOGIN FORM */
+
+.login-container{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:50px 20px;
+}
+
+.login-form{
+background:#ffffff;
+border:1px solid #d19b48;
+border-radius:15px;
+padding:40px;
+width:100%;
+max-width:400px;
+box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+
+.login-title{
+text-align:center;
+font-size:28px;
+font-weight:700;
+margin-bottom:30px;
+color:#000000;
+}
+
+.login-options{
+display:flex;
+flex-direction:column;
+gap:15px;
+margin-bottom:30px;
+}
+
+.login-btn{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+padding:12px 20px;
+border:2px solid #d19b48;
+border-radius:10px;
+background:#ffffff;
+color:#000000;
+text-decoration:none;
+font-weight:500;
+transition:all 0.3s ease;
+cursor:pointer;
+}
+
+.login-btn:hover{
+background:#d19b48;
+color:#ffffff;
+transform:translateY(-2px);
+box-shadow:0 5px 15px rgba(209,155,72,0.3);
+}
+
+.login-btn:hover{
+background:#d19b48;
+color:#ffffff;
+transform:translateY(-2px);
+box-shadow:0 5px 15px rgba(209,155,72,0.3);
+}
+
+.login-btn.google{
+border-color:#4285f4;
+color:#4285f4;
+}
+
+.login-btn.google:hover{
+background:#4285f4;
+color:#ffffff;
+}
+
+.login-btn.apple{
+border-color:#000000;
+color:#000000;
+}
+
+.login-btn.apple:hover{
+background:#000000;
+color:#ffffff;
+}
+
+.login-btn.email{
+border-color:#d19b48;
+color:#d19b48;
+}
+
+.login-btn.email:hover{
+background:#d19b48;
+color:#ffffff;
+}
+
+.divider{
+text-align:center;
+margin:20px 0;
+position:relative;
+color:#666;
+}
+
+.divider::before{
+content:'';
+position:absolute;
+top:50%;
+left:0;
+right:0;
+height:1px;
+background:#ddd;
+}
+
+.divider span{
+background:#ffffff;
+padding:0 15px;
+}
+
+.password-form{
+display:none;
+}
+
+.password-form.show{
+display:block;
+}
+
+.email-form{
+display:none;
+}
+
+.email-form.show{
+display:block;
+}
+
+.form-toggle{
+display:flex;
+margin-bottom:20px;
+border-radius:10px;
+overflow:hidden;
+border:2px solid #d19b48;
+}
+
+.toggle-btn{
+flex:1;
+padding:10px;
+background:#ffffff;
+color:#d19b48;
+border:none;
+cursor:pointer;
+transition:all 0.3s ease;
+font-weight:500;
+}
+
+.toggle-btn.active{
+background:#d19b48;
+color:#ffffff;
+}
+
+.toggle-btn:hover{
+background:#d19b48;
+color:#ffffff;
+}
+
+.form-group{
+margin-bottom:20px;
+}
+
+.form-group label{
+display:block;
+margin-bottom:5px;
+font-weight:500;
+color:#333;
+}
+
+.form-group input{
+width:100%;
+padding:12px;
+border:1px solid #ddd;
+border-radius:8px;
+font-size:16px;
+transition:border-color 0.3s ease;
+}
+
+.form-group input:focus{
+outline:none;
+border-color:#d19b48;
+}
+
+.btn-primary{
+width:100%;
+padding:12px;
+background:#d19b48;
+color:#ffffff;
+border:none;
+border-radius:8px;
+font-size:16px;
+font-weight:600;
+cursor:pointer;
+transition:all 0.3s ease;
+box-shadow:0 4px 15px rgba(209,155,72,0.3);
+}
+
+.btn-primary:hover{
+background:#ffd700;
+transform:translateY(-2px);
+box-shadow:0 8px 25px rgba(209,155,72,0.5);
+}
+
+.btn-secondary{
+width:100%;
+padding:12px;
+background:#ffffff;
+color:#d19b48;
+border:2px solid #d19b48;
+border-radius:8px;
+font-size:16px;
+font-weight:600;
+cursor:pointer;
+margin-top:10px;
+transition:all 0.3s ease;
+}
+
+.btn-secondary:hover{
+background:#d19b48;
+color:#ffffff;
+}
+
+.message{
+margin-top:20px;
+padding:10px;
+border-radius:5px;
+text-align:center;
+}
+
+.message.success{
+background:#d4edda;
+color:#155724;
+border:1px solid #c3e6cb;
+}
+
+.message.error{
+background:#f8d7da;
+color:#721c24;
+border:1px solid #f5c6cb;
+}
+
+.alt-options{
+margin-top:14px;
+}
+
+.shortcut-row{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+.shortcut-btn{
+flex:1;
+padding:10px;
+border:1px solid #d19b48;
+border-radius:8px;
+background:#ffffff;
+color:#d19b48;
+cursor:pointer;
+font-weight:600;
+}
+
+.shortcut-btn:hover{
+background:#d19b48;
+color:#ffffff;
+}
+
+/* USER MENU */
+.user-menu {
+  position: relative;
+}
+
+.user-btn {
+  background: #d19b48;
+  color: #ffffff;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(209,155,72,0.3);
+}
+
+.user-btn:hover {
+  transform: scale(1.1);
+  background: #ffd700;
+  color: #000;
+  box-shadow: 0 6px 20px rgba(209,155,72,0.5);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  background: #ffffff;
+  border: 1px solid #d19b48;
+  border-radius: 8px;
+  min-width: 180px;
+  display: none;
+  flex-direction: column;
+  z-index: 1001;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.user-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #000000;
+  text-decoration: none;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.user-dropdown a .user-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.user-dropdown a:hover {
+  background: #f5f5f5;
+  color: #d19b48;
+  padding-left: 20px;
+}
+
+.user-dropdown.open {
+  display: flex;
+}
+
+.user-dropdown a {
+  color: #000000;
+  text-decoration: none;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.user-dropdown a:last-child {
+  border-bottom: none;
+}
+
+.user-dropdown a:hover {
+  background: #f5f5f5;
+  color: #d19b48;
+  padding-left: 20px;
+}
+
+</style>
+
+<link rel="stylesheet" href="/assets/css/theme-overrides.css">
+</head>
+
+<body>
+
+<!-- NAV -->
+
+<nav>
+
+<div class="nav-left">
+  <div class="user-menu">
+    <button class="user-btn" onclick="toggleUserMenu()">☰</button>
+    <div class="user-dropdown" id="userDropdown">
+      <a href="login.html"><span class="user-icon">👤</span>Login / Signup</a>
+      <a href="cart.html">Cart</a>
+      <a href="collections.html">Collection</a>
+      <a href="story.html">Story</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
+
+  <div class="logo">
+    <a href="index.html"><img src="/assets/images/sa.jpg" alt="Nordluxe Logo"></a>
+  </div>
+</div>
+
+<div class="nav-right">
+  <a href="index.html">Home</a>
+  <a href="collections.html">Collection</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+  <a href="story.html">Story</a>
+  <a href="cart.html" class="cart-btn">🛒 Cart</a>
+</div>
+
+</nav>
+
+<!-- LOGIN FORM -->
+
+<div class="login-container">
+<div class="login-form" data-aos="fade-up">
+
+<h1 class="login-title">Welcome Back</h1>
+
+<div class="login-options">
+<button onclick="loginWithGoogle()" class="login-btn google">
+<svg width="20" height="20" viewBox="0 0 24 24">
+<path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+<path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+<path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+<path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+</svg>
+Continue with Google
+</button>
+
+<a href="#" class="login-btn apple">
+<svg width="20" height="20" viewBox="0 0 24 24">
+<path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+</svg>
+Continue with Apple
+</a>
+
+<button class="login-btn email" onclick="showEmailForm()">
+<svg width="20" height="20" viewBox="0 0 24 24">
+<path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+</svg>
+Continue with Email
+</button>
+
+<button class="login-btn password" onclick="showPasswordForm()">
+<svg width="20" height="20" viewBox="0 0 24 24">
+<path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm3 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+</svg>
+Sign In / Sign Up
+</button>
+</div>
+
+<div class="divider">
+<span>or</span>
+</div>
+
+<div class="email-form" id="emailForm">
+<form onsubmit="sendOTP(event)">
+<div class="form-group">
+<label for="email">Email Address</label>
+<input type="email" id="email" name="email" required>
+</div>
+<button type="submit" class="btn-primary">Send OTP</button>
+</form>
+
+<form onsubmit="verifyOTP(event)" style="display:none;" id="otpForm">
+<div class="form-group">
+<label for="otp">Enter OTP</label>
+<input type="text" id="otp" name="otp" required maxlength="6">
+</div>
+<button type="submit" class="btn-primary">Verify & Login</button>
+<button type="button" class="btn-secondary" onclick="backToEmail()">Back</button>
+</form>
+</div>
+
+<div class="password-form" id="passwordForm">
+<div class="form-toggle">
+<button type="button" class="toggle-btn active" onclick="showSignIn()">Sign In</button>
+<button type="button" class="toggle-btn" onclick="showSignUp()">Sign Up</button>
+</div>
+
+<form onsubmit="handleSignIn(event)" id="signinForm">
+<div class="form-group">
+<label for="signinEmail">Email Address</label>
+<input type="email" id="signinEmail" name="email" required>
+</div>
+<div class="form-group">
+<label for="signinPassword">Password</label>
+<input type="password" id="signinPassword" name="password" required>
+</div>
+<button type="submit" class="btn-primary">Sign In</button>
+
+<div class="alt-options">
+<div class="divider"><span>or</span></div>
+<div class="shortcut-row">
+<button type="button" class="shortcut-btn" onclick="showSignIn()"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> Email</button>
+<button type="button" class="shortcut-btn" onclick="window.location.href='/auth/apple'"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> Apple</button>
+<button type="button" class="shortcut-btn" onclick="loginWithGoogle()"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Google</button>
+</div>
+</div>
+</form>
+
+<form onsubmit="handleSignUp(event)" id="signupForm" style="display:none;">
+<div class="form-group">
+<label for="signupName">Full Name</label>
+<input type="text" id="signupName" name="name" required>
+</div>
+<div class="form-group">
+<label for="signupEmail">Email Address</label>
+<input type="email" id="signupEmail" name="email" required>
+</div>
+<div class="form-group">
+<label for="signupPassword">Password</label>
+<input type="password" id="signupPassword" name="password" required minlength="6">
+</div>
+<div class="form-group">
+<label for="signupConfirmPassword">Confirm Password</label>
+<input type="password" id="signupConfirmPassword" name="confirmPassword" required minlength="6" placeholder="Confirm Password">
+</div>
+<button type="submit" class="btn-primary">Sign Up</button>
+
+<div class="alt-options">
+<div class="divider"><span>or</span></div>
+<div class="shortcut-row">
+<button type="button" class="shortcut-btn" onclick="showSignUp()"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> Email</button>
+<button type="button" class="shortcut-btn" onclick="window.location.href='/auth/apple'"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> Apple</button>
+<button type="button" class="shortcut-btn" onclick="loginWithGoogle()"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Google</button>
+</div>
+</div>
+</form>
+</div>
+
+<div id="message"></div>
+
+</div>
+</div>
+
+<script>
+
+function showEmailForm() {
+document.querySelector('.email-form').classList.add('show');
+document.querySelector('.password-form').classList.remove('show');
+document.querySelector('.login-options').style.display = 'none';
+document.querySelector('.divider').style.display = 'none';
+}
+
+function showPasswordForm() {
+document.querySelector('.password-form').classList.add('show');
+document.querySelector('.email-form').classList.remove('show');
+document.querySelector('.login-options').style.display = 'none';
+document.querySelector('.divider').style.display = 'none';
+}
+
+function showSignIn() {
+document.getElementById('signinForm').style.display = 'block';
+document.getElementById('signupForm').style.display = 'none';
+document.querySelectorAll('.toggle-btn')[0].classList.add('active');
+document.querySelectorAll('.toggle-btn')[1].classList.remove('active');
+}
+
+function showSignUp() {
+document.getElementById('signinForm').style.display = 'none';
+document.getElementById('signupForm').style.display = 'block';
+document.querySelectorAll('.toggle-btn')[0].classList.remove('active');
+document.querySelectorAll('.toggle-btn')[1].classList.add('active');
+}
+
+function backToEmail() {
+  document.getElementById('otpForm').style.display = 'none';
+  document.querySelector('form[onsubmit="sendOTP(event)"]').style.display = 'block';
+}
+
+function showMessage(message, type) {
+  const msgDiv = document.getElementById('message');
+  msgDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+  setTimeout(() => msgDiv.innerHTML = '', 5000);
+}
+
+async function sendOTP(event) {
+  event.preventDefault();
+  const email = document.getElementById('email').value;
+
+  try {
+    const response = await fetch('/auth/email/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      showMessage('OTP sent to your email!', 'success');
+      document.querySelector('form[onsubmit="sendOTP(event)"]').style.display = 'none';
+      document.getElementById('otpForm').style.display = 'block';
+    } else {
+      showMessage(data.message, 'error');
+    }
+  } catch (error) {
+    showMessage('Failed to send OTP', 'error');
+  }
+}
+
+async function handleSignIn(event) {
+  event.preventDefault();
+  const email = document.getElementById('signinEmail').value;
+  const password = document.getElementById('signinPassword').value;
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(window.firebaseAuth, email, password);
+    const user = userCredential.user;
+    localStorage.setItem('nordluxeUser', JSON.stringify({
+      id: user.uid,
+      uid: user.uid,
+      name: user.displayName || '',
+      email: user.email,
+      profilePic: user.photoURL || '',
+      provider: user.providerData && user.providerData[0] ? user.providerData[0].providerId : 'email'
+    }));
+    localStorage.setItem('nordluxeLoggedIn', 'true');
+    showMessage('Login successful!', 'success');
+    setTimeout(() => window.location.href = 'index.html', 1000);
+  } catch (error) {
+    const errorMessage = error.message;
+    showMessage(errorMessage, 'error');
+  }
+}
+
+async function handleSignUp(event) {
+  event.preventDefault();
+  const name = document.getElementById('signupName').value;
+  const email = document.getElementById('signupEmail').value;
+  const password = document.getElementById('signupPassword').value;
+  const confirmPassword = document.getElementById('signupConfirmPassword').value;
+
+  if (password !== confirmPassword) {
+    showMessage('Passwords do not match', 'error');
+    return;
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
+    const user = userCredential.user;
+    localStorage.setItem('nordluxeUser', JSON.stringify({
+      id: user.uid,
+      uid: user.uid,
+      name: name || user.displayName || '',
+      email: user.email,
+      profilePic: user.photoURL || '',
+      provider: 'email'
+    }));
+    localStorage.setItem('nordluxeLoggedIn', 'true');
+    showMessage('Account created successfully!', 'success');
+    setTimeout(() => window.location.href = 'index.html', 1000);
+  } catch (error) {
+    if (error.code === 'auth/email-already-in-use') {
+      showMessage('This email already has an account. Please sign in instead.', 'error');
+      return;
+    }
+    showMessage(error.message, 'error');
+  }
+}
+
+function toggleUserMenu() {
+  const dropdown = document.getElementById('userDropdown');
+  if (!dropdown) return;
+  dropdown.classList.toggle('open');
+}
+
+document.addEventListener('click', function(event) {
+  const dropdown = document.getElementById('userDropdown');
+  const userBtn = document.querySelector('.user-btn');
+  if (!dropdown || !userBtn) return;
+  if (!dropdown.contains(event.target) && !userBtn.contains(event.target)) {
+    dropdown.classList.remove('open');
+  }
+});
+
+// Ensure AOS animations work and the login box is visible
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.AOS) {
+    AOS.init({ duration: 600, once: true });
+  }
+});
+
+</script>
+
+<script src="/assets/js/site-nav.js"></script>
+</body>
+</html>

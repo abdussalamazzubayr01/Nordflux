@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NORDLUXE | Product Details</title>
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Montserrat', sans-serif;
+scroll-behavior:smooth;
+}
+
+body{
+background:#ffffff;
+color:#000000;
+min-height:100vh;
+}
+
+/* NAVBAR */
+
+nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:25px 60px;
+background:#ffffff;
+border-bottom:1px solid #d19b48;
+position:sticky;
+top:0;
+z-index:1000;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.logo img{
+height:45px;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+nav a{
+color:#000000;
+text-decoration:none;
+margin-left:30px;
+font-size:15px;
+letter-spacing:1px;
+font-weight:500;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+position:relative;
+}
+
+nav a::before{
+content:'';
+position:absolute;
+bottom:-5px;
+left:0;
+width:0;
+height:2px;
+background:#d19b48;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+nav a:hover{
+color:#d19b48;
+transform:translateY(-2px);
+}
+
+nav a:hover::before{
+width:100%;
+}
+
+.cart-btn{
+background:#d19b48 !important;
+color:#ffffff !important;
+padding:10px 20px !important;
+border-radius:25px !important;
+font-weight:600 !important;
+font-size:14px !important;
+letter-spacing:0.5px !important;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+box-shadow:0 4px 15px rgba(209,155,72,0.3) !important;
+border:1px solid #d19b48 !important;
+}
+
+.cart-btn:hover{
+background:#ffd700 !important;
+transform:scale(1.05) translateY(-2px) !important;
+box-shadow:0 8px 25px rgba(209,155,72,0.5) !important;
+}
+
+/* PRODUCT PAGE */
+
+.product-container{
+max-width:1200px;
+margin:80px auto;
+padding:0 20px;
+}
+
+.product-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:60px;
+align-items:start;
+}
+
+.product-images{
+position:relative;
+}
+
+.main-image{
+width:100%;
+height:500px;
+object-fit:cover;
+border-radius:20px;
+box-shadow:0 20px 40px rgba(0,0,0,0.1);
+border:1px solid #d19b48;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-image:hover{
+transform:scale(1.02);
+box-shadow:0 25px 50px rgba(0,0,0,0.15);
+}
+
+.thumbnail-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+margin-top:20px;
+}
+
+.thumbnail{
+width:100%;
+height:100px;
+object-fit:cover;
+border-radius:10px;
+cursor:pointer;
+border:2px solid transparent;
+transition:all 0.3s ease;
+}
+
+.thumbnail:hover{
+border-color:#d19b48;
+transform:scale(1.05);
+}
+
+.thumbnail.active{
+border-color:#d19b48;
+box-shadow:0 0 15px rgba(209,155,72,0.3);
+}
+
+.product-info{
+padding:20px 0;
+}
+
+.product-category{
+color:#d19b48;
+font-size:14px;
+font-weight:600;
+text-transform:uppercase;
+letter-spacing:2px;
+margin-bottom:10px;
+}
+
+.product-title{
+font-size:36px;
+font-weight:700;
+margin-bottom:20px;
+color:#000000;
+line-height:1.2;
+}
+
+.product-price{
+font-size:28px;
+color:#d19b48;
+font-weight:600;
+margin-bottom:30px;
+}
+
+.product-description{
+font-size:16px;
+line-height:1.6;
+color:#666;
+margin-bottom:30px;
+}
+
+.product-details{
+background:#f9f9f9;
+padding:30px;
+border-radius:15px;
+margin-bottom:30px;
+border:1px solid #d19b48;
+}
+
+.details-title{
+color:#d19b48;
+font-size:20px;
+font-weight:600;
+margin-bottom:20px;
+}
+
+.details-list{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+}
+
+.detail-item{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.detail-icon{
+font-size:20px;
+}
+
+.detail-text{
+font-size:14px;
+color:#000000;
+font-weight:500;
+}
+
+.size-guide{
+margin-bottom:30px;
+}
+
+.size-title{
+font-size:18px;
+font-weight:600;
+margin-bottom:15px;
+color:#000000;
+}
+
+.size-options{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.size-btn{
+width:50px;
+height:50px;
+border:2px solid #d19b48;
+background:#ffffff;
+color:#d19b48;
+border-radius:10px;
+cursor:pointer;
+font-weight:600;
+transition:all 0.3s ease;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.size-btn:hover{
+background:#d19b48;
+color:#ffffff;
+transform:scale(1.05);
+}
+
+.size-btn.active{
+background:#d19b48;
+color:#ffffff;
+}
+
+.quantity-selector{
+display:flex;
+align-items:center;
+gap:15px;
+margin-bottom:30px;
+}
+
+.quantity-label{
+font-weight:600;
+color:#000000;
+}
+
+.quantity-controls{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.quantity-btn{
+width:40px;
+height:40px;
+border:2px solid #d19b48;
+background:#ffffff;
+color:#d19b48;
+border-radius:50%;
+cursor:pointer;
+font-weight:600;
+font-size:18px;
+transition:all 0.3s ease;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.quantity-btn:hover{
+background:#d19b48;
+color:#ffffff;
+transform:scale(1.05);
+}
+
+.quantity-input{
+width:60px;
+height:40px;
+border:2px solid #d19b48;
+border-radius:8px;
+text-align:center;
+font-weight:600;
+font-size:16px;
+color:#000000;
+}
+
+.action-buttons{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+}
+
+.add-to-cart-btn,
+.buy-now-btn{
+padding:18px 35px;
+border-radius:30px;
+font-weight:600;
+font-size:16px;
+cursor:pointer;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+text-decoration:none;
+display:inline-block;
+text-align:center;
+min-width:180px;
+position:relative;
+overflow:hidden;
+}
+
+.add-to-cart-btn::before,
+.buy-now-btn::before{
+content:'';
+position:absolute;
+top:0;
+left:-100%;
+width:100%;
+height:100%;
+background:linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+transition:all 0.5s;
+}
+
+.add-to-cart-btn{
+background:#d19b48;
+color:#ffffff;
+border:1px solid #d19b48;
+box-shadow:0 6px 20px rgba(209,155,72,0.4);
+}
+
+.add-to-cart-btn:hover{
+background:#ffd700;
+transform:translateY(-3px);
+box-shadow:0 12px 30px rgba(209,155,72,0.6);
+}
+
+.add-to-cart-btn:hover::before{
+left:100%;
+}
+
+.buy-now-btn{
+background:#000000;
+color:#d19b48;
+border:1px solid #d19b48;
+}
+
+.buy-now-btn:hover{
+background:#d19b48;
+color:#ffffff;
+transform:translateY(-3px);
+}
+
+.wishlist-btn{
+background:#ffffff;
+color:#d19b48;
+border:1px solid #d19b48;
+padding:15px 25px;
+border-radius:25px;
+cursor:pointer;
+font-weight:600;
+transition:all 0.3s ease;
+margin-left:auto;
+}
+
+.wishlist-btn:hover{
+background:#d19b48;
+color:#ffffff;
+transform:translateY(-2px);
+}
+
+/* SIMILAR PRODUCTS */
+
+.similar-products{
+margin-top:100px;
+padding-top:60px;
+border-top:1px solid #d19b48;
+}
+
+.similar-title{
+text-align:center;
+font-size:28px;
+margin-bottom:50px;
+color:#000000;
+font-weight:600;
+position:relative;
+}
+
+.similar-title::after{
+content:'';
+position:absolute;
+bottom:-10px;
+left:50%;
+transform:translateX(-50%);
+width:60px;
+height:2px;
+background:#d19b48;
+border-radius:1px;
+}
+
+.similar-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:30px;
+}
+
+.similar-product{
+background:#ffffff;
+border-radius:15px;
+overflow:hidden;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+border:1px solid #d19b48;
+box-shadow:0 8px 25px rgba(0,0,0,0.1);
+position:relative;
+text-decoration:none;
+color:#000000;
+}
+
+.similar-product:hover{
+transform:translateY(-10px) scale(1.02);
+box-shadow:0 20px 40px rgba(0,0,0,0.2);
+border-color:#ffd700;
+}
+
+.similar-product img{
+width:100%;
+height:250px;
+object-fit:cover;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.similar-product:hover img{
+transform:scale(1.05);
+}
+
+.similar-info{
+padding:20px;
+}
+
+.similar-info h4{
+margin-bottom:8px;
+font-size:16px;
+font-weight:600;
+}
+
+.similar-price{
+color:#d19b48;
+font-weight:600;
+font-size:18px;
+}
+
+/* CART ANIMATION */
+
+@keyframes cartBounce {
+0% { transform: scale(1); }
+50% { transform: scale(1.1); }
+100% { transform: scale(1); }
+}
+
+.cart-animation {
+animation: cartBounce 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* FLYING CART ANIMATION */
+
+.flying-cart {
+position: fixed;
+width: 30px;
+height: 30px;
+background: #d19b48;
+border-radius: 50%;
+z-index: 9999;
+pointer-events: none;
+animation: flyToCart 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+box-shadow: 0 4px 15px rgba(209,155,72, 0.6);
+}
+
+.flying-cart::before {
+content: '🛒';
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+font-size: 16px;
+}
+
+@keyframes flyToCart {
+0% {
+transform: scale(1) rotate(0deg);
+opacity: 1;
+}
+20% {
+transform: scale(1.2) rotate(90deg);
+}
+60% {
+transform: scale(0.8) rotate(180deg);
+opacity: 0.8;
+}
+100% {
+transform: scale(0.3) rotate(360deg);
+opacity: 0;
+}
+}
+
+.cart-icon-bounce {
+animation: cartIconBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes cartIconBounce {
+0% { transform: scale(1); }
+25% { transform: scale(1.3) rotate(-10deg); }
+50% { transform: scale(1.1) rotate(10deg); }
+75% { transform: scale(1.2) rotate(-5deg); }
+100% { transform: scale(1); }
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:50px;
+background:#000000;
+border-top:1px solid #d19b48;
+position:relative;
+}
+
+footer p{
+margin-bottom:15px;
+color:#ffffff;
+font-weight:300;
+}
+
+footer a{
+color:#d19b48;
+text-decoration:none;
+font-weight:500;
+transition:all 0.3s ease;
+}
+
+footer a:hover{
+color:#ffd700;
+transform:translateY(-2px);
+}
+
+/* RESPONSIVE */
+
+@media (max-width:768px){
+.product-grid{
+grid-template-columns:1fr;
+gap:40px;
+}
+
+.product-images{
+order:2;
+}
+
+.product-info{
+order:1;
+}
+
+.main-image{
+height:400px;
+}
+
+.thumbnail-grid{
+grid-template-columns:repeat(3,1fr);
+}
+
+.product-title{
+font-size:28px;
+}
+
+.action-buttons{
+flex-direction:column;
+}
+
+.add-to-cart-btn,
+.buy-now-btn{
+min-width:100%;
+}
+
+.similar-grid{
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+}
+}
+
+/* USER MENU - Product Page */
+.user-menu {
+    position: relative;
+}
+
+.user-btn {
+    background: #d19b48;
+    color: #ffffff;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(209,155,72,0.3);
+}
+
+.user-btn:hover {
+    transform: scale(1.1);
+    background: #ffd700;
+    color: #000;
+    box-shadow: 0 6px 20px rgba(209,155,72,0.5);
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: #ffffff;
+    border: 1px solid #d19b48;
+    border-radius: 8px;
+    min-width: 180px;
+    display: none;
+    flex-direction: column;
+    z-index: 1001;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.user-dropdown.open {
+    display: flex;
+}
+
+.user-dropdown a {
+    color: #000000;
+    text-decoration: none;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.user-dropdown a:last-child {
+    border-bottom: none;
+}
+
+.user-dropdown a:hover {
+    background: #f5f5f5;
+    color: #d19b48;
+    padding-left: 20px;
+}
+
+/* LOGIN MODAL - Product Page */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: #ffffff;
+    border: 1px solid #d19b48;
+    border-radius: 12px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.modal-header h2 {
+    color: #d19b48;
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #000000;
+    font-size: 28px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+    color: #d19b48;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px;
+    background: #f5f5f5;
+    border: 1px solid #d19b48;
+    color: #000000;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.tab-btn.active {
+    background: #d19b48;
+    color: #ffffff;
+    border-color: #d19b48;
+}
+
+.tab-btn:hover {
+    background: #e8e8e8;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    color: #000000;
+    margin-bottom: 7px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    background: #f9f9f9;
+    border: 1px solid #d19b48;
+    border-radius: 6px;
+    color: #000000;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    background: #ffffff;
+    border-color: #ffd700;
+    box-shadow: 0 0 10px rgba(209,155,72,0.2);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: #d19b48;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 15px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    background: #ffd700;
+    color: #000000;
+    box-shadow: 0 8px 20px rgba(209,155,72,0.4);
+}
+
+.auth-divider {
+    text-align: center;
+    margin: 20px 0;
+    color: #999999;
+    font-size: 14px;
+}
+
+.social-auth {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.social-btn {
+    padding: 12px;
+    background: #f5f5f5;
+    border: 1px solid #d19b48;
+    border-radius: 6px;
+    color: #000000;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s ease;
+}
+
+.social-btn:hover {
+    background: #e8e8e8;
+    transform: translateY(-2px);
+}
+
+.error-msg {
+    color: #ff6b6b;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+.success-msg {
+    color: #51cf66;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+</style>
+<link rel="stylesheet" href="/assets/css/theme-overrides.css">
+</head>
+<body>
+
+<!-- NAV -->
+
+<nav>
+<div class="logo">
+<a href="index.html"><img src="/assets/images/sa.jpg" alt="Nordluxe Logo"></a>
+</div>
+<div>
+<a href="index.html">Home</a>
+<a href="collections.html">Collection</a>
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
+<a href="story.html">Story</a>
+<a href="cart.html" class="cart-btn">🛒 Cart</a>
+<div class="user-menu" id="userMenuContainer">
+<button class="user-btn" id="userBtn" onclick="toggleUserMenu()">👤</button>
+<div class="user-dropdown" id="userDropdown">
+<a href="#" onclick="openLoginModal(); return false;">Login/Signup</a>
+<a href="#" onclick="logout(); return false;" id="logoutOption" style="display:none;">Logout</a>
+<a href="#" onclick="goToProfile(); return false;" id="profileOption" style="display:none;">My Profile</a>
+</div>
+</div>
+</div>
+</nav>
+
+<!-- PRODUCT PAGE -->
+
+<div class="product-container" data-aos="fade-up">
+
+<div class="product-grid">
+
+<!-- PRODUCT IMAGES -->
+<div class="product-images" data-aos="fade-right" data-aos-delay="200">
+<img id="mainImage" class="main-image" src="/assets/images/ChatGPT Image Feb 1, 2026, 03_19_23 PM.png" alt="Product Image">
+
+<div class="thumbnail-grid">
+<img class="thumbnail active" src="/assets/images/ChatGPT Image Feb 1, 2026, 03_19_23 PM.png" alt="Thumbnail 1" onclick="changeImage(this.src, this)">
+<img class="thumbnail" src="/assets/images/ChatGPT Image Feb 1, 2026, 03_19_23 PM.png" alt="Thumbnail 2" onclick="changeImage(this.src, this)">
+<img class="thumbnail" src="/assets/images/ChatGPT Image Feb 1, 2026, 03_19_23 PM.png" alt="Thumbnail 3" onclick="changeImage(this.src, this)">
+<img class="thumbnail" src="/assets/images/ChatGPT Image Feb 1, 2026, 03_19_23 PM.png" alt="Thumbnail 4" onclick="changeImage(this.src, this)">
+</div>
+</div>
+
+<!-- PRODUCT INFO -->
+<div class="product-info" data-aos="fade-left" data-aos-delay="400">
+
+<div class="product-category" id="productCategory">Bottoms & Trousers</div>
+
+<h1 class="product-title" id="productTitle">Premium Trousers</h1>
+
+<div class="product-price" id="productPrice">$450</div>
+
+<div class="product-description" id="productDescription">
+Experience unparalleled comfort and style with our Premium Trousers. Crafted from the finest Scandinavian wool blends, these trousers offer perfect tailoring with a modern silhouette. The luxurious fabric drapes beautifully while providing all-day comfort and exceptional durability.
+</div>
+
+<div class="product-details">
+<h3 class="details-title">Product Details</h3>
+<div class="details-list">
+<div class="detail-item">
+<span class="detail-icon">🏷️</span>
+<span class="detail-text">Premium wool blend</span>
+</div>
+<div class="detail-item">
+<span class="detail-icon">📏</span>
+<span class="detail-text">Tailored fit</span>
+</div>
+<div class="detail-item">
+<span class="detail-icon">🧵</span>
+<span class="detail-text">Hand-finished details</span>
+</div>
+<div class="detail-item">
+<span class="detail-icon">🇳🇴</span>
+<span class="detail-text">Made in Scandinavia</span>
+</div>
+<div class="detail-item">
+<span class="detail-icon">♻️</span>
+<span class="detail-text">Sustainable materials</span>
+</div>
+<div class="detail-item">
+<span class="detail-icon">🛡️</span>
+<span class="detail-text">2-year warranty</span>
+</div>
+</div>
+</div>
+
+<div class="size-guide">
+<h4 class="size-title">Size Guide</h4>
+<div class="size-options">
+<button class="size-btn" onclick="selectSize(this)">S</button>
+<button class="size-btn" onclick="selectSize(this)">M</button>
+<button class="size-btn active" onclick="selectSize(this)">L</button>
+<button class="size-btn" onclick="selectSize(this)">XL</button>
+<button class="size-btn" onclick="selectSize(this)">XXL</button>
+</div>
+</div>
+
+<div class="quantity-selector">
+<span class="quantity-label">Quantity:</span>
+<div class="quantity-controls">
+<button class="quantity-btn" onclick="updateQuantity(-1)">-</button>
+<input type="number" class="quantity-input" id="quantity" value="1" min="1" max="10">
+<button class="quantity-btn" onclick="updateQuantity(1)">+</button>
+</div>
+</div>
+
+<div class="action-buttons">
+<button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+<a href="/html/cart.html" class="buy-now-btn">Buy Now</a>
+<button class="wishlist-btn" onclick="addToWishlist()">♡ Add to Wishlist</button>
+</div>
+
+</div>
+
+</div>
+
+<!-- SIMILAR PRODUCTS -->
+<div class="similar-products" data-aos="fade-up" data-aos-delay="600">
+<h2 class="similar-title">You Might Also Like</h2>
+
+<div class="similar-grid">
+<a href="/html/product.html?id=heritage-sweater" class="similar-product">
+<img src="/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_16_33%20PM.png" alt="Heritage Sweater">
+<div class="similar-info">
+<h4>Heritage Sweater</h4>
+<div class="similar-price">$450</div>
+</div>
+</a>
+
+<a href="/html/product.html?id=arctic-boots" class="similar-product">
+<img src="/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_19_23%20PM.png" alt="Arctic Boots">
+<div class="similar-info">
+<h4>Arctic Boots</h4>
+<div class="similar-price">$620</div>
+</div>
+</a>
+
+<a href="/html/product.html?id=wool-scarf" class="similar-product">
+<img src="/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_19_35%20PM.png" alt="Wool Scarf">
+<div class="similar-info">
+<h4>Wool Scarf</h4>
+<div class="similar-price">$180</div>
+</div>
+</a>
+
+<a href="/html/product.html?id=minimalist-coat" class="similar-product">
+<img src="/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_19_35%20PM.png" alt="Minimalist Coat">
+<div class="similar-info">
+<h4>Minimalist Coat</h4>
+<div class="similar-price">$980</div>
+</div>
+</a>
+</div>
+
+</div>
+
+</div>
+
+<footer>
+<p>© 2026 NORDLUXE</p>
+<p><a href="https://instagram.com/nordluxe" target="_blank">Instagram</a> | <a href="mailto:hello@nordluxe.com">Email</a></p>
+</footer>
+
+<script>
+
+// Initialize AOS
+AOS.init({
+  duration: 800,
+  easing: 'ease-in-out',
+  once: true,
+  mirror: false
+});
+
+// Product data
+const products = {
+  'nordic-parka': {
+    title: 'Nordic Parka',
+    category: 'Outerwear',
+    price: '$890',
+    description: 'Experience the pinnacle of Scandinavian outerwear with our Nordic Parka. Designed for extreme Nordic climates yet styled for urban sophistication, this parka combines traditional fur-trimmed hoods with modern waterproof technology. The premium down filling provides exceptional warmth while maintaining a sleek silhouette.',
+    images: [
+      '/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_15_39%20PM.png',
+      '/assets/images/photo-1548883354-94bcfe321cbb.png',
+      '/assets/images/photo-1529139574466-a303027c1d8b.png',
+      '/assets/images/photo-1544966503-7cc5ac882d5f.png'
+    ],
+    details: ['Genuine down filling', 'Waterproof membrane', 'Fur-trimmed hood', 'Made in Norway', 'Extreme weather protection', '5-year warranty']
+  },
+  'premium-trousers': {
+    title: 'Premium Trousers',
+    category: 'Bottoms & Trousers',
+    price: '$450',
+    description: 'Experience unparalleled comfort and style with our Premium Trousers. Crafted from the finest Scandinavian wool blends, these trousers offer perfect tailoring with a modern silhouette. The luxurious fabric drapes beautifully while providing all-day comfort and exceptional durability.',
+    images: [
+      '/assets/images/photo-1542272604-787c3835535d.png',
+      '/assets/images/photo-1523381210434-271e8be1f52b.png',
+      '/assets/images/photo-1515347619252-60a4bf4fff4f.png',
+      '/assets/images/photo-1584464491033-06628f3a6b7b.png'
+    ],
+    details: ['Premium wool blend', 'Tailored fit', 'Hand-finished details', 'Made in Scandinavia', 'Sustainable materials', '2-year warranty']
+  },
+  'heritage-sweater': {
+    title: 'Heritage Sweater',
+    category: 'Tops & Shirts',
+    price: '$450',
+    description: 'Our Heritage Sweater combines traditional Nordic knitting techniques with contemporary design. Made from the softest merino wool, this sweater provides warmth without weight, featuring intricate cable patterns that tell stories of Scandinavian craftsmanship.',
+    images: [
+      '/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_16_33%20PM.png',
+      '/assets/images/photo-1523381210434-271e8be1f52b.png',
+      '/assets/images/photo-1515347619252-60a4bf4fff4f.png',
+      '/assets/images/photo-1584464491033-06628f3a6b7b.png'
+    ],
+    details: ['100% Merino wool', 'Cable knit pattern', 'Traditional Nordic design', 'Made in Norway', 'Eco-friendly dyes', 'Lifetime durability']
+  },
+  'arctic-boots': {
+    title: 'Arctic Boots',
+    category: 'Accessories',
+    price: '$620',
+    description: 'Conquer any terrain with our Arctic Boots, designed for the harshest Scandinavian winters yet styled for urban elegance. Waterproof leather uppers meet insulated interiors, providing both protection and sophistication.',
+    images: [
+      '/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_19_23%20PM.png',
+      '/assets/images/photo-1542272604-787c3835535d.png',
+      '/assets/images/photo-1523381210434-271e8be1f52b.png',
+      '/assets/images/photo-1515347619252-60a4bf4fff4f.png'
+    ],
+    details: ['Waterproof leather', 'Thinsulate insulation', 'Vibram sole', 'Made in Sweden', 'Weather-resistant', '5-year warranty']
+  },
+  'wool-scarf': {
+    title: 'Wool Scarf',
+    category: 'Accessories',
+    price: '$180',
+    description: 'Elevate your winter wardrobe with our luxurious Wool Scarf. Hand-woven from the finest Norwegian wool, this scarf offers unparalleled warmth and style. The subtle pattern reflects traditional Nordic motifs while maintaining modern elegance.',
+    images: [
+      '/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_19_35%20PM.png',
+      '/assets/images/photo-1542272604-787c3835535d.png',
+      '/assets/images/photo-1523381210434-271e8be1f52b.png',
+      '/assets/images/photo-1515347619252-60a4bf4fff4f.png'
+    ],
+    details: ['Pure Norwegian wool', 'Hand-woven', 'Traditional pattern', 'Ultra-soft', 'Wind-resistant', 'Care instructions included']
+  },
+  'minimalist-coat': {
+    title: 'Minimalist Coat',
+    category: 'Outerwear',
+    price: '$980',
+    description: 'Our Minimalist Coat represents the essence of Scandinavian design philosophy. Clean lines, premium materials, and thoughtful construction create a timeless piece that transcends seasons and trends.',
+    images: [
+      '/assets/images/photo-1548883354-94bcfe321cbb.png',
+      '/assets/images/photo-1529139574466-a303027c1d8b.png',
+      '/assets/images/photo-1544966503-7cc5ac882d5f.png',
+      '/assets/images/photo-1584464491033-06628f3a6b7b.png'
+    ],
+    details: ['Premium cashmere blend', 'Minimalist design', 'Water-repellent', 'Made in Denmark', 'Sustainable sourcing', '3-year warranty']
+  },
+  'nordluxe-hoodie': {
+    title: 'Nordluxe Hoodie',
+    category: 'Tops & Shirts',
+    price: '$390',
+    description: 'Comfort meets luxury in our Nordluxe Hoodie. Crafted from organic cotton with a touch of cashmere, this hoodie offers the perfect balance of casual comfort and elevated style.',
+    images: [
+      '/assets/images/photo-1523381210434-271e8be1f52b.png',
+      '/assets/images/photo-1542272604-787c3835535d.png',
+      '/assets/images/photo-1515347619252-60a4bf4fff4f.png',
+      '/assets/images/photo-1584464491033-06628f3a6b7b.png'
+    ],
+    details: ['Organic cotton blend', 'Cashmere touch', 'Kangaroo pocket', 'Made in Finland', 'Eco-friendly', 'Machine washable']
+  },
+  'designer-dress': {
+    title: 'Designer Dress',
+    category: 'Dresses & Full Wear',
+    price: '$780',
+    description: 'Make a statement with our Designer Dress, featuring innovative draping and Scandinavian elegance. The silk-blend fabric moves with you while maintaining its sophisticated silhouette.',
+    images: [
+      '/assets/images/photo-1595777457583-95e059d581b8.png',
+      '/assets/images/photo-1588854337221-4cf9fa96059c.png',
+      '/assets/images/photo-1529139574466-a303027c1d8b.png',
+      '/assets/images/photo-1544966503-7cc5ac882d5f.png'
+    ],
+    details: ['Silk blend fabric', 'Asymmetrical design', 'Hand-stitched', 'Made in Sweden', 'Dry clean only', 'Designer packaging']
+  },
+  'luxury-blazer': {
+    title: 'Luxury Blazer',
+    category: 'Dresses & Full Wear',
+    price: '$650',
+    description: 'Our Luxury Blazer combines Italian tailoring with Nordic minimalism. Perfectly structured yet comfortably wearable, this blazer elevates any outfit to new heights of sophistication.',
+    images: [
+      '/assets/images/photo-1529139574466-a303027c1d8b.png',
+      '/assets/images/photo-1548883354-94bcfe321cbb.png',
+      '/assets/images/photo-1544966503-7cc5ac882d5f.png',
+      '/assets/images/photo-1584464491033-06628f3a6b7b.png'
+    ],
+    details: ['Italian wool', 'Structured shoulders', 'Working buttons', 'Made in Italy', 'Professional tailoring', '2-year warranty']
+  }
+};
+
+// Get product ID from URL
+const urlParams = new URLSearchParams(window.location.search);
+const productId = urlParams.get('id') || 'premium-trousers';
+
+// Load product data
+function loadProduct(productId) {
+  const product = products[productId];
+  if (!product) {
+    // Default to premium trousers if product not found
+    loadProduct('premium-trousers');
+    return;
+  }
+
+  // Update page title
+  document.title = `NORDLUXE | ${product.title}`;
+
+  // Update product info
+  document.getElementById('productCategory').textContent = product.category;
+  document.getElementById('productTitle').textContent = product.title;
+  document.getElementById('productPrice').textContent = product.price;
+  document.getElementById('productDescription').textContent = product.description;
+
+  // Update main image
+  document.getElementById('mainImage').src = product.images[0];
+
+  // Update thumbnails
+  const thumbnails = document.querySelectorAll('.thumbnail');
+  thumbnails.forEach((thumb, index) => {
+    if (product.images[index]) {
+      thumb.src = product.images[index];
+      thumb.style.display = 'block';
+    } else {
+      thumb.style.display = 'none';
+    }
+  });
+
+  // Update product details
+  const detailsList = document.querySelector('.details-list');
+  detailsList.innerHTML = product.details.map(detail => `
+    <div class="detail-item">
+      <span class="detail-icon">${getDetailIcon(detail)}</span>
+      <span class="detail-text">${detail}</span>
+    </div>
+  `).join('');
+}
+
+// Get appropriate icon for detail
+function getDetailIcon(detail) {
+  const icons = {
+    'Premium': '🏷️',
+    'wool': '🧶',
+    'blend': '🧵',
+    'Tailored': '📏',
+    'Hand-finished': '✂️',
+    'Made in': '🇳🇴',
+    'Sustainable': '♻️',
+    'warranty': '🛡️',
+    'Merino': '🐑',
+    'Cable': '🧶',
+    'Nordic': '🏔️',
+    'Norway': '🇳🇴',
+    'Eco-friendly': '🌱',
+    'Waterproof': '💧',
+    'Thinsulate': '❄️',
+    'Vibram': '🥾',
+    'Sweden': '🇸🇪',
+    'Weather-resistant': '🌧️',
+    'Pure': '✨',
+    'Hand-woven': '👐',
+    'Traditional': '🏛️',
+    'Ultra-soft': '☁️',
+    'Wind-resistant': '💨',
+    'cashmere': '💎',
+    'Minimalist': '📐',
+    'Water-repellent': '🚿',
+    'Denmark': '🇩🇰',
+    'Organic': '🌿',
+    'cotton': '🌱',
+    'Kangaroo': '🦘',
+    'Finland': '🇫🇮',
+    'Machine': '🧺',
+    'Silk': '🕸️',
+    'Asymmetrical': '📐',
+    'Hand-stitched': '🪡',
+    'Dry clean': '🧼',
+    'Italian': '🇮🇹',
+    'Structured': '🏗️',
+    'Working': '🔘'
+  };
+
+  for (const [key, icon] of Object.entries(icons)) {
+    if (detail.toLowerCase().includes(key.toLowerCase())) {
+      return icon;
+    }
+  }
+  return '✨';
+}
+
+// Image switching functionality
+function changeImage(src, thumbnail) {
+  document.getElementById('mainImage').src = src;
+
+  // Update active thumbnail
+  document.querySelectorAll('.thumbnail').forEach(thumb => {
+    thumb.classList.remove('active');
+  });
+  thumbnail.classList.add('active');
+}
+
+// Size selection
+function selectSize(button) {
+  document.querySelectorAll('.size-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  button.classList.add('active');
+}
+
+// Quantity controls
+function updateQuantity(change) {
+  const input = document.getElementById('quantity');
+  const currentValue = parseInt(input.value);
+  const newValue = Math.max(1, Math.min(10, currentValue + change));
+  input.value = newValue;
+}
+
+// Add to cart functionality
+function addToCart() {
+  const product = products[productId];
+  const quantity = document.getElementById('quantity').value;
+  const selectedSize = document.querySelector('.size-btn.active').textContent;
+
+  // Add to cart with size and quantity
+  for (let i = 0; i < quantity; i++) {
+    addToCartItem(`${product.title} (${selectedSize})`, product.price);
+  }
+
+  // Show success animation
+  showAddToCartAnimation();
+}
+
+// Add item to cart (similar to collections page)
+function addToCartItem(productName, price) {
+  let cart = JSON.parse(localStorage.getItem('nordluxeCart') || '[]');
+  cart.push({name: productName, price: price, date: new Date().toISOString()});
+  localStorage.setItem('nordluxeCart', JSON.stringify(cart));
+}
+
+// Add to cart animation
+function showAddToCartAnimation() {
+  const button = document.querySelector('.add-to-cart-btn');
+  const originalText = button.textContent;
+
+  // Change button text
+  button.textContent = 'Added to Cart!';
+  button.classList.add('cart-animation');
+
+  // Create flying cart animation
+  const buttonRect = button.getBoundingClientRect();
+  const cartIcon = document.querySelector('.cart-btn');
+  const cartRect = cartIcon.getBoundingClientRect();
+
+  const flyingCart = document.createElement('div');
+  flyingCart.className = 'flying-cart';
+  flyingCart.style.left = buttonRect.left + buttonRect.width / 2 - 15 + 'px';
+  flyingCart.style.top = buttonRect.top + buttonRect.height / 2 - 15 + 'px';
+  document.body.appendChild(flyingCart);
+
+  // Animate cart icon
+  if (cartIcon) {
+    cartIcon.classList.add('cart-icon-bounce');
+    setTimeout(() => {
+      cartIcon.classList.remove('cart-icon-bounce');
+    }, 800);
+  }
+
+  // Reset button after animation
+  setTimeout(() => {
+    button.textContent = originalText;
+    button.classList.remove('cart-animation');
+  }, 600);
+
+  // Remove flying element
+  setTimeout(() => {
+    if (flyingCart.parentNode) {
+      flyingCart.parentNode.removeChild(flyingCart);
+    }
+  }, 1200);
+}
+
+// Add to wishlist
+function addToWishlist() {
+  const button = document.querySelector('.wishlist-btn');
+  const originalText = button.textContent;
+
+  button.textContent = 'Added to Wishlist! ♡';
+  button.style.background = '#d19b48';
+  button.style.color = '#ffffff';
+
+  setTimeout(() => {
+    button.textContent = originalText;
+    button.style.background = '#ffffff';
+    button.style.color = '#d19b48';
+  }, 2000);
+}
+
+// Initialize product page
+loadProduct(productId);
+
+// AUTHENTICATION SYSTEM
+function toggleUserMenu() {
+    const dropdown = document.getElementById('userDropdown');
+    dropdown.classList.toggle('open');
+}
+
+function openLoginModal() {
+    document.getElementById('loginModal').classList.add('show');
+    document.getElementById('userDropdown').classList.remove('open');
+    document.querySelector('.tab-btn.active').click();
+}
+
+function closeLoginModal() {
+    document.getElementById('loginModal').classList.remove('show');
+}
+
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('loginModal');
+    if (event.target === modal) {
+        closeLoginModal();
+    }
+});
+
+function switchTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+}
+
+function handleEmailSignup() {
+    const name = document.getElementById('signupName').value;
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (!name || !email || !password || !confirmPassword) {
+        showError('signupError', 'Please fill in all fields');
+        return;
+    }
+    
+    if (password !== confirmPassword) {
+        showError('signupError', 'Passwords do not match');
+        return;
+    }
+    
+    if (password.length < 6) {
+        showError('signupError', 'Password must be at least 6 characters');
+        return;
+    }
+    
+    const user = {
+        id: Date.now(),
+        name: name,
+        email: email,
+        password: btoa(password),
+        provider: 'email',
+        createdAt: new Date().toISOString()
+    };
+    
+    localStorage.setItem('nordluxeUser', JSON.stringify(user));
+    localStorage.setItem('nordluxeLoggedIn', 'true');
+    
+    showSuccess('signupSuccess', 'Account created! Welcome to NORDLUXE');
+    setTimeout(() => {
+        closeLoginModal();
+        updateUserUI();
+    }, 1500);
+}
+
+function handleEmailLogin() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    if (!email || !password) {
+        showError('loginError', 'Please fill in all fields');
+        return;
+    }
+    
+    const user = JSON.parse(localStorage.getItem('nordluxeUser') || '{}');
+    
+    if (user.email === email && user.password === btoa(password)) {
+        localStorage.setItem('nordluxeLoggedIn', 'true');
+        showSuccess('loginSuccess', 'Welcome back!');
+        setTimeout(() => {
+            closeLoginModal();
+            updateUserUI();
+        }, 1000);
+    } else {
+        showError('loginError', 'Invalid email or password');
+    }
+}
+
+function handleGoogleAuth() {
+  const backendBase = window.location.hostname ? `${window.location.protocol}//${window.location.hostname}:3001` : 'http://localhost:3001';
+  window.location.href = `${backendBase}/auth/google`;
+}
+
+function handleAppleAuth() {
+    const user = {
+        id: Date.now(),
+        name: 'Apple User',
+        email: 'user@icloud.com',
+        provider: 'apple',
+        profilePic: '👤',
+        createdAt: new Date().toISOString()
+    };
+    
+    localStorage.setItem('nordluxeUser', JSON.stringify(user));
+    localStorage.setItem('nordluxeLoggedIn', 'true');
+    
+    showSuccess('socialSuccess', 'Logged in with Apple!');
+    setTimeout(() => {
+        closeLoginModal();
+        updateUserUI();
+    }, 1000);
+}
+
+function handleEmailOption() {
+    switchTab('login');
+}
+
+function showError(elementId, message) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = message;
+        element.style.display = 'block';
+    }
+}
+
+function showSuccess(elementId, message) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = message;
+        element.style.display = 'block';
+    }
+}
+
+function logout() {
+    localStorage.removeItem('nordluxeLoggedIn');
+    localStorage.removeItem('nordluxeUser');
+    updateUserUI();
+    alert('You have been logged out');
+}
+
+function goToProfile() {
+    alert('Profile page coming soon!');
+}
+
+function updateUserUI() {
+    const isLoggedIn = localStorage.getItem('nordluxeLoggedIn') === 'true';
+    const user = JSON.parse(localStorage.getItem('nordluxeUser') || '{}');
+    
+    const loginLink = document.querySelector('[onclick="openLoginModal(); return false;"]').parentElement;
+    const logoutLink = document.getElementById('logoutOption');
+    const profileLink = document.getElementById('profileOption');
+    const userBtn = document.getElementById('userBtn');
+    
+    if (isLoggedIn && user.name) {
+        loginLink.style.display = 'none';
+        logoutLink.style.display = 'block';
+        profileLink.style.display = 'block';
+        userBtn.textContent = '✓👤';
+        userBtn.title = `Logged in as: ${user.name}`;
+    } else {
+        loginLink.style.display = 'block';
+        logoutLink.style.display = 'none';
+        profileLink.style.display = 'none';
+        userBtn.textContent = '👤';
+        userBtn.title = 'Login/Signup';
+    }
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+    updateUserUI();
+});
+
+document.addEventListener('click', function(event) {
+    const userMenu = document.getElementById('userMenuContainer');
+    if (userMenu && !userMenu.contains(event.target)) {
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown) dropdown.classList.remove('open');
+    }
+});
+
+</script>
+
+<!-- LOGIN/SIGNUP MODAL -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>NORDLUXE Account</h2>
+            <button class="close-btn" onclick="closeLoginModal()">&times;</button>
+        </div>
+        
+        <div class="auth-tabs">
+            <button class="tab-btn active" onclick="switchTab('login'); event.preventDefault();">Login</button>
+            <button class="tab-btn" onclick="switchTab('signup'); event.preventDefault();">Sign Up</button>
+        </div>
+        
+        <div id="login" class="tab-content active">
+            <div class="social-auth">
+              <button class="social-btn" onclick="handleGoogleAuth()" title="Login with Google"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg></button>
+              <button class="social-btn" onclick="handleAppleAuth()" title="Login with Apple"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg></button>
+              <button class="social-btn" onclick="handleEmailOption()" title="Login with Email"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+            </div>
+            
+            <div class="auth-divider">OR USE EMAIL</div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="your@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="••••••••">
+            </div>
+            
+            <button class="submit-btn" onclick="handleEmailLogin()">Login</button>
+            <div id="loginError" class="error-msg"></div>
+            <div id="loginSuccess" class="success-msg"></div>
+            
+            <div style="text-align:center; color:#999999; font-size:13px; margin-top:15px;">
+                Don't have an account? <a href="#" onclick="switchTab('signup'); return false;" style="color:#d19b48; text-decoration:underline;">Sign up here</a>
+            </div>
+        </div>
+        
+        <div id="signup" class="tab-content">
+            <div class="social-auth">
+              <button class="social-btn" onclick="handleGoogleAuth()" title="Sign up with Google"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg></button>
+              <button class="social-btn" onclick="handleAppleAuth()" title="Sign up with Apple"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg></button>
+              <button class="social-btn" onclick="handleEmailOption()" title="Sign up with Email"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+            </div>
+            
+            <div class="auth-divider">OR CREATE ACCOUNT WITH EMAIL</div>
+            
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="signupName" placeholder="John Doe">
+            </div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="signupEmail" placeholder="your@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="signupPassword" placeholder="••••••••">
+            </div>
+            
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="confirmPassword" placeholder="••••••••">
+            </div>
+            
+            <button class="submit-btn" onclick="handleEmailSignup()">Create Account</button>
+            <div id="signupError" class="error-msg"></div>
+            <div id="signupSuccess" class="success-msg"></div>
+            
+            <div style="text-align:center; color:#999999; font-size:13px; margin-top:15px;">
+                Already have an account? <a href="#" onclick="switchTab('login'); return false;" style="color:#d19b48; text-decoration:underline;">Login here</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/assets/js/site-nav.js"></script>
+</body>
+</html>

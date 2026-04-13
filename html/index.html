@@ -1,0 +1,992 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NORDLUXE | Scandinavian Luxury</title>
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Montserrat', sans-serif;
+scroll-behavior:smooth;
+}
+
+body{
+background:#ffffff;
+color:#000000;
+min-height:100vh;
+}
+
+/* NAVBAR */
+
+nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:25px 60px;
+background:#ffffff;
+border-bottom:1px solid #d19b48;
+position:sticky;
+top:0;
+z-index:1000;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.logo img{
+height:45px;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+nav a{
+color:#000000;
+text-decoration:none;
+margin-left:30px;
+font-size:15px;
+letter-spacing:1px;
+font-weight:500;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+position:relative;
+}
+
+nav a::before{
+content:'';
+position:absolute;
+bottom:-5px;
+left:0;
+width:0;
+height:2px;
+background:#d19b48;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+nav a:hover{
+color:#d19b48;
+transform:translateY(-2px);
+}
+
+nav a:hover::before{
+width:100%;
+}
+
+.cart-btn{
+background:#d19b48 !important;
+color:#ffffff !important;
+padding:10px 20px !important;
+border-radius:25px !important;
+font-weight:600 !important;
+font-size:14px !important;
+letter-spacing:0.5px !important;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+box-shadow:0 4px 15px rgba(209,155,72,0.3) !important;
+border:1px solid #d19b48 !important;
+}
+
+.cart-btn:hover{
+background:#ffd700 !important;
+transform:scale(1.05) translateY(-2px) !important;
+box-shadow:0 8px 25px rgba(209,155,72,0.5) !important;
+}
+
+/* HERO */
+
+.hero{
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+background:#ffffff;
+position:relative;
+overflow:hidden;
+}
+
+.hero::before{
+content:'';
+position:absolute;
+left:5%;
+top:15%;
+width:120px;
+height:120px;
+background:linear-gradient(45deg, #d19b48, #ffd700);
+border-radius:50%;
+opacity:0.1;
+animation: float 6s ease-in-out infinite;
+z-index:1;
+}
+
+.hero::after{
+content:'';
+position:absolute;
+right:5%;
+bottom:15%;
+width:150px;
+height:150px;
+background:linear-gradient(135deg, #d19b48, #000000);
+clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+opacity:0.1;
+animation: float 8s ease-in-out infinite reverse;
+z-index:1;
+}
+
+.hero-content{
+position:relative;
+z-index:2;
+padding:0 20px;
+max-width:960px;
+}
+
+/* DECORATIVE ELEMENTS */
+
+.decoration{
+position:absolute;
+opacity:0.08;
+z-index:1;
+}
+
+.spiral-1{
+top:10%;
+left:8%;
+width:80px;
+height:80px;
+background:conic-gradient(from 0deg, #d19b48, #ffd700, #d19b48);
+border-radius:50%;
+animation: spin 20s linear infinite;
+}
+
+.spiral-2{
+top:70%;
+right:12%;
+width:60px;
+height:60px;
+background:conic-gradient(from 180deg, #000000, #d19b48, #000000);
+border-radius:50%;
+animation: spin 15s linear infinite reverse;
+}
+
+.geometric-1{
+top:25%;
+right:8%;
+width:100px;
+height:100px;
+background:linear-gradient(45deg, #d19b48, transparent, #ffd700);
+clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+animation: rotate 25s ease-in-out infinite;
+}
+
+.geometric-2{
+bottom:30%;
+left:10%;
+width:70px;
+height:70px;
+background:linear-gradient(135deg, #000000, #d19b48);
+clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+animation: rotate 30s ease-in-out infinite reverse;
+}
+
+.line-1{
+top:40%;
+left:3%;
+width:2px;
+height:200px;
+background:linear-gradient(to bottom, transparent, #d19b48, transparent);
+animation: pulse 4s ease-in-out infinite;
+}
+
+.line-2{
+top:50%;
+right:3%;
+width:2px;
+height:150px;
+background:linear-gradient(to bottom, transparent, #ffd700, transparent);
+animation: pulse 5s ease-in-out infinite reverse;
+}
+
+.dot-1{
+top:15%;
+right:25%;
+width:15px;
+height:15px;
+background:#d19b48;
+border-radius:50%;
+animation: bounce 3s ease-in-out infinite;
+}
+
+.dot-2{
+bottom:20%;
+left:20%;
+width:20px;
+height:20px;
+background:#ffd700;
+border-radius:50%;
+animation: bounce 4s ease-in-out infinite reverse;
+}
+
+.wave-1{
+bottom:10%;
+left:30%;
+width:120px;
+height:40px;
+background:linear-gradient(90deg, transparent, #d19b48, transparent);
+border-radius:50%;
+animation: wave 6s ease-in-out infinite;
+}
+.hero-subtitle{
+font-size:20px;
+letter-spacing:2px;
+color:#d19b48;
+margin-top:10px;
+margin-bottom:18px;
+opacity:0.9;
+animation:fadeInUp 1.5s ease-out 0.2s both;
+}
+
+.hero h1{
+font-size:72px;
+letter-spacing:4px;
+color:#000000;
+margin-bottom:20px;
+font-weight:800;
+font-family: 'Oswald', sans-serif;
+animation:fadeInUp 1.5s ease-out;
+}
+
+.hero p{
+max-width:700px;
+line-height:1.8;
+opacity:.9;
+font-size:18px;
+font-weight:300;
+color:#000000;
+animation:fadeInUp 1.5s ease-out 0.3s both;
+}
+
+.hero button{
+margin-top:40px;
+padding:18px 40px;
+background:#d19b48;
+border:none;
+color:#ffffff;
+font-weight:600;
+font-size:16px;
+cursor:pointer;
+border-radius:30px;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+box-shadow:0 8px 25px rgba(209,155,72,0.4);
+position:relative;
+overflow:hidden;
+}
+
+.hero button::before{
+content:'';
+position:absolute;
+top:0;
+left:-100%;
+width:100%;
+height:100%;
+background:linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+transition:all 0.5s;
+}
+
+.hero button:hover{
+transform:scale(1.05) translateY(-3px);
+box-shadow:0 12px 35px rgba(209,155,72,0.6);
+}
+
+/* SECTION TITLE */
+
+.section-title{
+text-align:center;
+font-size:36px;
+margin:100px 0 60px 0;
+letter-spacing:2px;
+color:#000000;
+font-weight:700;
+position:relative;
+}
+
+.section-title::after{
+content:'';
+position:absolute;
+bottom:-10px;
+left:50%;
+transform:translateX(-50%);
+width:80px;
+height:3px;
+background:#d19b48;
+border-radius:2px;
+}
+
+/* PRODUCTS */
+
+.product-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:40px;
+padding:0 60px 100px;
+}
+
+.product{
+background:#ffffff;
+border-radius:20px;
+overflow:hidden;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+border:1px solid #d19b48;
+box-shadow:0 8px 25px rgba(0,0,0,0.1);
+position:relative;
+}
+
+.product:hover{
+transform:translateY(-15px) scale(1.02);
+box-shadow:0 20px 40px rgba(0,0,0,0.2);
+border-color:#ffd700;
+}
+
+.product img{
+width:100%;
+height:340px;
+object-fit:cover;
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product:hover img{
+transform:scale(1.05);
+}
+
+.product-info{
+padding:25px;
+}
+
+.product-info h3{
+margin-bottom:15px;
+color:#000000;
+font-weight:600;
+font-size:20px;
+}
+
+.price{
+color:#d19b48;
+margin-bottom:20px;
+font-size:18px;
+font-weight:700;
+}
+
+.product button{
+width:100%;
+padding:15px;
+background:#d19b48;
+border:1px solid #d19b48;
+color:#ffffff;
+cursor:pointer;
+font-weight:600;
+font-size:15px;
+transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+border-radius:25px;
+position:relative;
+overflow:hidden;
+}
+
+.product button::before{
+content:'';
+position:absolute;
+top:0;
+left:-100%;
+width:100%;
+height:100%;
+background:linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+transition:all 0.5s;
+}
+
+.product button:hover{
+background:#ffd700;
+transform:translateY(-2px);
+box-shadow:0 8px 20px rgba(209,155,72,0.4);
+}
+
+/* CART ANIMATION */
+
+@keyframes cartBounce {
+0% { transform: scale(1); }
+50% { transform: scale(1.1); }
+100% { transform: scale(1); }
+}
+
+.cart-animation {
+animation: cartBounce 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* FLYING CART ANIMATION */
+
+.flying-cart {
+position: fixed;
+width: 30px;
+height: 30px;
+background: #d19b48;
+border-radius: 50%;
+z-index: 9999;
+pointer-events: none;
+animation: flyToCart 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+box-shadow: 0 4px 15px rgba(209,155,72, 0.6);
+}
+
+.flying-cart::before {
+content: '🛒';
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+font-size: 16px;
+}
+
+@keyframes flyToCart {
+0% {
+transform: scale(1) rotate(0deg);
+opacity: 1;
+}
+20% {
+transform: scale(1.2) rotate(90deg);
+}
+60% {
+transform: scale(0.8) rotate(180deg);
+opacity: 0.8;
+}
+100% {
+transform: scale(0.3) rotate(360deg);
+opacity: 0;
+}
+}
+
+.cart-icon-bounce {
+animation: cartIconBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes cartIconBounce {
+0% { transform: scale(1); }
+25% { transform: scale(1.3) rotate(-10deg); }
+50% { transform: scale(1.1) rotate(10deg); }
+75% { transform: scale(1.2) rotate(-5deg); }
+100% { transform: scale(1); }
+}
+
+@keyframes fadeInUp {
+0% {
+opacity: 0;
+transform: translateY(30px);
+}
+100% {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+@keyframes float {
+0%, 100% { transform: translateY(0px); }
+50% { transform: translateY(-20px); }
+}
+
+@keyframes spin {
+from { transform: rotate(0deg); }
+to { transform: rotate(360deg); }
+}
+
+@keyframes rotate {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+0%, 100% { transform: translateY(0px) scale(1); }
+50% { transform: translateY(-10px) scale(1.1); }
+}
+
+@keyframes wave {
+0%, 100% { transform: scaleX(1) scaleY(1); }
+50% { transform: scaleX(1.2) scaleY(0.8); }
+}
+
+@keyframes pulse {
+0%, 100% { opacity: 0.3; }
+50% { opacity: 0.8; }
+}
+
+/* ABOUT */
+
+.about{
+display:flex;
+flex-wrap:wrap;
+gap:60px;
+padding:100px 60px;
+align-items:center;
+justify-content:center;
+background:#ffffff;
+border-top:1px solid #d19b48;
+border-bottom:1px solid #d19b48;
+}
+
+.about img{
+width:300px;
+border-radius:50%;
+border:3px solid #d19b48;
+box-shadow:0 0 30px rgba(209,155,72,0.3);
+transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.about img:hover{
+transform:scale(1.05);
+box-shadow:0 0 40px rgba(209,155,72,0.5);
+}
+
+.about-text{
+max-width:550px;
+line-height:1.8;
+color:#000000;
+}
+
+.about-text h2{
+font-size:36px;
+margin-bottom:30px;
+color:#000000;
+font-weight:700;
+}
+
+/* CONTACT */
+
+.contact{
+padding:100px 60px;
+text-align:center;
+background:#ffffff;
+border-top:1px solid #d19b48;
+}
+
+.contact h2{
+font-size:36px;
+margin-bottom:60px;
+color:#000000;
+font-weight:700;
+}
+
+.contact p{
+margin-top:15px;
+opacity:.9;
+font-size:20px;
+color:#000000;
+font-weight:300;
+transition:all 0.3s ease;
+}
+
+.contact p:hover{
+color:#d19b48;
+transform:translateY(-2px);
+}
+
+/* STORY */
+
+.story{
+padding:100px 60px;
+text-align:center;
+max-width:900px;
+margin:0 auto;
+background:#ffffff;
+border-top:1px solid #d19b48;
+border-bottom:1px solid #d19b48;
+}
+
+.story h2{
+font-size:36px;
+margin-bottom:60px;
+color:#000000;
+font-weight:700;
+}
+
+.story p{
+margin-bottom:35px;
+line-height:1.8;
+opacity:.9;
+font-size:18px;
+color:#000000;
+font-weight:300;
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:50px;
+background:#000000;
+border-top:1px solid #d19b48;
+position:relative;
+}
+
+footer p{
+margin-bottom:15px;
+color:#ffffff;
+font-weight:300;
+}
+
+footer a{
+color:#d19b48;
+text-decoration:none;
+font-weight:500;
+transition:all 0.3s ease;
+}
+
+footer a:hover{
+color:#ffd700;
+transform:translateY(-2px);
+}
+
+/* USER MENU */
+.user-menu {
+  position: relative;
+}
+
+.user-btn {
+  background: #d19b48;
+  color: #ffffff;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(209,155,72,0.3);
+}
+
+.user-btn:hover {
+  transform: scale(1.1);
+  background: #ffd700;
+  color: #000;
+  box-shadow: 0 6px 20px rgba(209,155,72,0.5);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  background: #ffffff;
+  border: 1px solid #d19b48;
+  border-radius: 8px;
+  min-width: 180px;
+  display: none;
+  flex-direction: column;
+  z-index: 1001;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.user-dropdown.open {
+  display: flex;
+}
+
+.user-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #000000;
+  text-decoration: none;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.user-dropdown a .user-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.user-dropdown a:last-child {
+  border-bottom: none;
+}
+
+.user-dropdown a:hover {
+  background: #f5f5f5;
+  color: #d19b48;
+  padding-left: 20px;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+</style>
+<link rel="stylesheet" href="/assets/css/theme-overrides.css">
+</head>
+
+<body>
+
+<!-- NAV -->
+
+<nav>
+
+<div class="nav-left">
+  <div class="user-menu">
+    <button class="user-btn" onclick="toggleUserMenu()">☰</button>
+    <div class="user-dropdown" id="userDropdown">
+      <a href="login.html"><span class="user-icon">👤</span>Login / Signup</a>
+      <a href="cart.html">Cart</a>
+      <a href="collections.html">Collection</a>
+      <a href="story.html">Story</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
+
+  <div class="logo">
+    <a href="index.html"><img src="/assets/images/sa.jpg" alt="Nordluxe Logo"></a>
+  </div>
+</div>
+
+<div class="nav-right">
+  <a href="index.html">Home</a>
+  <a href="collections.html">Collection</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+  <a href="story.html">Story</a>
+  <a href="cart.html" class="cart-btn">🛒 Cart</a>
+</div>
+
+</nav>
+
+<!-- HERO -->
+
+<section class="hero" id="home">
+
+<!-- Decorative Elements -->
+<div class="decoration spiral-1"></div>
+<div class="decoration spiral-2"></div>
+<div class="decoration geometric-1"></div>
+<div class="decoration geometric-2"></div>
+<div class="decoration line-1"></div>
+<div class="decoration line-2"></div>
+<div class="decoration dot-1"></div>
+<div class="decoration dot-2"></div>
+<div class="decoration wave-1"></div>
+
+<div class="hero-content" data-aos="fade-up">
+<h1 data-aos="fade-up" data-aos-delay="200">NORDLUXE</h1>
+<h2 class="hero-subtitle" data-aos="fade-up" data-aos-delay="400">Scandinavian Luxury — Nordic Heritage. Future Wears.</h2>
+<p data-aos="fade-up" data-aos-delay="600">
+Luxury Scandinavian fashion crafted with minimalist elegance and premium materials.
+</p>
+
+<button onclick="scrollToCollection()" data-aos="fade-up" data-aos-delay="800">Explore Collection</button>
+</div>
+
+</section>
+
+<!-- COLLECTION -->
+
+<h2 class="section-title" id="collection" data-aos="fade-up">NORDLUXE Collection</h2>
+
+<div class="product-grid">
+
+<div class="product" data-aos="fade-up" data-aos-delay="100">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_15_39 PM.png">
+<div class="product-info">
+<h3>Nordic Parka</h3>
+<div class="price">$890</div>
+<button onclick="addCart('Nordic Parka', this, '$890')">Add to Cart</button>
+</div>
+</div>
+
+<div class="product" data-aos="fade-up" data-aos-delay="200">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Heritage Sweater</h3>
+<div class="price">$450</div>
+<button onclick="addCart('Heritage Sweater', this, '$450')">Add to Cart</button>
+</div>
+</div>
+
+<div class="product" data-aos="fade-up" data-aos-delay="300">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Arctic Boots</h3>
+<div class="price">$620</div>
+<button onclick="addCart('Arctic Boots', this, '$620')">Add to Cart</button>
+</div>
+</div>
+
+<div class="product" data-aos="fade-up" data-aos-delay="400">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Wool Scarf</h3>
+<div class="price">$180</div>
+<button onclick="addCart('Wool Scarf', this, '$180')">Add to Cart</button>
+</div>
+</div>
+
+<div class="product" data-aos="fade-up" data-aos-delay="500">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Minimalist Coat</h3>
+<div class="price">$980</div>
+<button onclick="addCart('Minimalist Coat', this, '$980')">Add to Cart</button>
+</div>
+</div>
+
+<div class="product" data-aos="fade-up" data-aos-delay="600">
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product-info">
+<h3>Nordluxe Hoodie</h3>
+<div class="price">$390</div>
+<button onclick="addCart('Nordluxe Hoodie', this, '$390')">Add to Cart</button>
+</div>
+</div>
+
+</div>
+
+<!-- ABOUT -->
+
+<section class="about" id="about" data-aos="fade-up">
+
+<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png" data-aos="fade-right" data-aos-delay="200">
+
+<div class="about-text" data-aos="fade-left" data-aos-delay="400">
+
+<h2>About NORDLUXE</h2>
+
+<p>
+NORDLUXE is a luxury Scandinavian-inspired fashion house built on minimalism,
+timeless design, and premium craftsmanship. Our mission is to create elegant
+pieces that blend simplicity with bold identity.
+</p>
+
+</div>
+
+</section>
+
+<!-- CONTACT -->
+
+<section class="contact" id="contact" data-aos="fade-up">
+
+<h2 class="section-title">Contact</h2>
+
+<p data-aos="fade-up" data-aos-delay="200">Email: nord.luxe@gmail.com</p>
+<p data-aos="fade-up" data-aos-delay="300">Instagram: @nordluxe</p>
+
+</section>
+
+<!-- STORY -->
+
+<section class="story" id="story" data-aos="fade-up">
+
+<h2 class="section-title">Our Story</h2>
+
+<p data-aos="fade-up" data-aos-delay="200">
+Founded in the heart of Scandinavia, NORDLUXE emerged from a vision to redefine luxury fashion.
+What started as a small atelier in Stockholm has grown into a global brand, but our core values remain unchanged.
+</p>
+
+<p data-aos="fade-up" data-aos-delay="400">
+We believe in the power of simplicity, the beauty of natural materials, and the importance of sustainable practices.
+Every piece in our collection tells a story of craftsmanship, innovation, and timeless elegance.
+</p>
+
+</section>
+
+<footer>
+
+<p>© 2026 NORDLUXE</p>
+<p><a href="#">Instagram</a></p>
+
+</footer>
+
+<script>
+
+AOS.init({
+  duration: 800,
+  easing: 'ease-in-out',
+  once: true,
+  mirror: false
+});
+
+function addCart(product, button, price){
+alert(product + " added to cart");
+
+// Add animation to the clicked button
+if(button){
+button.classList.add('cart-animation');
+setTimeout(() => {
+button.classList.remove('cart-animation');
+}, 600);
+}
+
+// Create flying cart animation
+if(button){
+const buttonRect = button.getBoundingClientRect();
+const cartIcon = document.querySelector('.cart-btn');
+const cartRect = cartIcon.getBoundingClientRect();
+
+// Create flying element
+const flyingCart = document.createElement('div');
+flyingCart.className = 'flying-cart';
+flyingCart.style.left = buttonRect.left + buttonRect.width / 2 - 15 + 'px';
+flyingCart.style.top = buttonRect.top + buttonRect.height / 2 - 15 + 'px';
+document.body.appendChild(flyingCart);
+
+// Animate cart icon
+if(cartIcon){
+cartIcon.classList.add('cart-icon-bounce');
+setTimeout(() => {
+cartIcon.classList.remove('cart-icon-bounce');
+}, 800);
+}
+
+// Remove flying element after animation
+setTimeout(() => {
+if(flyingCart.parentNode){
+flyingCart.parentNode.removeChild(flyingCart);
+}
+}, 1200);
+}
+
+// Add to cart storage
+let cart = JSON.parse(localStorage.getItem('nordluxeCart') || '[]');
+cart.push({name: product, price: price, date: new Date().toISOString()});
+localStorage.setItem('nordluxeCart', JSON.stringify(cart));
+}
+
+function scrollToCollection(){
+  document.getElementById("collection").scrollIntoView({behavior:"smooth"});
+}
+
+function toggleUserMenu() {
+  const dropdown = document.getElementById('userDropdown');
+  if (!dropdown) return;
+  dropdown.classList.toggle('open');
+}
+
+document.addEventListener('click', function(event) {
+  const dropdown = document.getElementById('userDropdown');
+  const userBtn = document.querySelector('.user-btn');
+  if (!dropdown || !userBtn) return;
+  if (!dropdown.contains(event.target) && !userBtn.contains(event.target)) {
+    dropdown.classList.remove('open');
+  }
+});
+
+</script>
+
+<script src="/assets/js/site-nav.js"></script>
+</body>
+</html>
+```
