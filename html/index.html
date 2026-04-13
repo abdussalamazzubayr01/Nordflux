@@ -4,8 +4,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="NORDLUXE is a royal luxury fashion house crafting premium shorts, longs, and cloaks with refined design, elevated tailoring, and statement detail.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://nordluxe.com/html/index.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NORDLUXE">
+<meta property="og:title" content="NORDLUXE | Royal Luxury Shorts, Longs and Cloaks">
+<meta property="og:description" content="NORDLUXE is a royal luxury fashion house crafting premium shorts, longs, and cloaks with refined design, elevated tailoring, and statement detail.">
+<meta property="og:url" content="https://nordluxe.com/html/index.html">
+<meta property="og:image" content="https://nordluxe.com/assets/images/sa.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NORDLUXE | Royal Luxury Shorts, Longs and Cloaks">
+<meta name="twitter:description" content="NORDLUXE is a royal luxury fashion house crafting premium shorts, longs, and cloaks with refined design, elevated tailoring, and statement detail.">
+<meta name="twitter:image" content="https://nordluxe.com/assets/images/sa.jpg">
 
-<title>NORDLUXE | Scandinavian Luxury</title>
+<title>NORDLUXE | Royal Luxury Shorts, Longs and Cloaks</title>
 
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -13,7 +26,7 @@
 <style>
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap');
 
 *{
 margin:0;
@@ -101,8 +114,42 @@ box-shadow:0 8px 25px rgba(209,155,72,0.5) !important;
 
 /* HERO */
 
+.hero-video-wrap{
+width:100%;
+padding:0;
+background:#0a0a0a;
+position:relative;
+}
+
+.hero-video-shell{
+width:100%;
+border:none;
+border-radius:0;
+overflow:hidden;
+box-shadow:none;
+background:#0b0b0b;
+}
+
+.hero-video{
+width:100%;
+display:block;
+height:clamp(420px,72vh,840px);
+object-fit:cover;
+filter:saturate(1.08) contrast(1.04);
+}
+
+.hero-video-wrap::after{
+content:'';
+position:absolute;
+inset:0;
+background:
+linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.08) 35%, rgba(255,255,255,0.02) 70%, rgba(255,255,255,0.12) 100%),
+linear-gradient(to right, rgba(0,0,0,0.22), rgba(0,0,0,0) 42%, rgba(0,0,0,0.12));
+pointer-events:none;
+}
+
 .hero{
-height:100vh;
+min-height:unset;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -110,6 +157,7 @@ text-align:center;
 background:#ffffff;
 position:relative;
 overflow:hidden;
+padding:35px 60px 70px;
 }
 
 .hero::before{
@@ -143,8 +191,9 @@ z-index:1;
 .hero-content{
 position:relative;
 z-index:2;
-padding:0 20px;
-max-width:960px;
+padding:0;
+max-width:760px;
+margin:0 auto;
 }
 
 /* DECORATIVE ELEMENTS */
@@ -244,21 +293,26 @@ animation: wave 6s ease-in-out infinite;
 }
 .hero-subtitle{
 font-size:20px;
-letter-spacing:2px;
+letter-spacing:1.2px;
 color:#d19b48;
 margin-top:10px;
 margin-bottom:18px;
 opacity:0.9;
 animation:fadeInUp 1.5s ease-out 0.2s both;
+font-family:'Cormorant Garamond', serif;
+font-weight:600;
 }
 
 .hero h1{
-font-size:72px;
-letter-spacing:4px;
+font-size:80px;
+letter-spacing:3px;
 color:#000000;
 margin-bottom:20px;
-font-weight:800;
-font-family: 'Oswald', sans-serif;
+font-weight:700;
+font-family:'Cinzel', serif;
+text-transform:uppercase;
+line-height:1.03;
+text-shadow:0 1px 0 #fff, 0 2px 0 rgba(209,155,72,0.2);
 animation:fadeInUp 1.5s ease-out;
 }
 
@@ -266,10 +320,12 @@ animation:fadeInUp 1.5s ease-out;
 max-width:700px;
 line-height:1.8;
 opacity:.9;
-font-size:18px;
-font-weight:300;
+font-size:21px;
+font-weight:600;
+letter-spacing:0.2px;
 color:#000000;
 animation:fadeInUp 1.5s ease-out 0.3s both;
+font-family:'Cormorant Garamond', serif;
 }
 
 .hero button{
@@ -471,6 +527,172 @@ opacity: 0;
 animation: cartIconBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
+.preorder-modal {
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.72);
+z-index:2001;
+justify-content:center;
+align-items:center;
+padding:24px;
+}
+
+.preorder-modal.show {
+display:flex;
+}
+
+.preorder-content {
+background:#ffffff;
+border:2px solid #d19b48;
+border-radius:18px;
+padding:30px;
+width:min(92vw, 640px);
+max-height:82vh;
+overflow-y:auto;
+box-shadow:0 20px 60px rgba(0,0,0,0.35);
+}
+
+.preorder-header {
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:16px;
+margin-bottom:20px;
+padding-bottom:12px;
+border-bottom:2px solid #d19b48;
+}
+
+.preorder-header h2 {
+color:#d19b48;
+font-size:24px;
+letter-spacing:1px;
+margin:0;
+}
+
+.preorder-close {
+background:none;
+border:none;
+font-size:30px;
+color:#000000;
+cursor:pointer;
+line-height:1;
+}
+
+.preorder-close:hover {
+color:#d19b48;
+}
+
+.product-name {
+font-size:22px;
+font-weight:700;
+color:#000000;
+margin-bottom:14px;
+}
+
+.preorder-price-summary {
+background:#fffaf1;
+border:1px solid #edd4a4;
+border-radius:12px;
+padding:14px 16px;
+margin-bottom:16px;
+}
+
+.preorder-price-summary p {
+margin:0 0 6px;
+font-size:14px;
+color:#333333;
+}
+
+.preorder-price-summary p:last-child {
+margin-bottom:0;
+}
+
+.preorder-price-summary .original {
+color:#999999;
+text-decoration:line-through;
+}
+
+.preorder-price-summary .active {
+color:#d19b48;
+font-weight:700;
+}
+
+.terms-list {
+background:#f9f9f9;
+border-left:4px solid #d19b48;
+padding:18px;
+border-radius:10px;
+margin:18px 0;
+}
+
+.terms-list h3 {
+color:#d19b48;
+font-size:16px;
+margin-bottom:12px;
+}
+
+.terms-list ul {
+list-style:none;
+margin:0;
+padding:0;
+}
+
+.terms-list li {
+font-size:14px;
+line-height:1.6;
+margin-bottom:10px;
+color:#333333;
+}
+
+.terms-list li::before {
+content:'✓';
+color:#d19b48;
+font-weight:700;
+margin-right:10px;
+}
+
+.preorder-actions {
+display:flex;
+gap:12px;
+margin-top:20px;
+}
+
+.preorder-confirm,
+.preorder-cancel {
+flex:1;
+padding:14px 18px;
+border-radius:24px;
+font-size:15px;
+font-weight:700;
+cursor:pointer;
+transition:all 0.3s ease;
+}
+
+.preorder-confirm {
+background:#d19b48;
+color:#ffffff;
+border:none;
+}
+
+.preorder-confirm:hover {
+background:#ffd700;
+color:#000000;
+}
+
+.preorder-cancel {
+background:#f5f5f5;
+color:#000000;
+border:2px solid #d19b48;
+}
+
+.preorder-cancel:hover {
+background:#ececec;
+}
+
 @keyframes cartIconBounce {
 0% { transform: scale(1); }
 25% { transform: scale(1.3) rotate(-10deg); }
@@ -518,6 +740,13 @@ to { transform: rotate(360deg); }
 @keyframes pulse {
 0%, 100% { opacity: 0.3; }
 50% { opacity: 0.8; }
+}
+
+@media (max-width:900px){
+.hero-video{height:56vh;}
+.hero{padding:24px 20px 48px;}
+.hero h1{font-size:52px;}
+.hero p{font-size:18px;}
 }
 
 /* ABOUT */
@@ -736,11 +965,21 @@ transform:translateY(-2px);
 
 <nav>
 
-<div class="nav-left">
+<div class="logo">
+  <a href="index.html"><img src="/assets/images/sa.jpg" alt="Nordluxe Logo"></a>
+</div>
+
+<div class="nav-links">
+  <a href="index.html">Home</a>
+  <a href="collections.html">Collection</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+  <a href="story.html">Story</a>
+  <a href="cart.html" class="cart-btn">🛒 Cart</a>
   <div class="user-menu">
-    <button class="user-btn" onclick="toggleUserMenu()">☰</button>
+    <button class="user-btn" onclick="toggleUserMenu()">👤</button>
     <div class="user-dropdown" id="userDropdown">
-      <a href="login.html"><span class="user-icon">👤</span>Login / Signup</a>
+      <a href="login.html">Login / Signup</a>
       <a href="cart.html">Cart</a>
       <a href="collections.html">Collection</a>
       <a href="story.html">Story</a>
@@ -748,22 +987,17 @@ transform:translateY(-2px);
       <a href="contact.html">Contact</a>
     </div>
   </div>
-
-  <div class="logo">
-    <a href="index.html"><img src="/assets/images/sa.jpg" alt="Nordluxe Logo"></a>
-  </div>
-</div>
-
-<div class="nav-right">
-  <a href="index.html">Home</a>
-  <a href="collections.html">Collection</a>
-  <a href="about.html">About</a>
-  <a href="contact.html">Contact</a>
-  <a href="story.html">Story</a>
-  <a href="cart.html" class="cart-btn">🛒 Cart</a>
 </div>
 
 </nav>
+
+<section class="hero-video-wrap" data-aos="fade-up" data-aos-delay="80">
+  <div class="hero-video-shell">
+    <video class="hero-video" autoplay muted loop playsinline preload="metadata" disablepictureinpicture>
+      <source src="/assets/videos/nordluxe-intro.mp4" type="video/mp4">
+    </video>
+  </div>
+</section>
 
 <!-- HERO -->
 
@@ -798,67 +1032,44 @@ Luxury Scandinavian fashion crafted with minimalist elegance and premium materia
 
 <div class="product-grid">
 
-<div class="product" data-aos="fade-up" data-aos-delay="100">
-<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_15_39 PM.png">
+<div class="product" data-aos="fade-up" data-aos-delay="100" onclick="window.location.href='product.html?id=nordluxe-long-white'" style="cursor:pointer;">
+<img src="/assets/images/white%20long.png" alt="Nordluxe Long Ascension White">
 <div class="product-info">
-<h3>Nordic Parka</h3>
-<div class="price">$890</div>
-<button onclick="addCart('Nordic Parka', this, '$890')">Add to Cart</button>
+<h3>Nordluxe Long Ascension White</h3>
+<div class="price"><span style="display:block; color:#999999; text-decoration:line-through; font-size:14px; margin-bottom:6px;">Regular Price: ₦120,000</span><span>Preorder Price: ₦100,000</span></div>
+<button onclick="event.stopPropagation(); addCart('Nordluxe Long Ascension White', this, '₦120,000', '₦100,000')">Add to Cart</button>
 </div>
 </div>
 
-<div class="product" data-aos="fade-up" data-aos-delay="200">
-<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product" data-aos="fade-up" data-aos-delay="300" onclick="window.location.href='product.html?id=nordluxe-long-black'" style="cursor:pointer;">
+<img src="/assets/images/long%20black.png" alt="Nordluxe Long Ascension Black">
 <div class="product-info">
-<h3>Heritage Sweater</h3>
-<div class="price">$450</div>
-<button onclick="addCart('Heritage Sweater', this, '$450')">Add to Cart</button>
+<h3>Nordluxe Long Ascension Black</h3>
+<div class="price"><span style="display:block; color:#999999; text-decoration:line-through; font-size:14px; margin-bottom:6px;">Regular Price: ₦120,000</span><span>Preorder Price: ₦100,000</span></div>
+<button onclick="event.stopPropagation(); addCart('Nordluxe Long Ascension Black', this, '₦120,000', '₦100,000')">Add to Cart</button>
 </div>
 </div>
 
-<div class="product" data-aos="fade-up" data-aos-delay="300">
-<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
+<div class="product" data-aos="fade-up" data-aos-delay="500" onclick="window.location.href='product.html?id=full-package'" style="cursor:pointer;">
+<img src="/assets/images/Full%20package.png" alt="Full Package Bundle">
 <div class="product-info">
-<h3>Arctic Boots</h3>
-<div class="price">$620</div>
-<button onclick="addCart('Arctic Boots', this, '$620')">Add to Cart</button>
+<h3>Full Package (White + Black)</h3>
+<div class="price"><span style="display:block; color:#999999; text-decoration:line-through; font-size:14px; margin-bottom:6px;">Regular Price: ₦610,000</span><span>Preorder Price: ₦580,000</span></div>
+<button onclick="event.stopPropagation(); addCart('Full Package (White + Black) Complete Collection', this, '₦610,000', '₦580,000')">Add to Cart</button>
 </div>
 </div>
 
-<div class="product" data-aos="fade-up" data-aos-delay="400">
-<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
-<div class="product-info">
-<h3>Wool Scarf</h3>
-<div class="price">$180</div>
-<button onclick="addCart('Wool Scarf', this, '$180')">Add to Cart</button>
-</div>
 </div>
 
-<div class="product" data-aos="fade-up" data-aos-delay="500">
-<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
-<div class="product-info">
-<h3>Minimalist Coat</h3>
-<div class="price">$980</div>
-<button onclick="addCart('Minimalist Coat', this, '$980')">Add to Cart</button>
-</div>
-</div>
-
-<div class="product" data-aos="fade-up" data-aos-delay="600">
-<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png">
-<div class="product-info">
-<h3>Nordluxe Hoodie</h3>
-<div class="price">$390</div>
-<button onclick="addCart('Nordluxe Hoodie', this, '$390')">Add to Cart</button>
-</div>
-</div>
-
+<div style="text-align:center; padding:0 60px 100px;" data-aos="fade-up" data-aos-delay="820">
+<a href="collections.html" style="display:inline-block; padding:16px 34px; border-radius:28px; background:#000000; color:#ffffff; text-decoration:none; font-weight:600; letter-spacing:0.5px; border:1px solid #000000; transition:all 0.3s ease;">View Full Collection</a>
 </div>
 
 <!-- ABOUT -->
 
 <section class="about" id="about" data-aos="fade-up">
 
-<img src="/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png" data-aos="fade-right" data-aos-delay="200">
+<img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80" alt="NORDLUXE atelier" data-aos="fade-right" data-aos-delay="200">
 
 <div class="about-text" data-aos="fade-left" data-aos-delay="400">
 
@@ -910,6 +1121,32 @@ Every piece in our collection tells a story of craftsmanship, innovation, and ti
 
 </footer>
 
+<div id="preorderModal" class="preorder-modal">
+  <div class="preorder-content">
+    <div class="preorder-header">
+      <h2>Preorder Terms</h2>
+      <button class="preorder-close" onclick="closePreorderModal()">&times;</button>
+    </div>
+    <div class="product-name" id="modalProductName">Product Name</div>
+    <div class="preorder-price-summary" id="modalPriceSummary"></div>
+    <div class="terms-list">
+      <h3>Important Information</h3>
+      <ul>
+        <li>NORDLUXE is currently accepting preorders only.</li>
+        <li>The crossed-out price is the regular price for the piece.</li>
+        <li>The highlighted price is the full preorder price for the piece.</li>
+        <li>Only 40% is charged now as your preorder deposit.</li>
+        <li>The remaining 60% is paid when your piece is ready and fully made.</li>
+        <li>Delivery occurs within 8-15 days once delivery has started.</li>
+      </ul>
+    </div>
+    <div class="preorder-actions">
+      <button class="preorder-confirm" onclick="confirmPreorder()">Confirm & Add to Cart</button>
+      <button class="preorder-cancel" onclick="closePreorderModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script>
 
 AOS.init({
@@ -919,7 +1156,64 @@ AOS.init({
   mirror: false
 });
 
-function addCart(product, button, price){
+let pendingPreorder = null;
+
+function addCart(product, button, originalPrice, preorderPrice){
+var _u = {}; try { _u = JSON.parse(localStorage.getItem('nordluxeUser') || '{}'); } catch(e){}
+if (!_u.uid && !_u.id) { window.location.href = 'login.html'; return; }
+
+pendingPreorder = {
+  product,
+  button,
+  originalPrice,
+  preorderPrice
+};
+
+showPreorderModal(product, originalPrice, preorderPrice);
+}
+
+function showPreorderModal(product, originalPrice, preorderPrice) {
+const modal = document.getElementById('preorderModal');
+const paymentBreakdown = calculatePreorderBreakdown(preorderPrice || originalPrice);
+document.getElementById('modalProductName').textContent = product;
+document.getElementById('modalPriceSummary').innerHTML = `
+  ${originalPrice ? `<p class="original">Regular Price: ${originalPrice}</p>` : ''}
+  <p class="active">Preorder Price: ${paymentBreakdown.fullLabel}</p>
+  <p>Pay 40% now: ${paymentBreakdown.depositLabel}</p>
+  <p>Remaining 60%: ${paymentBreakdown.remainingLabel}</p>
+`;
+modal.classList.add('show');
+}
+
+function calculatePreorderBreakdown(priceLabel) {
+const normalized = (priceLabel || '₦0').replace(/,/g, '');
+const numeric = normalized.match(/[0-9]+(?:\.[0-9]+)?/);
+const amount = numeric ? parseFloat(numeric[0]) : 0;
+const currencySymbol = '₦';
+const depositAmount = Math.round(amount * 0.4);
+const remainingAmount = Math.max(amount - depositAmount, 0);
+const formatAmount = (value) => `${currencySymbol}${value.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+
+return {
+  fullLabel: formatAmount(amount),
+  depositLabel: formatAmount(depositAmount),
+  remainingLabel: formatAmount(remainingAmount)
+};
+}
+
+function closePreorderModal() {
+const modal = document.getElementById('preorderModal');
+modal.classList.remove('show');
+}
+
+function confirmPreorder() {
+if (!pendingPreorder) { return; }
+
+const product = pendingPreorder.product;
+const button = pendingPreorder.button;
+const preorderPrice = pendingPreorder.preorderPrice;
+const originalPrice = pendingPreorder.originalPrice;
+
 alert(product + " added to cart");
 
 // Add animation to the clicked button
@@ -960,9 +1254,20 @@ flyingCart.parentNode.removeChild(flyingCart);
 }
 
 // Add to cart storage
-let cart = JSON.parse(localStorage.getItem('nordluxeCart') || '[]');
-cart.push({name: product, price: price, date: new Date().toISOString()});
-localStorage.setItem('nordluxeCart', JSON.stringify(cart));
+function nordluxeKey(base) {
+  try {
+    var u = JSON.parse(localStorage.getItem('nordluxeUser') || '{}');
+    var uid = u.uid || u.id || '';
+    return uid ? base + '_' + uid : base;
+  } catch(e) { return base; }
+}
+let cart = JSON.parse(localStorage.getItem(nordluxeKey('nordluxeCart')) || '[]');
+const paymentBreakdown = calculatePreorderBreakdown(preorderPrice || originalPrice);
+cart.push({name: product, price: paymentBreakdown.depositLabel, originalPrice: originalPrice, preorderPrice: paymentBreakdown.fullLabel, depositPrice: paymentBreakdown.depositLabel, remainingBalancePrice: paymentBreakdown.remainingLabel, finalPrice: paymentBreakdown.depositLabel, isPreorder: true, date: new Date().toISOString()});
+localStorage.setItem(nordluxeKey('nordluxeCart'), JSON.stringify(cart));
+
+closePreorderModal();
+pendingPreorder = null;
 }
 
 function scrollToCollection(){
@@ -982,10 +1287,17 @@ document.addEventListener('click', function(event) {
   if (!dropdown.contains(event.target) && !userBtn.contains(event.target)) {
     dropdown.classList.remove('open');
   }
+
+  const preorderModal = document.getElementById('preorderModal');
+  if (event.target === preorderModal) {
+    closePreorderModal();
+  }
 });
 
 </script>
 
+<script src="/assets/js/site-shell.js" defer></script>
+<script src="/assets/js/site-audio.js" defer></script>
 <script src="/assets/js/site-nav.js"></script>
 </body>
 </html>

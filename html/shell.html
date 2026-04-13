@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="NORDLUXE shell page for internal page-frame routing.">
+<meta name="robots" content="noindex, nofollow">
+<title>NORDLUXE</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #ffffff;
+  }
+
+  #pageFrame {
+    border: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: #ffffff;
+  }
+</style>
+</head>
+<body>
+<iframe id="pageFrame" title="NORDLUXE Content" loading="eager"></iframe>
+
+<script>
+(function () {
+  var frame = document.getElementById('pageFrame');
+  var params = new URLSearchParams(window.location.search);
+  var requested = params.get('page') || 'index.html';
+  var currentTrackedPage = '/html/' + requested;
+
+  function sanitizePageRef(value) {
+    var cleaned = String(value || '').trim();
+    if (!cleaned) return 'index.html';
+    if (!/^[a-zA-Z0-9_.\-]+(\.html)?([?#].*)?$/.test(cleaned)) return 'index.html';
+    if (cleaned.indexOf('..') !== -1 || cleaned.indexOf('/') !== -1 || cleaned.indexOf('\\') !== -1) return 'index.html';
+    if (!/\.html([?#].*)?$/i.test(cleaned)) cleaned += '.html';
+    return cleaned;
+  }
+
+  var safePage = sanitizePageRef(requested);
+  frame.src = safePage;
+  currentTrackedPage = '/html/' + safePage;
+
+  function getSessionId() {
+    var key = 'nordluxeLiveSessionId';
+    var existing = localStorage.getItem(key);
+    if (existing && existing.length > 10) return existing;
+    var generated = 'sess-' + Date.now() + '-' + Math.random().toString(36).slice(2, 12);
+    localStorage.setItem(key, generated);
+    return generated;
+  }
+
+  function sendHeartbeat() {
+    var payload = JSON.stringify({
+      sessionId: getSessionId(),
+      page: currentTrackedPage,
+      title: document.title || 'NORDLUXE',
+      at: Date.now()
+    });
+
+    fetch('/api/analytics/heartbeat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
+      keepalive: true
+    }).catch(function () {});
+  }
+
+  sendHeartbeat();
+  setInterval(sendHeartbeat, 15000);
+
+  window.addEventListener('message', function (event) {
+    if (event.origin !== window.location.origin) return;
+    var data = event.data || {};
+    if (data.type !== 'nordluxe:navigation') return;
+
+    var nextPage = sanitizePageRef(data.page || 'index.html');
+    var nextUrl = '/html/shell.html?page=' + encodeURIComponent(nextPage);
+    window.history.replaceState({}, '', nextUrl);
+    currentTrackedPage = '/html/' + nextPage;
+
+    if (typeof data.title === 'string' && data.title.trim()) {
+      document.title = data.title.trim();
+    }
+
+    sendHeartbeat();
+  });
+})();
+</script>
+<script src="/assets/js/site-audio.js" defer></script>
+</body>
+</html>

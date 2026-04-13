@@ -1,0 +1,742 @@
+[
+  {
+    "_id": "fallback-1776007196495-saxxmz",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Short Ascension White (L)",
+        "price": "₦32,000",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-12T15:19:38.823Z"
+      }
+    ],
+    "totalAmount": 32000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 80000,
+      "depositAmount": 32000,
+      "remainingBalance": 48000
+    },
+    "flutterwaveRef": "nordluxe-1776007194611-xann9",
+    "paymentReference": "nordluxe-1776007194611-xann9",
+    "status": "pending",
+    "createdAt": "2026-04-12T15:19:56.495Z",
+    "updatedAt": "2026-04-12T15:19:56.495Z"
+  },
+  {
+    "_id": "fallback-1776005156340-7ayqcb",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Long Ascension Black",
+        "originalPrice": "₦120,000",
+        "preorderPrice": "₦100,000",
+        "depositPrice": "₦40,000",
+        "remainingBalancePrice": "₦60,000",
+        "finalPrice": "₦40,000",
+        "isPreorder": true,
+        "date": "2026-04-12T14:41:47.975Z"
+      },
+      {
+        "name": "Nordluxe Short Ascension White",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-12T14:41:53.572Z"
+      },
+      {
+        "name": "Nordluxe Short Ascension Black (L)",
+        "price": "₦32,000",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-12T14:42:04.820Z"
+      }
+    ],
+    "totalAmount": 104000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 260000,
+      "depositAmount": 104000,
+      "remainingBalance": 156000
+    },
+    "flutterwaveRef": "nordluxe-1776005155507-bvsmbt",
+    "paymentReference": "nordluxe-1776005155507-bvsmbt",
+    "status": "pending",
+    "createdAt": "2026-04-12T14:45:56.340Z",
+    "updatedAt": "2026-04-12T14:45:56.340Z"
+  },
+  {
+    "_id": "fallback-1775986034528-53j1s0",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Short Ascension Black",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-12T09:26:39.337Z"
+      },
+      {
+        "name": "Cloak Black",
+        "originalPrice": "₦140,000",
+        "preorderPrice": "₦110,000",
+        "depositPrice": "₦44,000",
+        "remainingBalancePrice": "₦66,000",
+        "finalPrice": "₦44,000",
+        "isPreorder": true,
+        "date": "2026-04-12T09:26:44.336Z"
+      },
+      {
+        "name": "Full Package (White + Black) Complete Collection",
+        "originalPrice": "₦610,000",
+        "preorderPrice": "₦580,000",
+        "depositPrice": "₦232,000",
+        "remainingBalancePrice": "₦348,000",
+        "finalPrice": "₦232,000",
+        "isPreorder": true,
+        "date": "2026-04-12T09:26:49.167Z"
+      }
+    ],
+    "totalAmount": 308000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 770000,
+      "depositAmount": 308000,
+      "remainingBalance": 462000
+    },
+    "flutterwaveRef": "nordluxe-1775986033788-2dnad",
+    "paymentReference": "nordluxe-1775986033788-2dnad",
+    "status": "pending",
+    "createdAt": "2026-04-12T09:27:14.529Z",
+    "updatedAt": "2026-04-12T09:27:14.529Z"
+  },
+  {
+    "_id": "fallback-1775985481930-5s04la",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Long Ascension Black",
+        "originalPrice": "₦120,000",
+        "preorderPrice": "₦100,000",
+        "depositPrice": "₦40,000",
+        "remainingBalancePrice": "₦60,000",
+        "finalPrice": "₦40,000",
+        "isPreorder": true,
+        "date": "2026-04-12T09:17:33.954Z"
+      }
+    ],
+    "totalAmount": 40000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 100000,
+      "depositAmount": 40000,
+      "remainingBalance": 60000
+    },
+    "flutterwaveRef": "nordluxe-1775985479058-7avq6p",
+    "paymentReference": "nordluxe-1775985479058-7avq6p",
+    "status": "pending",
+    "createdAt": "2026-04-12T09:18:01.931Z",
+    "updatedAt": "2026-04-12T09:18:01.931Z"
+  },
+  {
+    "_id": "fallback-1775978721777-zf56tq",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Short Ascension Black",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-12T07:20:18.105Z"
+      }
+    ],
+    "totalAmount": 32000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 80000,
+      "depositAmount": 32000,
+      "remainingBalance": 48000
+    },
+    "flutterwaveRef": "nordluxe-1775978720551-gmjc8g",
+    "paymentReference": "nordluxe-1775978720551-gmjc8g",
+    "status": "pending",
+    "createdAt": "2026-04-12T07:25:21.777Z",
+    "updatedAt": "2026-04-12T07:25:21.777Z"
+  },
+  {
+    "_id": "fallback-1775978521359-4o732z",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Short Ascension Black",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-12T07:20:18.105Z"
+      }
+    ],
+    "totalAmount": 32000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 80000,
+      "depositAmount": 32000,
+      "remainingBalance": 48000
+    },
+    "flutterwaveRef": "nordluxe-1775978520387-w2pk6",
+    "paymentReference": "nordluxe-1775978520387-w2pk6",
+    "status": "pending",
+    "createdAt": "2026-04-12T07:22:01.359Z",
+    "updatedAt": "2026-04-12T07:22:01.359Z"
+  },
+  {
+    "_id": "fallback-1775978453752-mz8cue",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Short Ascension Black",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-12T07:20:18.105Z"
+      }
+    ],
+    "totalAmount": 32000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 80000,
+      "depositAmount": 32000,
+      "remainingBalance": 48000
+    },
+    "flutterwaveRef": "nordluxe-1775978452794-kwsyfo",
+    "paymentReference": "nordluxe-1775978452794-kwsyfo",
+    "status": "pending",
+    "createdAt": "2026-04-12T07:20:53.753Z",
+    "updatedAt": "2026-04-12T07:20:53.753Z"
+  },
+  {
+    "_id": "fallback-1775978151630-m210z1",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Long Ascension Black",
+        "originalPrice": "₦120,000",
+        "preorderPrice": "₦100,000",
+        "depositPrice": "₦40,000",
+        "remainingBalancePrice": "₦60,000",
+        "finalPrice": "₦40,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:17.196Z"
+      },
+      {
+        "name": "Nordluxe Short Ascension White (L)",
+        "price": "₦32,000",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:22.744Z"
+      }
+    ],
+    "totalAmount": 72000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 180000,
+      "depositAmount": 72000,
+      "remainingBalance": 108000
+    },
+    "flutterwaveRef": "nordluxe-1775978150349-qed5r",
+    "paymentReference": "nordluxe-1775978150349-qed5r",
+    "status": "pending",
+    "createdAt": "2026-04-12T07:15:51.630Z",
+    "updatedAt": "2026-04-12T07:15:51.630Z"
+  },
+  {
+    "_id": "fallback-1775978017695-jqemlm",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Long Ascension Black",
+        "originalPrice": "₦120,000",
+        "preorderPrice": "₦100,000",
+        "depositPrice": "₦40,000",
+        "remainingBalancePrice": "₦60,000",
+        "finalPrice": "₦40,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:17.196Z"
+      },
+      {
+        "name": "Nordluxe Short Ascension White (L)",
+        "price": "₦32,000",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:22.744Z"
+      }
+    ],
+    "totalAmount": 72000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 180000,
+      "depositAmount": 72000,
+      "remainingBalance": 108000
+    },
+    "flutterwaveRef": "nordluxe-1775978016691-1475u3",
+    "paymentReference": "nordluxe-1775978016691-1475u3",
+    "status": "pending",
+    "createdAt": "2026-04-12T07:13:37.695Z",
+    "updatedAt": "2026-04-12T07:13:37.695Z"
+  },
+  {
+    "_id": "fallback-1775977868222-gat28s",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Long Ascension Black",
+        "originalPrice": "₦120,000",
+        "preorderPrice": "₦100,000",
+        "depositPrice": "₦40,000",
+        "remainingBalancePrice": "₦60,000",
+        "finalPrice": "₦40,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:17.196Z"
+      },
+      {
+        "name": "Nordluxe Short Ascension White (L)",
+        "price": "₦32,000",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:22.744Z"
+      }
+    ],
+    "totalAmount": 72000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 180000,
+      "depositAmount": 72000,
+      "remainingBalance": 108000
+    },
+    "flutterwaveRef": "nordluxe-1775977867277-qs60mdh",
+    "paymentReference": "nordluxe-1775977867277-qs60mdh",
+    "status": "pending",
+    "createdAt": "2026-04-12T07:11:08.222Z",
+    "updatedAt": "2026-04-12T07:11:08.222Z"
+  },
+  {
+    "_id": "fallback-1775977811041-0m5c8k",
+    "customerEmail": "test@example.com",
+    "customerName": "Test User",
+    "items": [],
+    "totalAmount": 1000,
+    "paymentPlan": {
+      "preorderTotal": 2500,
+      "remainingBalance": 1500,
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "depositAmount": 1000,
+      "balancePercentage": 60
+    },
+    "flutterwaveRef": "nordluxe-1775977809762-vpq4mp",
+    "paymentReference": "nordluxe-1775977809762-vpq4mp",
+    "status": "pending",
+    "createdAt": "2026-04-12T07:10:11.041Z",
+    "updatedAt": "2026-04-12T07:10:11.042Z"
+  },
+  {
+    "_id": "fallback-1775977442548-ii58na",
+    "customerEmail": "test@example.com",
+    "customerName": "Test User",
+    "items": [],
+    "totalAmount": 1000,
+    "paymentPlan": null,
+    "flutterwaveRef": "nordluxe-1775977441487-o9fc",
+    "paymentReference": "nordluxe-1775977441487-o9fc",
+    "status": "pending",
+    "createdAt": "2026-04-12T07:04:02.548Z",
+    "updatedAt": "2026-04-12T07:04:02.550Z"
+  },
+  {
+    "_id": "fallback-1775858121818-0bikao",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Long Ascension Black",
+        "originalPrice": "₦120,000",
+        "preorderPrice": "₦100,000",
+        "depositPrice": "₦40,000",
+        "remainingBalancePrice": "₦60,000",
+        "finalPrice": "₦40,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:17.196Z"
+      },
+      {
+        "name": "Nordluxe Short Ascension White (L)",
+        "price": "₦32,000",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:22.744Z"
+      }
+    ],
+    "totalAmount": 72000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 180000,
+      "depositAmount": 72000,
+      "remainingBalance": 108000
+    },
+    "flutterwaveRef": "nordluxe-1775858121137-cq4pfr",
+    "paymentReference": "nordluxe-1775858121137-cq4pfr",
+    "status": "pending",
+    "createdAt": "2026-04-10T21:55:21.818Z",
+    "updatedAt": "2026-04-10T21:55:21.818Z"
+  },
+  {
+    "_id": "fallback-1775857537717-m32dpw",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Long Ascension Black",
+        "originalPrice": "₦120,000",
+        "preorderPrice": "₦100,000",
+        "depositPrice": "₦40,000",
+        "remainingBalancePrice": "₦60,000",
+        "finalPrice": "₦40,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:17.196Z"
+      },
+      {
+        "name": "Nordluxe Short Ascension White (L)",
+        "price": "₦32,000",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:22.744Z"
+      }
+    ],
+    "totalAmount": 72000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 180000,
+      "depositAmount": 72000,
+      "remainingBalance": 108000
+    },
+    "flutterwaveRef": "nordluxe-1775857537064-cjzq0q",
+    "paymentReference": "nordluxe-1775857537064-cjzq0q",
+    "status": "pending",
+    "createdAt": "2026-04-10T21:45:37.717Z",
+    "updatedAt": "2026-04-10T21:45:37.717Z"
+  },
+  {
+    "_id": "fallback-1775857523908-t0he74",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Long Ascension Black",
+        "originalPrice": "₦120,000",
+        "preorderPrice": "₦100,000",
+        "depositPrice": "₦40,000",
+        "remainingBalancePrice": "₦60,000",
+        "finalPrice": "₦40,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:17.196Z"
+      },
+      {
+        "name": "Nordluxe Short Ascension White (L)",
+        "price": "₦32,000",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:22.744Z"
+      }
+    ],
+    "totalAmount": 72000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 180000,
+      "depositAmount": 72000,
+      "remainingBalance": 108000
+    },
+    "flutterwaveRef": "nordluxe-1775857523273-ghew6",
+    "paymentReference": "nordluxe-1775857523273-ghew6",
+    "status": "pending",
+    "createdAt": "2026-04-10T21:45:23.908Z",
+    "updatedAt": "2026-04-10T21:45:23.908Z"
+  },
+  {
+    "_id": "fallback-1775857459402-c1r06e",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Long Ascension Black",
+        "originalPrice": "₦120,000",
+        "preorderPrice": "₦100,000",
+        "depositPrice": "₦40,000",
+        "remainingBalancePrice": "₦60,000",
+        "finalPrice": "₦40,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:17.196Z"
+      },
+      {
+        "name": "Nordluxe Short Ascension White (L)",
+        "price": "₦32,000",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:22.744Z"
+      }
+    ],
+    "totalAmount": 72000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 180000,
+      "depositAmount": 72000,
+      "remainingBalance": 108000
+    },
+    "flutterwaveRef": "nordluxe-1775857458499-miqg5u",
+    "paymentReference": "nordluxe-1775857458499-miqg5u",
+    "status": "pending",
+    "createdAt": "2026-04-10T21:44:19.403Z",
+    "updatedAt": "2026-04-10T21:44:19.403Z"
+  },
+  {
+    "_id": "fallback-1775857416429-mo46yk",
+    "customerEmail": "testbuyer@gmail.com",
+    "customerName": "Test User",
+    "items": [
+      {
+        "price": "40000",
+        "quantity": 1,
+        "name": "Test Item"
+      }
+    ],
+    "totalAmount": 40000,
+    "paymentPlan": {
+      "preorderTotal": 100000,
+      "remainingBalance": 60000,
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "depositAmount": 40000,
+      "balancePercentage": 60
+    },
+    "flutterwaveRef": "nordluxe-1775857415618-th16t",
+    "paymentReference": "nordluxe-1775857415618-th16t",
+    "status": "pending",
+    "createdAt": "2026-04-10T21:43:36.429Z",
+    "updatedAt": "2026-04-10T21:43:36.429Z"
+  },
+  {
+    "_id": "fallback-1775857078798-1iqh9s",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Long Ascension Black",
+        "originalPrice": "₦120,000",
+        "preorderPrice": "₦100,000",
+        "depositPrice": "₦40,000",
+        "remainingBalancePrice": "₦60,000",
+        "finalPrice": "₦40,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:17.196Z"
+      },
+      {
+        "name": "Nordluxe Short Ascension White (L)",
+        "price": "₦32,000",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:22.744Z"
+      }
+    ],
+    "totalAmount": 72000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 180000,
+      "depositAmount": 72000,
+      "remainingBalance": 108000
+    },
+    "flutterwaveRef": "nordluxe-1775857078121-gg4ogr",
+    "paymentReference": "nordluxe-1775857078121-gg4ogr",
+    "status": "pending",
+    "createdAt": "2026-04-10T21:37:58.798Z",
+    "updatedAt": "2026-04-10T21:37:58.798Z"
+  },
+  {
+    "_id": "fallback-1775857063016-g8jjy9",
+    "customerEmail": "adesholaariff@gmail.com",
+    "customerName": "ARIFF ADESHOLA",
+    "items": [
+      {
+        "name": "Nordluxe Long Ascension Black",
+        "originalPrice": "₦120,000",
+        "preorderPrice": "₦100,000",
+        "depositPrice": "₦40,000",
+        "remainingBalancePrice": "₦60,000",
+        "finalPrice": "₦40,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:17.196Z"
+      },
+      {
+        "name": "Nordluxe Short Ascension White (L)",
+        "price": "₦32,000",
+        "originalPrice": "₦100,000",
+        "preorderPrice": "₦80,000",
+        "depositPrice": "₦32,000",
+        "remainingBalancePrice": "₦48,000",
+        "finalPrice": "₦32,000",
+        "isPreorder": true,
+        "date": "2026-04-10T21:37:22.744Z"
+      }
+    ],
+    "totalAmount": 72000,
+    "paymentPlan": {
+      "type": "preorder-deposit",
+      "depositPercentage": 40,
+      "balancePercentage": 60,
+      "preorderTotal": 180000,
+      "depositAmount": 72000,
+      "remainingBalance": 108000
+    },
+    "flutterwaveRef": "nordluxe-1775857062003-gapbn6",
+    "paymentReference": "nordluxe-1775857062003-gapbn6",
+    "status": "pending",
+    "createdAt": "2026-04-10T21:37:43.016Z",
+    "updatedAt": "2026-04-10T21:37:43.016Z"
+  },
+  {
+    "_id": "ac694e7dc7cb3dc236b9ad9b",
+    "customerEmail": "test@nordluxe.com",
+    "customerName": "Test User",
+    "orderCode": "NLX-ZV8HUG7X",
+    "userId": null,
+    "items": [
+      {
+        "price": "?1000",
+        "name": "Item A"
+      }
+    ],
+    "totalAmount": 1000,
+    "paymentPlan": {
+      "type": "preorder-deposit"
+    },
+    "flutterwaveRef": "tx-demo-001",
+    "paymentReference": "pay-demo-001",
+    "status": "confirmed",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "timestamp": "2026-04-07T21:24:15.917Z",
+        "notes": "Order created"
+      },
+      {
+        "status": "confirmed",
+        "timestamp": "2026-04-08T17:53:27.866Z",
+        "notes": "Updated by Team"
+      }
+    ],
+    "createdAt": "2026-04-07T21:24:15.917Z",
+    "customerConfirmedReceived": false,
+    "notificationsSent": {
+      "confirmed": false,
+      "packed": false,
+      "dispatched": false,
+      "inTransit": false,
+      "delivered": false,
+      "received": false
+    },
+    "assignedTo": "Team",
+    "confirmedAt": "2026-04-08T17:53:27.866Z"
+  }
+]

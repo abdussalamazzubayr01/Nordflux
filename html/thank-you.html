@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NORDLUXE | Thank You for Your Purchase</title>
+<meta name="description" content="Thank you for shopping with NORDLUXE. Your royal luxury order has been received and is being prepared with care.">
+<meta name="robots" content="noindex, nofollow">
+<title>Thank You | NORDLUXE</title>
 
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -189,6 +191,27 @@ font-size:16px;
 color:#000000;
 line-height:1.6;
 margin-bottom:0;
+}
+
+.payment-summary{
+background:linear-gradient(135deg, #fff8ef, #ffffff);
+padding:30px;
+border-radius:18px;
+margin:35px 0;
+border:1px solid rgba(209,155,72,0.35);
+text-align:left;
+}
+
+.payment-summary h3{
+color:#000000;
+font-size:24px;
+margin-bottom:18px;
+}
+
+.payment-summary p{
+font-size:16px;
+color:#444;
+margin-bottom:12px;
 }
 
 .next-steps{
@@ -401,7 +424,7 @@ min-width:250px;
 <div class="logo">
 <a href="index.html"><img src="/assets/images/sa.jpg" alt="Nordluxe Logo"></a>
 </div>
-<div>
+<div class="nav-links">
 <a href="index.html">Home</a>
 <a href="collections.html">Collection</a>
 <a href="about.html">About</a>
@@ -426,6 +449,13 @@ min-width:250px;
 We are absolutely delighted that you've chosen NORDLUXE for your luxury fashion needs. Your order has been successfully processed and is being prepared with the utmost care and attention to detail.
 </div>
 
+<div class="payment-summary" id="paymentSummary" style="display:none;">
+<h3>Payment Summary</h3>
+<p id="paymentSummaryDeposit"></p>
+<p id="paymentSummaryTotal"></p>
+<p id="paymentSummaryBalance"></p>
+</div>
+
 <div class="customer-appreciation" data-aos="fade-up" data-aos-delay="500">
 <h2 class="appreciation-title">A Special Thank You</h2>
 <p class="appreciation-text">
@@ -444,7 +474,7 @@ Your support allows us to continue creating pieces that blend Nordic heritage wi
 <div class="step" data-aos="fade-up" data-aos-delay="800">
 <span class="step-icon">📧</span>
 <h4 class="step-title">Order Confirmation</h4>
-<p class="step-description">You'll receive a detailed email confirmation with your order summary and tracking information within the next few minutes.</p>
+<p class="step-description">You'll receive a detailed email confirmation with your order summary within the next few minutes.</p>
 </div>
 
 <div class="step" data-aos="fade-up" data-aos-delay="900">
@@ -456,7 +486,7 @@ Your support allows us to continue creating pieces that blend Nordic heritage wi
 <div class="step" data-aos="fade-up" data-aos-delay="1000">
 <span class="step-icon">🚚</span>
 <h4 class="step-title">Swift Shipping</h4>
-<p class="step-description">Your order will be shipped within 2-3 business days with full tracking information provided.</p>
+<p class="step-description">Your order will be shipped within 2-3 business days with delivery updates sent by our team.</p>
 </div>
 
 <div class="step" data-aos="fade-up" data-aos-delay="1100">
@@ -474,7 +504,6 @@ Your support allows us to continue creating pieces that blend Nordic heritage wi
 
 <div class="thank-you-actions" data-aos="fade-up" data-aos-delay="1300">
 <a href="collections.html" class="thank-you-btn primary-btn">Continue Shopping</a>
-<a href="story.html" class="thank-you-btn secondary-btn">Our Story</a>
 <a href="contact.html" class="thank-you-btn tertiary-btn">Contact Us</a>
 </div>
 
@@ -501,6 +530,26 @@ const urlParams = new URLSearchParams(window.location.search);
 const transactionId = urlParams.get('transaction_id');
 const txRef = urlParams.get('tx_ref');
 
+function resolveApiBase() {
+  const configuredApiBase = (window.NORDLUXE_API_BASE || '').trim();
+  if (configuredApiBase) {
+    return configuredApiBase;
+  }
+
+  const host = String(window.location.hostname || '').trim();
+  const protocol = String(window.location.protocol || '').trim();
+
+  if (!host || protocol === 'file:') {
+    return 'http://localhost:3001';
+  }
+
+  if (host === 'localhost' || host === '127.0.0.1') {
+    return window.location.port === '3001' ? '' : 'http://localhost:3001';
+  }
+
+  return '';
+}
+
 function readList(key) {
   try {
     const parsed = JSON.parse(localStorage.getItem(key) || '[]');
@@ -510,6 +559,14 @@ function readList(key) {
   }
 }
 
+function nordluxeKey(base) {
+  try {
+    var u = JSON.parse(localStorage.getItem('nordluxeUser') || '{}');
+    var uid = u.uid || u.id || '';
+    return uid ? base + '_' + uid : base;
+  } catch(e) { return base; }
+}
+
 function writeList(key, items, maxItems) {
   localStorage.setItem(key, JSON.stringify(items.slice(0, maxItems || 60)));
 }
@@ -517,18 +574,20 @@ function writeList(key, items, maxItems) {
 function saveCompletedOrder() {
   let pendingOrder = null;
   try {
-    pendingOrder = JSON.parse(localStorage.getItem('nordluxePendingOrder') || 'null');
+    pendingOrder = JSON.parse(localStorage.getItem(nordluxeKey('nordluxePendingOrder')) || 'null');
   } catch (error) {
     pendingOrder = null;
   }
 
+  window.nordluxeCompletedPendingOrder = pendingOrder;
+
   if (!pendingOrder) {
-    localStorage.removeItem('nordluxeCart');
+    localStorage.removeItem(nordluxeKey('nordluxeCart'));
     return;
   }
 
   const orderRef = transactionId || txRef || pendingOrder.txRef || `manual-${Date.now()}`;
-  const orderHistory = readList('nordluxeOrderHistory');
+  const orderHistory = readList(nordluxeKey('nordluxeOrderHistory'));
   const alreadySaved = orderHistory.some(order => (order.orderRef || order.txRef || order.transactionId) === orderRef);
 
   if (!alreadySaved) {
@@ -541,39 +600,168 @@ function saveCompletedOrder() {
     });
 
     orderHistory.unshift(completedOrder);
-    writeList('nordluxeOrderHistory', orderHistory, 80);
+    writeList(nordluxeKey('nordluxeOrderHistory'), orderHistory, 80);
 
-    const activity = readList('nordluxeActivityLog');
+    const activity = readList(nordluxeKey('nordluxeActivityLog'));
     activity.unshift({
       type: 'order',
       title: 'Order completed',
       details: `Ref: ${orderRef}`,
       at: new Date().toISOString()
     });
-    writeList('nordluxeActivityLog', activity, 120);
+    writeList(nordluxeKey('nordluxeActivityLog'), activity, 120);
   }
 
-  localStorage.removeItem('nordluxePendingOrder');
-  localStorage.removeItem('nordluxeCart');
+  localStorage.removeItem(nordluxeKey('nordluxePendingOrder'));
+  localStorage.removeItem(nordluxeKey('nordluxeCart'));
+}
+
+function populatePaymentSummary() {
+  const pendingOrder = window.nordluxeCompletedPendingOrder;
+
+  if (!pendingOrder || !pendingOrder.paymentPlan || pendingOrder.paymentPlan.type !== 'preorder-deposit') {
+    return;
+  }
+
+  const paymentSummary = document.getElementById('paymentSummary');
+  const depositEl = document.getElementById('paymentSummaryDeposit');
+  const totalEl = document.getElementById('paymentSummaryTotal');
+  const balanceEl = document.getElementById('paymentSummaryBalance');
+  const messageEl = document.querySelector('.thank-you-message');
+  const titleEl = document.querySelector('.thank-you-title');
+  const subtitleEl = document.querySelector('.thank-you-subtitle');
+
+  if (!paymentSummary || !depositEl || !totalEl || !balanceEl) {
+    return;
+  }
+
+  paymentSummary.style.display = 'block';
+  depositEl.innerHTML = `<strong>Deposit Received:</strong> ${pendingOrder.totalLabel || ''}`;
+  totalEl.innerHTML = `<strong>Full Preorder Total:</strong> ${pendingOrder.preorderTotalLabel || ''}`;
+  balanceEl.innerHTML = `<strong>Remaining 60%:</strong> ${pendingOrder.balanceTotalLabel || ''}`;
+
+  if (titleEl) {
+    titleEl.textContent = 'Preorder Deposit Received';
+  }
+
+  if (subtitleEl) {
+    subtitleEl.textContent = 'Your NORDLUXE piece is now in motion';
+  }
+
+  if (messageEl) {
+    messageEl.textContent = 'Your 40% preorder deposit has been received. We will contact you for the remaining 60% payment when your piece is ready and fully made.';
+  }
+
+  const stepTitles = document.querySelectorAll('.step-title');
+  const stepDescriptions = document.querySelectorAll('.step-description');
+  if (stepTitles.length >= 4 && stepDescriptions.length >= 4) {
+    stepTitles[0].textContent = 'Deposit Confirmation';
+    stepDescriptions[0].textContent = 'You will receive a confirmation email with your deposit amount, full preorder total, and the remaining 60% balance.';
+    stepTitles[1].textContent = 'Production Begins';
+    stepDescriptions[1].textContent = 'Your NORDLUXE piece now moves into production with the same premium finishing and quality assurance.';
+    stepTitles[2].textContent = 'Balance Reminder';
+    stepDescriptions[2].textContent = 'Once your piece is ready, our team will contact you to complete the remaining 60% payment before delivery.';
+    stepTitles[3].textContent = 'Delivery Planning';
+    stepDescriptions[3].textContent = 'After the balance is completed, we will confirm dispatch and share delivery details for your finished piece.';
+  }
 }
 
 saveCompletedOrder();
+populatePaymentSummary();
+
+// Automatically create order in database after successful payment
+async function createOrderInDatabase() {
+  let pendingOrder = null;
+  try {
+    pendingOrder = JSON.parse(localStorage.getItem(nordluxeKey('nordluxePendingOrder')) || 'null');
+  } catch (error) {
+    pendingOrder = null;
+  }
+
+  if (!pendingOrder) {
+    pendingOrder = window.nordluxeCompletedPendingOrder;
+  }
+
+  if (!pendingOrder || !pendingOrder.customer) {
+    console.log('No pending order found');
+    return;
+  }
+
+  try {
+    const apiBase = resolveApiBase();
+
+    const orderPayload = {
+      customerEmail: pendingOrder.customer.email,
+      customerName: `${pendingOrder.customer.firstName} ${pendingOrder.customer.lastName}`,
+      userId: null,
+      items: pendingOrder.items,
+      totalAmount: pendingOrder.total,
+      paymentPlan: pendingOrder.paymentPlan,
+      flutterwaveRef: pendingOrder.txRef || transactionId,
+      paymentReference: transactionId || txRef || pendingOrder.txRef
+    };
+
+    const response = await fetch(`${apiBase}/api/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderPayload)
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      console.log('Order created successfully:', result.order._id);
+      // Store order ID locally for tracking
+      localStorage.setItem('lastOrderId', result.order.orderCode || result.order._id);
+      
+            // Display order ID prominently
+            const orderIdBox = document.querySelector('[style*="background: #d4af37"]');
+            if (!orderIdBox) {
+              const orderId = result.order._id.toString().slice(-8).toUpperCase();
+              const thankYouCard = document.querySelector('.thank-you-card');
+              if (thankYouCard) {
+                const orderIdDisplay = document.createElement('div');
+                orderIdDisplay.style.cssText = 'background: #d4af37; border-radius: 10px; padding: 20px; margin: 20px 0; text-align: center;';
+                orderIdDisplay.innerHTML = `
+                  <p style="color: #1a1a2e; font-size: 12px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px;">Your Order ID</p>
+                  <p style="color: #1a1a2e; font-size: 32px; font-weight: 700; margin: 0; letter-spacing: 2px;"><strong>#${orderId}</strong></p>
+                  <p style="color: #1a1a2e; font-size: 12px; margin: 10px 0 0 0;">Keep this number to track your order</p>
+                `;
+                const thankYouMessage = document.querySelector('.thank-you-message');
+                if (thankYouMessage && thankYouMessage.parentNode) {
+                  thankYouMessage.parentNode.insertBefore(orderIdDisplay, thankYouMessage.nextSibling);
+                }
+              }
+            }
+      return result.order._id;
+    } else {
+      console.error('Order creation failed:', result.message);
+    }
+  } catch (error) {
+    console.error('Error creating order:', error);
+  }
+}
 
 if (transactionId) {
   // Verify payment with backend
-  fetch(`http://localhost:3001/api/verify-payment/${transactionId}`)
+  fetch(`${resolveApiBase()}/api/verify-payment/${transactionId}`)
     .then(response => response.json())
     .then(data => {
       if (data.success) {
         console.log('Payment verified successfully');
-        // Could add additional success animations or confetti here
+        // Create order in database
+        createOrderInDatabase();
       } else {
         console.log('Payment verification failed');
       }
     })
     .catch(error => {
       console.error('Verification error:', error);
+      // Create order anyway in case verification endpoint has issues
+      createOrderInDatabase();
     });
+} else {
+  // If no transaction ID, still try to create order
+  createOrderInDatabase();
 }
 
 // Add some celebratory effects
@@ -628,6 +816,8 @@ document.head.appendChild(style);
 
 </script>
 
+<script src="/assets/js/site-shell.js" defer></script>
+<script src="/assets/js/site-audio.js" defer></script>
 <script src="/assets/js/site-nav.js"></script>
 </body>
 </html>

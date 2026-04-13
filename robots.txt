@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Keep utility/account pages out of search results
+Disallow: /html/login.html
+Disallow: /html/cart.html
+Disallow: /html/profile.html
+Disallow: /html/payment-success.html
+Disallow: /html/thank-you.html
+Disallow: /html/shell.html
+
+Sitemap: https://nordluxe.com/sitemap.xml

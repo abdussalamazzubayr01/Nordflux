@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>NORDLUXE | Unsubscribe</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+
+body {
+  background: #fffaf2;
+  color: #2c2016;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.card {
+  background: linear-gradient(140deg, rgba(255,255,255,0.95), rgba(248,236,211,0.95));
+  border: 1px solid rgba(209,155,72,0.35);
+  border-radius: 18px;
+  padding: 40px 32px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 18px 36px rgba(105,72,24,0.08);
+  text-align: center;
+}
+
+h1 { font-size: 22px; margin-bottom: 10px; }
+
+p { color: #5a4429; font-size: 15px; line-height: 1.7; margin-bottom: 20px; }
+
+.email-display {
+  background: rgba(209,155,72,0.1);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #6f5128;
+  margin-bottom: 24px;
+  word-break: break-all;
+}
+
+button {
+  background: #d19b48;
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 22px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+button:hover { background: #ba8a36; }
+
+.cancel-btn {
+  background: transparent;
+  color: #9a7d56;
+  border: 1px solid rgba(209,155,72,0.3);
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
+.cancel-btn:hover { background: rgba(209,155,72,0.05); color: #6f5128; }
+
+.success-state, .error-state { display: none; }
+
+.success-icon { font-size: 40px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <div id="confirmState">
+    <p style="font-size: 28px; margin-bottom: 8px;">👋</p>
+    <h1>Unsubscribe</h1>
+    <p>Are you sure you want to stop receiving NORDLUXE updates?</p>
+    <div class="email-display" id="emailDisplay">Loading...</div>
+    <button id="confirmBtn" onclick="doUnsubscribe()">Yes, Unsubscribe</button>
+    <button class="cancel-btn" onclick="window.location.href='index.html'">No, Keep Me Subscribed</button>
+  </div>
+
+  <div class="success-state" id="successState">
+    <div class="success-icon">✅</div>
+    <h1>You're Unsubscribed</h1>
+    <p>Your email has been removed from our list. You won't receive newsletter emails from us again.</p>
+    <button onclick="window.location.href='index.html'" style="margin-top: 8px;">Back to NORDLUXE</button>
+  </div>
+
+  <div class="error-state" id="errorState">
+    <p style="font-size: 28px; margin-bottom: 8px;">⚠️</p>
+    <h1>Something Went Wrong</h1>
+    <p id="errorMessage">Could not process your request. Please try again or contact support@nordluxe.com.</p>
+    <button onclick="window.location.href='contact.html'">Contact Support</button>
+  </div>
+
+</div>
+
+<script>
+  var emailParam = '';
+
+  (function init() {
+    var params = new URLSearchParams(window.location.search);
+    emailParam = params.get('email') || '';
+    var display = document.getElementById('emailDisplay');
+    if (emailParam) {
+      try { emailParam = decodeURIComponent(emailParam); } catch (e) {}
+      display.textContent = emailParam;
+    } else {
+      display.textContent = 'No email specified';
+      document.getElementById('confirmBtn').disabled = true;
+    }
+  })();
+
+  function doUnsubscribe() {
+    if (!emailParam) return;
+
+    var btn = document.getElementById('confirmBtn');
+    btn.textContent = 'Processing...';
+    btn.disabled = true;
+
+    fetch('/api/newsletter/unsubscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: emailParam })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById('confirmState').style.display = 'none';
+      if (data.success) {
+        document.getElementById('successState').style.display = 'block';
+      } else {
+        document.getElementById('errorMessage').textContent = data.message || 'An error occurred.';
+        document.getElementById('errorState').style.display = 'block';
+      }
+    })
+    .catch(function() {
+      document.getElementById('confirmState').style.display = 'none';
+      document.getElementById('errorState').style.display = 'block';
+    });
+  }
+</script>
+
+</body>
+</html>

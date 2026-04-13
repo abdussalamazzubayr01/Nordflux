@@ -3,7 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NORDLUXE | About</title>
+<meta name="description" content="Learn about NORDLUXE, a royal luxury brand redefining shorts, longs, and cloaks through bold design and elevated craftsmanship.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://nordluxe.com/html/about.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NORDLUXE">
+<meta property="og:title" content="About NORDLUXE | Royal Luxury Fashion House">
+<meta property="og:description" content="Learn about NORDLUXE, a royal luxury brand redefining shorts, longs, and cloaks through bold design and elevated craftsmanship.">
+<meta property="og:url" content="https://nordluxe.com/html/about.html">
+<meta property="og:image" content="https://nordluxe.com/assets/images/sa.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="About NORDLUXE | Royal Luxury Fashion House">
+<meta name="twitter:description" content="Learn about NORDLUXE, a royal luxury brand redefining shorts, longs, and cloaks through bold design and elevated craftsmanship.">
+<meta name="twitter:image" content="https://nordluxe.com/assets/images/sa.jpg">
+<title>About NORDLUXE | Royal Luxury Fashion House</title>
 
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -128,6 +141,178 @@ line-height:1.8;
 color:#000000;
 }
 
+.about-text p{
+margin-bottom:18px;
+font-size:16px;
+}
+
+.about-pillars{
+padding:90px 60px;
+background:linear-gradient(180deg, #ffffff 0%, #fdf9f3 100%);
+border-bottom:1px solid #d19b48;
+}
+
+.section-heading{
+text-align:center;
+max-width:900px;
+margin:0 auto 50px;
+}
+
+.section-heading h3{
+font-size:34px;
+margin-bottom:16px;
+}
+
+.section-heading p{
+font-size:16px;
+line-height:1.8;
+color:#252525;
+}
+
+.pillar-grid{
+display:grid;
+grid-template-columns:repeat(3, minmax(220px, 1fr));
+gap:24px;
+max-width:1200px;
+margin:0 auto;
+}
+
+.pillar-card{
+background:#ffffff;
+border:1px solid #e8cf9f;
+border-radius:14px;
+padding:28px;
+box-shadow:0 8px 25px rgba(0,0,0,0.05);
+transition:transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pillar-card:hover{
+transform:translateY(-6px);
+box-shadow:0 14px 32px rgba(0,0,0,0.08);
+}
+
+.pillar-card h4{
+font-size:20px;
+margin-bottom:12px;
+color:#1f1f1f;
+}
+
+.pillar-card p{
+line-height:1.75;
+color:#2f2f2f;
+}
+
+.brand-journey{
+padding:90px 60px;
+background:#ffffff;
+border-bottom:1px solid #d19b48;
+}
+
+.journey-wrap{
+display:grid;
+grid-template-columns:1.1fr 1fr;
+gap:36px;
+max-width:1200px;
+margin:0 auto;
+align-items:start;
+}
+
+.journey-copy p{
+font-size:16px;
+line-height:1.85;
+margin-bottom:16px;
+}
+
+.timeline{
+display:flex;
+flex-direction:column;
+gap:18px;
+}
+
+.timeline-item{
+border-left:3px solid #d19b48;
+padding:8px 0 8px 18px;
+}
+
+.timeline-item strong{
+display:block;
+font-size:18px;
+margin-bottom:6px;
+}
+
+.timeline-item span{
+line-height:1.7;
+color:#2b2b2b;
+display:block;
+}
+
+.brand-promise{
+padding:90px 60px 110px;
+background:radial-gradient(circle at 10% 10%, #fff6e7, #ffffff 55%);
+}
+
+.promise-box{
+max-width:1000px;
+margin:0 auto;
+border:1px solid #d19b48;
+border-radius:16px;
+padding:42px;
+background:#ffffff;
+box-shadow:0 10px 30px rgba(0,0,0,0.06);
+}
+
+.promise-box h3{
+font-size:30px;
+margin-bottom:18px;
+}
+
+.promise-box p{
+font-size:16px;
+line-height:1.9;
+margin-bottom:16px;
+}
+
+@media (max-width: 960px) {
+  nav{
+    padding:20px;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+
+  .nav-links{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  nav a{
+    margin-left:0;
+  }
+
+  .about,
+  .about-pillars,
+  .brand-journey,
+  .brand-promise{
+    padding:70px 20px;
+  }
+
+  .pillar-grid{
+    grid-template-columns:1fr;
+  }
+
+  .journey-wrap{
+    grid-template-columns:1fr;
+  }
+
+  .about img{
+    width:min(300px, 80vw);
+  }
+
+  .promise-box{
+    padding:28px;
+  }
+}
+
 .about-text h2{
 font-size:36px;
 margin-bottom:30px;
@@ -234,7 +419,7 @@ transform:translateY(-2px);
 <div class="logo">
 <a href="index.html"><img src="/assets/images/sa.jpg" alt="Nordluxe Logo"></a>
 </div>
-<div>
+<div class="nav-links">
 <a href="index.html">Home</a>
 <a href="collections.html">Collection</a>
 <a href="about.html">About</a>
@@ -259,20 +444,151 @@ transform:translateY(-2px);
 
 <section class="about" data-aos="fade-up">
 
-<img src="/assets/images/about-image.png" data-aos="fade-right" data-aos-delay="200">
+<img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80" alt="NORDLUXE studio and apparel" data-aos="fade-right" data-aos-delay="200">
 
 <div class="about-text" data-aos="fade-left" data-aos-delay="400">
 
 <h2>About NORDLUXE</h2>
 
 <p>
-NORDLUXE is a luxury Scandinavian-inspired fashion house built on minimalism,
-timeless design, and premium craftsmanship. Our mission is to create elegant
-pieces that blend simplicity with bold identity.
+NORDLUXE began with a simple conviction: luxury should feel powerful without
+being loud. Inspired by Nordic clarity and modern royal tailoring, we design
+garments that hold presence through silhouette, fit, and finish rather than
+excess decoration.
+</p>
+
+<p>
+What started as a focused studio vision has grown into a fashion house built
+for people who want clothing to express discipline, confidence, and character.
+Each collection is developed around everyday movement and ceremonial energy,
+so the same piece can carry you from daylight precision to evening statement.
+</p>
+
+<p>
+Our shorts, longs, and cloaks are not trend experiments. They are intentional
+wardrobe architecture designed to last, layer, and evolve with the wearer over
+time. NORDLUXE stands for modern heritage: garments that feel current now and
+remain relevant years from today.
 </p>
 
 </div>
 
+</section>
+
+<section class="about-pillars" data-aos="fade-up">
+  <div class="section-heading">
+    <h3>The NORDLUXE Standard</h3>
+    <p>
+      Every decision in our studio follows a strict framework balancing form,
+      function, and emotional impact. We build pieces that look composed from a
+      distance and reveal precision in every detail up close.
+    </p>
+  </div>
+
+  <div class="pillar-grid">
+    <article class="pillar-card" data-aos="fade-up" data-aos-delay="100">
+      <h4>Craft Before Hype</h4>
+      <p>
+        We prioritize construction, material behavior, and wear experience over
+        seasonal noise. Seams, linings, and trims are selected to perform with
+        dignity over repeated use.
+      </p>
+    </article>
+
+    <article class="pillar-card" data-aos="fade-up" data-aos-delay="220">
+      <h4>Purposeful Design</h4>
+      <p>
+        Every shape has a role. Structured shoulders signal authority, balanced
+        drape creates movement, and measured proportions ensure comfort without
+        compromising elegance.
+      </p>
+    </article>
+
+    <article class="pillar-card" data-aos="fade-up" data-aos-delay="340">
+      <h4>Quiet Distinction</h4>
+      <p>
+        NORDLUXE is designed for clients who value quality that does not need
+        to shout. The brand language is deliberate, refined, and unmistakably
+        confident in any room.
+      </p>
+    </article>
+  </div>
+</section>
+
+<section class="brand-journey" data-aos="fade-up">
+  <div class="section-heading">
+    <h3>Our Journey</h3>
+    <p>
+      We are building NORDLUXE as a long-term house, not a short-term label.
+      Growth is guided by quality control, client trust, and consistency.
+    </p>
+  </div>
+
+  <div class="journey-wrap">
+    <div class="journey-copy">
+      <p>
+        The NORDLUXE process begins long before a garment is released. We map a
+        collection around a narrative, test silhouettes against real movement,
+        and refine each piece until it carries both comfort and authority.
+      </p>
+      <p>
+        We work to create wardrobe foundations that simplify high-level style:
+        fewer pieces, better choices, stronger outcomes. That is why we focus
+        on precision cuts, durable fabrics, and a palette designed for seamless
+        pairing across seasons.
+      </p>
+      <p>
+        As we grow, we remain committed to elevated service and transparent
+        standards. Our clients are not transactions. They are part of the
+        NORDLUXE legacy, and we design with that responsibility in mind.
+      </p>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item" data-aos="fade-left" data-aos-delay="100">
+        <strong>Foundation</strong>
+        <span>
+          NORDLUXE was created to merge Scandinavian restraint with royal
+          confidence, establishing a clear identity from day one.
+        </span>
+      </div>
+      <div class="timeline-item" data-aos="fade-left" data-aos-delay="220">
+        <strong>Development</strong>
+        <span>
+          We shaped signature categories around shorts, longs, and cloaks,
+          testing fit and fabric behavior to guarantee premium performance.
+        </span>
+      </div>
+      <div class="timeline-item" data-aos="fade-left" data-aos-delay="340">
+        <strong>Today</strong>
+        <span>
+          Our house continues to expand with disciplined design principles and
+          a mission to deliver timeless garments for modern leaders.
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="brand-promise" data-aos="zoom-in">
+  <div class="promise-box">
+    <h3>What We Promise</h3>
+    <p>
+      We promise intentional luxury: carefully made garments, consistent quality,
+      and design integrity that does not collapse under trends. Every release
+      must earn its place in your wardrobe through utility, beauty, and lasting
+      relevance.
+    </p>
+    <p>
+      We also promise evolution without identity loss. As NORDLUXE introduces
+      new expressions, we remain anchored to the principles that define us:
+      confidence, clarity, and craftsmanship.
+    </p>
+    <p>
+      This is more than clothing. It is a uniform for ambition, shaped for
+      people who build, lead, and leave a refined signature wherever they go.
+    </p>
+  </div>
 </section>
 
 <footer>
@@ -306,6 +622,8 @@ document.addEventListener('click', function(event) {
 
 </script>
 
+<script src="/assets/js/site-shell.js" defer></script>
+<script src="/assets/js/site-audio.js" defer></script>
 <script src="/assets/js/site-nav.js"></script>
 </body>
 </html>

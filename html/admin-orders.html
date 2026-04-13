@@ -1,0 +1,852 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NORDLUXE Admin</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --gold: #d4af37; --gold-dim: rgba(212,175,55,0.2); --gold-border: rgba(212,175,55,0.35);
+      --bg: #0c0c0e; --surface: #161410; --surface2: #1d1b12; --surface3: #222018;
+      --border: rgba(212,175,55,0.14); --border-strong: rgba(212,175,55,0.32);
+      --text: #f0ddb0; --text-muted: #9a8560; --text-dim: #5a4e35;
+      --green: #4db86a; --red: #e05858;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; min-height: 100vh; }
+
+    /* Auth */
+    #authScreen { display: none; min-height: 100vh; align-items: center; justify-content: center; background: linear-gradient(135deg,#0c0c0e,#13100c,#1a1408); }
+    #authScreen.show { display: flex; }
+    .auth-card { width: 420px; max-width: 92vw; background: linear-gradient(160deg,#1b1810,#111015); border: 1px solid var(--border-strong); border-radius: 20px; box-shadow: 0 40px 90px rgba(0,0,0,0.65); overflow: hidden; }
+    .auth-head { background: linear-gradient(135deg,#1c1608,#2b1e07); padding: 34px 36px 26px; text-align: center; border-bottom: 1px solid var(--border); }
+    .auth-icon { font-size: 42px; line-height: 1; margin-bottom: 12px; }
+    .auth-brand { color: var(--gold); font-size: 20px; letter-spacing: 5px; font-weight: 700; }
+    .auth-sub { color: var(--text-dim); font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; margin-top: 5px; }
+    .auth-body { padding: 28px 32px 32px; }
+    .auth-label { display: block; color: var(--text-muted); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+    .auth-input { width: 100%; padding: 13px 16px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; outline: none; }
+    .auth-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(212,175,55,0.12); }
+    .auth-btn { margin-top: 14px; width: 100%; padding: 13px; background: linear-gradient(145deg,#7f5a22,#c49a38); color: #fff7e2; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+    .auth-btn:hover { filter: brightness(1.08); }
+    .auth-err { display: none; margin-top: 10px; text-align: center; font-size: 12px; color: var(--red); padding: 8px; background: rgba(224,88,88,0.08); border-radius: 8px; border: 1px solid rgba(224,88,88,0.2); }
+    .auth-err.show { display: block; }
+
+    /* Dashboard */
+    #dashboard { display: none; flex-direction: column; min-height: 100vh; }
+    #dashboard.show { display: flex; }
+
+    /* Top bar */
+    .topbar { background: linear-gradient(135deg,#131008,#0e0c08); border-bottom: 1px solid var(--border); padding: 0 28px; height: 58px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; position: sticky; top: 0; z-index: 100; }
+    .tb-brand { color: var(--gold); font-size: 14px; letter-spacing: 4px; font-weight: 700; }
+    .tb-sep { color: var(--text-dim); }
+    .tb-sub { color: var(--text-muted); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; }
+    .tb-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .live-dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; animation: blink 2s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .live-pill { color: var(--green); font-size: 11px; letter-spacing: 1px; font-weight: 700; }
+    .op-name { color: var(--gold); font-size: 12px; font-weight: 600; }
+    .tb-btn { padding: 6px 13px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 7px; color: var(--text-muted); font-size: 12px; cursor: pointer; }
+    .tb-btn:hover { color: var(--gold); border-color: var(--gold-border); }
+
+    /* Purchase alert */
+    .buy-banner { display: none; background: linear-gradient(90deg,rgba(77,184,106,0.12),rgba(77,184,106,0.04)); border-bottom: 1px solid rgba(77,184,106,0.3); padding: 9px 28px; font-size: 13px; color: #80e8a0; font-weight: 600; gap: 9px; align-items: center; flex-shrink: 0; }
+    .buy-banner.show { display: flex; }
+
+    /* Tab nav */
+    .tabnav { background: #0e0c08; border-bottom: 1px solid var(--border); display: flex; padding: 0 28px; gap: 2px; flex-shrink: 0; }
+    .tn { padding: 13px 18px; background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; color: var(--text-dim); font-size: 12px; font-weight: 600; letter-spacing: 0.5px; cursor: pointer; text-transform: uppercase; }
+    .tn:hover { color: var(--text-muted); }
+    .tn.on { color: var(--gold); border-bottom-color: var(--gold); }
+
+    /* Main content */
+    .main { flex: 1; padding: 24px 28px; overflow-y: auto; }
+    .tab-panel { display: none; }
+    .tab-panel.on { display: block; }
+
+    /* Stat cards */
+    .stat-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(170px,1fr)); gap: 14px; margin-bottom: 22px; }
+    .sc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+    .sc-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+    .sc-val { font-size: 2rem; font-weight: 700; color: var(--gold); line-height: 1; margin: 8px 0 4px; }
+    .sc-val.grn { color: var(--green); }
+    .sc-sub { font-size: 11px; color: var(--text-dim); }
+
+    /* Panel header */
+    .ph { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .ph-t { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
+    .ph-r { font-size: 11px; color: var(--text-dim); }
+
+    /* Tables */
+    .tbox { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 22px; }
+    .dt { width: 100%; border-collapse: collapse; }
+    .dt th { background: var(--surface2); padding: 11px 16px; text-align: left; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); font-weight: 700; }
+    .dt td { padding: 13px 16px; border-bottom: 1px solid rgba(212,175,55,0.06); font-size: 13px; vertical-align: middle; }
+    .dt tr:last-child td { border-bottom: none; }
+    .dt tr:hover td { background: rgba(212,175,55,0.025); }
+    .dt .empty td { text-align: center; color: var(--text-dim); padding: 34px; }
+
+    /* Badges */
+    .badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+    .b-pending    { background: rgba(224,144,64,0.14); color: #e09040; border: 1px solid rgba(224,144,64,0.3); }
+    .b-confirmed  { background: rgba(80,160,220,0.14); color: #70b0e8; border: 1px solid rgba(80,160,220,0.3); }
+    .b-packed     { background: rgba(160,128,220,0.14); color: #b090e0; border: 1px solid rgba(160,128,220,0.3); }
+    .b-dispatched { background: rgba(212,175,55,0.14); color: var(--gold); border: 1px solid var(--gold-border); }
+    .b-in-transit { background: rgba(80,180,240,0.18); color: #80d0ff; border: 1px solid rgba(80,180,240,0.4); }
+    .b-delivered  { background: rgba(77,184,106,0.14); color: #70d890; border: 1px solid rgba(77,184,106,0.3); }
+    .b-received   { background: rgba(77,184,106,0.24); color: #90f0a0; border: 1px solid rgba(77,184,106,0.5); }
+    .b-device     { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid rgba(255,255,255,0.08); }
+
+    /* Colours */
+    .gold { color: var(--gold); }
+    .dim  { color: var(--text-dim); }
+    .mut  { color: var(--text-muted); }
+    .grn  { color: var(--green); }
+    .sm   { font-size: 12px; }
+    .xs   { font-size: 11px; }
+    .bold { font-weight: 600; }
+
+    /* Controls */
+    .ctrlbar { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+    .s-input, .s-select { padding: 9px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px; outline: none; }
+    .s-input { min-width: 230px; }
+    .s-input::placeholder { color: var(--text-dim); }
+    .s-input:focus, .s-select:focus { border-color: var(--gold); }
+    .s-select option { background: #1a1710; }
+
+    /* Action buttons */
+    .ab { padding: 5px 11px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--text-muted); font-size: 12px; cursor: pointer; font-weight: 600; }
+    .ab:hover { border-color: var(--gold-border); color: var(--gold); }
+    .ab.pri { background: rgba(212,175,55,0.12); border-color: var(--gold-border); color: var(--gold); }
+    .ab.pri:hover { background: rgba(212,175,55,0.2); }
+    .ab.mail { border-color: rgba(80,160,220,0.35); color: #70b0e8; text-decoration: none; display: inline-block; }
+    .ab.mail:hover { background: rgba(80,160,220,0.1); }
+
+    /* Live visitor dot */
+    .vdot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: blink 2s infinite; display: inline-block; margin-right: 5px; vertical-align: middle; }
+
+    /* Status breakdown */
+    .sb-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .sb-lbl { font-size: 11px; color: var(--text-muted); width: 82px; text-transform: capitalize; }
+    .sb-bg { flex: 1; background: rgba(255,255,255,0.05); border-radius: 99px; height: 5px; }
+    .sb-bar { height: 5px; border-radius: 99px; min-width: 3px; transition: width .4s; }
+    .sb-n { font-size: 11px; color: var(--text-dim); width: 22px; text-align: right; }
+    .sb-lnk { color: inherit; text-decoration: none; }
+    .sb-lnk:hover { color: var(--gold); }
+
+    /* Status quick pages */
+    .status-pages { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap: 10px; margin-bottom: 22px; }
+    .sp-link { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; color: var(--text-muted); text-decoration: none; text-transform: capitalize; font-size: 12px; }
+    .sp-link:hover { border-color: var(--gold-border); color: var(--gold); }
+    .sp-link strong { color: var(--gold); font-size: 13px; }
+
+    /* Overview 2-col */
+    .ov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 22px; }
+
+    /* Modal */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 300; align-items: center; justify-content: center; }
+    .modal.open { display: flex; }
+    .mbox { background: linear-gradient(160deg,#1e1b14,#131108); border: 1px solid var(--border-strong); border-radius: 16px; width: 580px; max-width: 92vw; max-height: 90vh; overflow-y: auto; padding: 26px; }
+    .mh { display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+    .mh h3 { color: var(--gold); font-size: 15px; letter-spacing: 1px; }
+    .mc { background: none; border: none; color: var(--text-dim); font-size: 20px; cursor: pointer; line-height: 1; }
+    .mc:hover { color: var(--text); }
+    .dg { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .di { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+    .di-l { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 3px; }
+    .di-v { font-size: 13px; font-weight: 600; color: var(--text); }
+    .di.full { grid-column: 1/-1; }
+    .sec-h { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin: 16px 0 8px; }
+    .hl { list-style: none; }
+    .hl li { display: flex; gap: 10px; margin-bottom: 9px; align-items: flex-start; }
+    .hl-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); flex-shrink: 0; margin-top: 4px; }
+    .hl-st { font-weight: 700; font-size: 13px; }
+    .hl-ts { font-size: 11px; color: var(--text-dim); }
+    .hl-no { font-size: 12px; color: var(--text-muted); }
+    .form-g { margin-bottom: 13px; }
+    .form-l { display: block; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+    .form-i, .form-s, .form-ta { width: 100%; padding: 10px 13px; background: rgba(0,0,0,0.35); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px; font-family: inherit; outline: none; }
+    .form-i:focus, .form-s:focus, .form-ta:focus { border-color: var(--gold); }
+    .form-s option { background: #1a1710; }
+    .form-ta { resize: vertical; min-height: 68px; }
+    .form-acts { display: flex; gap: 10px; margin-top: 16px; }
+    .form-acts .ab { flex: 1; padding: 11px; text-align: center; font-size: 13px; }
+    .form-acts .ab.pri { background: linear-gradient(145deg,#7f5a22,#c49a38); border-color: transparent; color: #fff7e2; }
+
+    @media (max-width: 768px) {
+      .topbar, .tabnav { padding-left: 14px; padding-right: 14px; }
+      .main { padding: 14px 16px; }
+      .tn { padding: 10px 10px; font-size: 11px; }
+      .stat-row { grid-template-columns: 1fr 1fr; }
+      .ov-grid { grid-template-columns: 1fr; }
+      .dg { grid-template-columns: 1fr; }
+      .s-input { min-width: 0; }
+      .ctrlbar { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Auth screen -->
+<div id="authScreen">
+  <div class="auth-card">
+    <div class="auth-head">
+      <div class="auth-icon">ðŸ”</div>
+      <div class="auth-brand">NORDLUXE</div>
+      <div class="auth-sub">Admin Dashboard</div>
+    </div>
+    <div class="auth-body">
+      <label class="auth-label" for="adminKeyIn">Admin Key</label>
+      <input type="password" id="adminKeyIn" class="auth-input" placeholder="Enter your admin key" autofocus>
+      <button class="auth-btn" onclick="doAuth()">Enter Dashboard</button>
+      <div class="auth-err" id="authErr">Incorrect key â€” please try again.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard">
+  <div class="topbar">
+    <div class="tb-brand">NORDLUXE</div>
+    <div class="tb-sep">Â·</div>
+    <div class="tb-sub">Admin</div>
+    <div class="tb-right">
+      <div class="live-dot"></div>
+      <div class="live-pill" id="topLive">0 LIVE</div>
+      <div class="op-name" id="opLabel"></div>
+      <button class="tb-btn" onclick="openMod('opMod')">Operator</button>
+      <button class="tb-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="buy-banner" id="buyBanner">
+    <span>ðŸ›’</span><span id="buyText"></span>
+  </div>
+
+  <div class="tabnav">
+    <button class="tn on"  data-tab="overview"  onclick="switchTab(this)">Overview</button>
+    <button class="tn"     data-tab="live"       onclick="switchTab(this)">Live Visitors <span id="liveBadge"></span></button>
+    <button class="tn"     data-tab="orders"     onclick="switchTab(this)">Orders</button>
+    <button class="tn"     data-tab="customers"  onclick="switchTab(this)">Customers</button>
+  </div>
+
+  <div class="main">
+
+    <!-- OVERVIEW -->
+    <div class="tab-panel on" id="tab-overview">
+      <div class="stat-row">
+        <div class="sc"><div class="sc-label">Total Orders</div><div class="sc-val" id="ovOrders">â€”</div><div class="sc-sub">all time</div></div>
+        <div class="sc"><div class="sc-label">Total Revenue</div><div class="sc-val" id="ovRevenue">â€”</div><div class="sc-sub">from all orders</div></div>
+        <div class="sc"><div class="sc-label">Unique Customers</div><div class="sc-val" id="ovCust">â€”</div><div class="sc-sub">distinct emails</div></div>
+        <div class="sc"><div class="sc-label">Live Visitors</div><div class="sc-val grn" id="ovLive">0</div><div class="sc-sub">on site right now</div></div>
+      </div>
+
+      <div class="ov-grid">
+        <div>
+          <div class="ph"><span class="ph-t">Orders by Status</span></div>
+          <div class="tbox" style="padding:16px;"><div id="sbWrap"><span class="dim xs">Loadingâ€¦</span></div></div>
+        </div>
+        <div>
+          <div class="ph"><span class="ph-t">Recent Orders</span><span class="ph-r" id="ovTs">â€”</span></div>
+          <div class="tbox">
+            <table class="dt">
+              <thead><tr><th>Customer</th><th>Amount</th><th>Status</th></tr></thead>
+              <tbody id="recentTb"><tr class="empty"><td colspan="3">Loadingâ€¦</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="ph"><span class="ph-t">Status Pages</span><span class="ph-r">Click any status to open its own page</span></div>
+      <div class="status-pages" id="statusPages"></div>
+
+      <div class="ph"><span class="ph-t">Live â€” Pages Right Now</span><span class="ph-r" id="liveTs">â€”</span></div>
+      <div class="tbox">
+        <table class="dt">
+          <thead><tr><th>Page</th><th>Visitors</th></tr></thead>
+          <tbody id="ovPagesTb"><tr class="empty"><td colspan="2">No visitors right now</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LIVE VISITORS -->
+    <div class="tab-panel" id="tab-live">
+      <div class="ph"><span class="ph-t">Live Visitors</span><span class="ph-r dim xs">Auto-refreshes every 8 s â€” real sessions only, no guessing</span></div>
+      <div class="tbox">
+        <table class="dt">
+          <thead><tr><th>Session</th><th>Current Page</th><th>Time on Site</th><th>Pages Visited</th><th>Device</th><th>Last Seen</th></tr></thead>
+          <tbody id="liveSessionsTb"><tr class="empty"><td colspan="6">No visitors right now</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="ph" style="margin-top:14px;"><span class="ph-t">Live Site Activity</span><span class="ph-r dim xs">Latest actions from visitors and logged-in customers</span></div>
+      <div class="tbox">
+        <table class="dt">
+          <thead><tr><th>Time</th><th>Type</th><th>Action</th><th>Page</th><th>User</th><th>Session</th></tr></thead>
+          <tbody id="liveEventsTb"><tr class="empty"><td colspan="6">No recent activity yet</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="tab-panel" id="tab-orders">
+      <div class="ctrlbar">
+        <input class="s-input" id="orderSearch" placeholder="Search by order ID, name or emailâ€¦" oninput="filterOrders()">
+        <select class="s-select" id="statusFilter" onchange="filterOrders()">
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="packed">Packed</option>
+          <option value="dispatched">Dispatched</option>
+          <option value="in-transit">In Transit</option>
+          <option value="delivered">Delivered</option>
+          <option value="received">Received</option>
+        </select>
+        <button class="ab" onclick="loadOrders()">â†» Refresh</button>
+      </div>
+      <div class="tbox">
+        <table class="dt">
+          <thead><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Status</th><th>Assigned</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="ordersTb"><tr class="empty"><td colspan="7">Loading ordersâ€¦</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CUSTOMERS -->
+    <div class="tab-panel" id="tab-customers">
+      <div class="ph"><span class="ph-t">All Customers</span><span class="ph-r dim xs">Every customer who has placed an order â€” click Email to message them directly</span></div>
+      <div class="tbox">
+        <table class="dt">
+          <thead><tr><th>Name</th><th>Email</th><th>Orders</th><th>Total Spend</th><th>Last Order</th><th>Actions</th></tr></thead>
+          <tbody id="custTb"><tr class="empty"><td colspan="6">Loadingâ€¦</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Update Status Modal -->
+<div class="modal" id="updMod">
+  <div class="mbox">
+    <div class="mh"><h3>Update Order Status</h3><button class="mc" onclick="closeMod('updMod')">âœ•</button></div>
+    <div id="updDetails"></div>
+    <form id="statusForm">
+      <div class="form-g">
+        <label class="form-l">New Status</label>
+        <select class="form-s" id="newStatus" required>
+          <option value="">Select status</option>
+          <option value="confirmed">Confirmed â€” order is being made</option>
+          <option value="packed">Packed â€” ready for dispatch</option>
+          <option value="dispatched">Dispatched â€” shipped out</option>
+          <option value="in-transit">In Transit â€” on the way to customer</option>
+          <option value="delivered">Delivered â€” arrived at destination</option>
+          <option value="received">Received â€” customer confirmed, completed</option>
+        </select>
+      </div>
+      <div id="trackFields" style="display:none;">
+        <div class="form-g"><label class="form-l">Tracking Number</label><input class="form-i" id="trackNo" placeholder="e.g. 1234567890"></div>
+        <div class="form-g"><label class="form-l">Shipping Company</label><input class="form-i" id="shipCo" placeholder="e.g. DHL, FedEx, GIG"></div>
+      </div>
+      <div class="form-g"><label class="form-l">Updated By</label><input class="form-i" id="updBy" placeholder="Team member name"></div>
+      <div class="form-g"><label class="form-l">Customer Note <span class="dim xs">(sent to customer email)</span></label><textarea class="form-ta" id="custNote" placeholder="e.g. Your order has been packed and is ready for dispatch."></textarea></div>
+      <div class="form-g"><label class="form-l">Internal Note <span class="dim xs">(team only, not sent)</span></label><textarea class="form-ta" id="intNote" placeholder="e.g. Awaiting final QC approval."></textarea></div>
+      <div class="form-acts">
+        <button type="button" class="ab" onclick="closeMod('updMod')">Cancel</button>
+        <button type="submit" class="ab pri">Update &amp; Email Customer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- View Order Modal -->
+<div class="modal" id="viewMod">
+  <div class="mbox">
+    <div class="mh"><h3>Order Details</h3><button class="mc" onclick="closeMod('viewMod')">âœ•</button></div>
+    <div id="viewContent"></div>
+    <div style="margin-top:16px;"><button class="ab" onclick="closeMod('viewMod')">Close</button></div>
+  </div>
+</div>
+
+<!-- Operator Modal -->
+<div class="modal" id="opMod">
+  <div class="mbox" style="max-width:360px;">
+    <div class="mh"><h3>Operator Name</h3><button class="mc" onclick="closeMod('opMod')">âœ•</button></div>
+    <div class="form-g"><label class="form-l">Your Name</label><input class="form-i" id="opIn" placeholder="e.g. Sarah"></div>
+    <div class="form-acts">
+      <button type="button" class="ab" onclick="closeMod('opMod')">Cancel</button>
+      <button type="button" class="ab pri" onclick="saveOp()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASES = (() => {
+  const host = window.location.hostname;
+  const protocol = window.location.protocol;
+  const candidates = [];
+
+  if (protocol === 'file:' || !host || host === 'localhost' || host === '127.0.0.1') {
+    candidates.push('http://localhost:3001', 'http://127.0.0.1:3001');
+  }
+
+  if (window.location.origin && window.location.origin !== 'null') {
+    candidates.push(window.location.origin);
+  }
+
+  return Array.from(new Set(candidates));
+})();
+
+async function apiFetch(path, options) {
+  let lastError = null;
+  for (const base of API_BASES) {
+    try {
+      return await fetch(`${base}${path}`, options);
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError || new Error('No reachable API base.');
+}
+
+let KEY = '';
+let allOrders = [];
+let allCust   = [];
+let knownIds  = new Set();
+let loaded    = false;
+let operator  = localStorage.getItem('nlxOp') || '';
+let timers    = [];
+
+const SC = { pending:'#e09040', confirmed:'#70b0e8', packed:'#b090e0', dispatched:'#d4af37', 'in-transit':'#80d0ff', delivered:'#70d890', received:'#90f0a0' };
+
+// â”€â”€ Boot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('nlxKey');
+  if (saved) { KEY = saved; showDash(); loadAll(); }
+  else document.getElementById('authScreen').classList.add('show');
+});
+
+// â”€â”€ Auth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+document.getElementById('adminKeyIn').addEventListener('keydown', e => { if (e.key === 'Enter') doAuth(); });
+
+async function doAuth() {
+  const k = (document.getElementById('adminKeyIn').value || '').trim();
+  const err = document.getElementById('authErr');
+  err.classList.remove('show');
+  if (!k) return;
+  try {
+    const r = await apiFetch('/api/orders', { headers: { 'x-admin-key': k } });
+    if (r.status === 403) { err.classList.add('show'); return; }
+    KEY = k;
+    localStorage.setItem('nlxKey', k);
+    showDash();
+    loadAll();
+  } catch (ex) {
+    err.textContent = 'Cannot reach server. Is it running?';
+    err.classList.add('show');
+  }
+}
+
+function showDash() {
+  document.getElementById('authScreen').classList.remove('show');
+  document.getElementById('dashboard').classList.add('show');
+  renderOpLabel();
+}
+
+function doLogout() {
+  if (!confirm('Log out?')) return;
+  localStorage.removeItem('nlxKey');
+  KEY = '';
+  timers.forEach(clearInterval);
+  timers = [];
+  document.getElementById('dashboard').classList.remove('show');
+  document.getElementById('authScreen').classList.add('show');
+  document.getElementById('adminKeyIn').value = '';
+}
+
+// â”€â”€ Tabs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function switchTab(btn) {
+  document.querySelectorAll('.tn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tab-' + btn.dataset.tab).classList.add('on');
+}
+
+// â”€â”€ Operator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function saveOp() {
+  operator = (document.getElementById('opIn').value || '').trim();
+  localStorage.setItem('nlxOp', operator);
+  renderOpLabel();
+  closeMod('opMod');
+}
+function renderOpLabel() { document.getElementById('opLabel').textContent = operator || ''; }
+
+// â”€â”€ Modals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function openMod(id) {
+  if (id === 'opMod') document.getElementById('opIn').value = operator;
+  document.getElementById(id).classList.add('open');
+}
+function closeMod(id) { document.getElementById(id).classList.remove('open'); }
+window.addEventListener('click', e => { if (e.target.classList.contains('modal')) e.target.classList.remove('open'); });
+
+// â”€â”€ Load all â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function loadAll() {
+  loadOrders();
+  loadLive();
+  loadCustomers();
+  if (window.Notification && Notification.permission === 'default') Notification.requestPermission().catch(() => {});
+  timers.push(setInterval(() => { if (KEY) loadOrders(true); }, 20000));
+  timers.push(setInterval(() => { if (KEY) loadLive();        },  8000));
+  timers.push(setInterval(() => { if (KEY) loadCustomers();   }, 60000));
+}
+
+// â”€â”€ Orders â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async function loadOrders(poll) {
+  try {
+    const r = await apiFetch('/api/orders', { headers: { 'x-admin-key': KEY } });
+    if (r.status === 403) { doLogout(); return; }
+    const d = await r.json();
+    if (!d.success) return;
+    const incoming = d.orders || [];
+    if (loaded) {
+      incoming.forEach(o => {
+        const id = String(o._id || o.orderCode || '');
+        if (id && !knownIds.has(id)) newOrderAlert(o);
+      });
+    }
+    knownIds  = new Set(incoming.map(o => String(o._id || o.orderCode || '')));
+    allOrders = incoming;
+    loaded    = true;
+    renderOrders(allOrders);
+    renderOverview();
+    const ts = document.getElementById('ovTs');
+    if (ts) ts.textContent = 'Updated ' + new Date().toLocaleTimeString();
+  } catch (ex) { console.error('loadOrders', ex); }
+}
+
+function oid(o) {
+  return (o && o.orderCode) ? o.orderCode : (o && o._id ? String(o._id).slice(-8).toUpperCase() : 'N/A');
+}
+
+function newOrderAlert(o) {
+  const msg = 'New order from ' + (o.customerName || 'Customer') + ' â€” ' + oid(o);
+  const ban = document.getElementById('buyBanner');
+  document.getElementById('buyText').textContent = msg + ' at ' + new Date(o.createdAt || Date.now()).toLocaleTimeString();
+  ban.classList.add('show');
+  setTimeout(() => ban.classList.remove('show'), 14000);
+  if (window.Notification && Notification.permission === 'granted')
+    new Notification('NORDLUXE â€” New Order', { body: msg });
+}
+
+function bh(status) {
+  const s = status || 'pending';
+  return `<span class="badge b-${s}">${s.replace(/-/g, ' ')}</span>`;
+}
+
+function statusPageUrl(status) {
+  return 'admin-status.html?status=' + encodeURIComponent(status);
+}
+
+function renderOrders(list) {
+  const tb = document.getElementById('ordersTb');
+  if (!tb) return;
+  if (!list.length) { tb.innerHTML = '<tr class="empty"><td colspan="7">No orders found</td></tr>'; return; }
+  tb.innerHTML = list.map(o => `
+    <tr>
+      <td class="bold gold">${x(oid(o))}</td>
+      <td><div class="bold">${x(o.customerName||'â€”')}</div><div class="dim xs">${x(o.customerEmail||'')}</div></td>
+      <td>â‚¦${Number(o.totalAmount||0).toLocaleString()}</td>
+      <td>${bh(o.status)}</td>
+      <td class="sm mut">${x(o.assignedTo||'â€”')}</td>
+      <td class="sm dim">${new Date(o.createdAt).toLocaleDateString()}</td>
+      <td>
+        <button class="ab pri" onclick="openUpdate('${x(String(o._id))}')">Update</button>
+        <button class="ab"     onclick="openView('${x(String(o._id))}')">View</button>
+        <a class="ab mail" href="mailto:${x(o.customerEmail||'')}?subject=Your%20NORDLUXE%20Order%20${x(oid(o))}">Email</a>
+      </td>
+    </tr>`).join('');
+}
+
+function filterOrders() {
+  const q  = (document.getElementById('orderSearch').value || '').toLowerCase();
+  const sf = document.getElementById('statusFilter').value;
+  renderOrders(allOrders.filter(o => {
+    const mq = !q || [String(o._id||''), o.orderCode||'', o.customerEmail||'', o.customerName||''].some(v => v.toLowerCase().includes(q));
+    return mq && (!sf || o.status === sf);
+  }));
+}
+
+// â”€â”€ Overview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function renderOverview() {
+  const total   = allOrders.length;
+  const revenue = allOrders.reduce((s, o) => s + Number(o.totalAmount || 0), 0);
+  const emails  = new Set(allOrders.map(o => (o.customerEmail||'').toLowerCase()).filter(Boolean));
+  document.getElementById('ovOrders').textContent  = total;
+  document.getElementById('ovRevenue').textContent = 'â‚¦' + revenue.toLocaleString();
+  document.getElementById('ovCust').textContent    = emails.size;
+
+  const tb = document.getElementById('recentTb');
+  if (tb) {
+    const r = allOrders.slice(0, 8);
+    tb.innerHTML = r.length
+      ? r.map(o => `<tr><td><div class="bold">${x(o.customerName||'â€”')}</div><div class="dim xs">${x(o.customerEmail||'')}</div></td><td class="gold">â‚¦${Number(o.totalAmount||0).toLocaleString()}</td><td>${bh(o.status)}</td></tr>`).join('')
+      : '<tr class="empty"><td colspan="3">No orders yet</td></tr>';
+  }
+
+  const counts = {};
+  allOrders.forEach(o => { const s = o.status || 'pending'; counts[s] = (counts[s] || 0) + 1; });
+  const max = Math.max(...Object.values(counts), 1);
+  const STATUSES = ['pending','confirmed','packed','dispatched','in-transit','delivered','received'];
+  const sb = document.getElementById('sbWrap');
+  if (sb) {
+    if (!total) { sb.innerHTML = '<span class="dim xs">No orders yet</span>'; }
+    else {
+      sb.innerHTML = STATUSES.map(s => {
+        const n = counts[s] || 0;
+        if (!n) return '';
+        return `<div class="sb-row"><a class="sb-lnk sb-lbl" href="${statusPageUrl(s)}">${s.replace(/-/g,' ')}</a><div class="sb-bg"><div class="sb-bar" style="width:${Math.round(n/max*100)}%;background:${SC[s]};"></div></div><a class="sb-lnk sb-n" href="${statusPageUrl(s)}">${n}</a></div>`;
+      }).join('');
+    }
+  }
+
+  const sp = document.getElementById('statusPages');
+  if (sp) {
+    sp.innerHTML = STATUSES.map(s => `<a class="sp-link" href="${statusPageUrl(s)}"><span>${s.replace(/-/g,' ')}</span><strong>${counts[s] || 0}</strong></a>`).join('');
+  }
+}
+
+// â”€â”€ Live sessions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async function loadLive() {
+  try {
+    const r = await apiFetch('/api/admin/live-sessions', { headers: { 'x-admin-key': KEY } });
+    if (!r.ok) return;
+    const d = await r.json();
+    if (!d.success) return;
+    const total = d.total || 0;
+    document.getElementById('topLive').textContent     = total + ' LIVE';
+    document.getElementById('ovLive').textContent      = total;
+    document.getElementById('liveBadge').textContent   = total ? ` (${total})` : '';
+    const ts = document.getElementById('liveTs');
+    if (ts) ts.textContent = 'Updated ' + new Date().toLocaleTimeString();
+    renderLiveSessions(d.sessions || []);
+    renderLivePages(d.sessions || []);
+    await loadLiveEvents();
+  } catch (ex) { console.error('loadLive', ex); }
+}
+
+function renderLiveSessions(sessions) {
+  const tb = document.getElementById('liveSessionsTb');
+  if (!tb) return;
+  if (!sessions.length) { tb.innerHTML = '<tr class="empty"><td colspan="6">No active visitors right now</td></tr>'; return; }
+  tb.innerHTML = sessions.map(s => `
+    <tr>
+      <td><span class="vdot"></span><span class="dim xs">${x(s.sessionId)}</span></td>
+      <td>
+        <div class="bold">${x(s.currentPage)}</div>
+        ${s.pageTitle ? `<div class="dim xs">${x(s.pageTitle)}</div>` : ''}
+        ${s.isLoggedIn && s.userEmail ? `<div class="xs" style="color:#70d890;">Logged in: ${x(s.userName || '')}${s.userName ? ' · ' : ''}${x(s.userEmail)}</div>` : ''}
+      </td>
+      <td class="gold bold">${x(s.timeOnSite)}</td>
+      <td>${s.pagesVisited}</td>
+      <td><span class="badge b-device">${x(s.device)}</span></td>
+      <td class="dim xs">${new Date(s.lastSeenAt).toLocaleTimeString()}</td>
+    </tr>`).join('');
+}
+
+function renderLivePages(sessions) {
+  const perPage = {};
+  sessions.forEach(s => { const p = s.currentPage || '/'; perPage[p] = (perPage[p]||0)+1; });
+  const pages = Object.entries(perPage).sort((a,b) => b[1]-a[1]);
+  const tb = document.getElementById('ovPagesTb');
+  if (!tb) return;
+  if (!pages.length) { tb.innerHTML = '<tr class="empty"><td colspan="2">No visitors right now</td></tr>'; return; }
+  tb.innerHTML = pages.map(([p,n]) => `<tr><td>${x(p)}</td><td><strong class="gold">${n}</strong></td></tr>`).join('');
+}
+
+async function loadLiveEvents() {
+  try {
+    const r = await apiFetch('/api/admin/live-events?limit=120', { headers: { 'x-admin-key': KEY } });
+    if (!r.ok) return;
+    const d = await r.json();
+    if (!d.success) return;
+    renderLiveEvents(d.events || []);
+  } catch (ex) { console.error('loadLiveEvents', ex); }
+}
+
+function renderLiveEvents(events) {
+  const tb = document.getElementById('liveEventsTb');
+  if (!tb) return;
+  if (!events.length) {
+    tb.innerHTML = '<tr class="empty"><td colspan="6">No recent activity yet</td></tr>';
+    return;
+  }
+
+  tb.innerHTML = events.map(e => {
+    const when = e.at ? new Date(e.at).toLocaleTimeString() : 'â€”';
+    const type = (e.type || 'activity').replace(/-/g, ' ');
+    const action = e.title || e.details || 'Activity';
+    const page = e.page || 'â€”';
+    const user = e.userEmail || e.userName
+      ? `${e.userName ? x(e.userName) + (e.userEmail ? ' Â· ' : '') : ''}${e.userEmail ? x(e.userEmail) : ''}`
+      : 'Guest';
+    const session = e.sessionId || 'â€”';
+
+    return `
+      <tr>
+        <td class="dim xs">${x(when)}</td>
+        <td><span class="badge b-device">${x(type)}</span></td>
+        <td class="bold">${x(action)}</td>
+        <td class="dim sm">${x(page)}</td>
+        <td class="dim sm">${user}</td>
+        <td class="dim xs">${x(session)}</td>
+      </tr>`;
+  }).join('');
+}
+
+// â”€â”€ Customers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async function loadCustomers() {
+  try {
+    const r = await apiFetch('/api/admin/customer-summary', { headers: { 'x-admin-key': KEY } });
+    if (!r.ok) return;
+    const d = await r.json();
+    if (!d.success) return;
+    allCust = d.customers || [];
+    renderCustomers(allCust);
+  } catch (ex) { console.error('loadCustomers', ex); }
+}
+
+function renderCustomers(list) {
+  const tb = document.getElementById('custTb');
+  if (!tb) return;
+  if (!list.length) { tb.innerHTML = '<tr class="empty"><td colspan="6">No customers yet</td></tr>'; return; }
+  tb.innerHTML = list.map(c => `
+    <tr>
+      <td class="bold">${x(c.name)}</td>
+      <td><a href="mailto:${x(c.email)}" style="color:#70b0e8;text-decoration:none;">${x(c.email)}</a></td>
+      <td>${c.orderCount}</td>
+      <td class="gold">â‚¦${Number(c.totalSpend||0).toLocaleString()}</td>
+      <td class="dim sm">${c.lastOrderAt ? new Date(c.lastOrderAt).toLocaleDateString() : 'â€”'}</td>
+      <td>
+        <a class="ab mail" href="mailto:${x(c.email)}?subject=NORDLUXE%20â€”%20Your%20Order%20Update">Email</a>
+        <button class="ab" onclick="showCustOrders('${x(c.email)}')">Orders</button>
+      </td>
+    </tr>`).join('');
+}
+
+function showCustOrders(email) {
+  const orders = allOrders.filter(o => (o.customerEmail||'').toLowerCase() === email.toLowerCase());
+  const c = allCust.find(c2 => c2.email.toLowerCase() === email.toLowerCase());
+  let html = `<div class="dg"><div class="di full"><div class="di-l">Customer</div><div class="di-v">${x(c ? c.name : email)}</div></div></div>`;
+  html += `<div class="dim xs" style="margin-bottom:8px;">${x(email)}</div>`;
+  html += `<div class="sec-h">All Orders (${orders.length})</div>`;
+  if (!orders.length) {
+    html += `<p class="dim sm">No orders found.</p>`;
+  } else {
+    html += `<table class="dt" style="width:100%;"><thead><tr><th>Order ID</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>`;
+    html += orders.map(o => `<tr><td class="gold">${x(oid(o))}</td><td>â‚¦${Number(o.totalAmount||0).toLocaleString()}</td><td>${bh(o.status)}</td><td class="dim xs">${new Date(o.createdAt).toLocaleDateString()}</td></tr>`).join('');
+    html += `</tbody></table>`;
+  }
+  document.getElementById('viewContent').innerHTML = html;
+  openMod('viewMod');
+}
+
+// â”€â”€ Update Status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function openUpdate(orderId) {
+  const o = allOrders.find(o2 => String(o2._id) === orderId);
+  if (!o) return;
+  document.getElementById('updDetails').innerHTML = `
+    <div class="dg" style="margin-bottom:14px;">
+      <div class="di"><div class="di-l">Order ID</div><div class="di-v gold">${x(oid(o))}</div></div>
+      <div class="di"><div class="di-l">Current Status</div><div class="di-v">${bh(o.status)}</div></div>
+      <div class="di"><div class="di-l">Customer</div><div class="di-v">${x(o.customerName||'â€”')}</div></div>
+      <div class="di"><div class="di-l">Email</div><div class="di-v sm">${x(o.customerEmail||'â€”')}</div></div>
+    </div>`;
+  document.getElementById('newStatus').value  = '';
+  document.getElementById('trackNo').value    = o.trackingNumber || '';
+  document.getElementById('shipCo').value     = o.shippingCompany || '';
+  document.getElementById('updBy').value      = operator || o.assignedTo || '';
+  document.getElementById('custNote').value   = '';
+  document.getElementById('intNote').value    = '';
+  document.getElementById('trackFields').style.display = 'none';
+  document.getElementById('newStatus').onchange = function () {
+    const show = this.value === 'in-transit' || this.value === 'dispatched';
+    document.getElementById('trackFields').style.display = show ? 'block' : 'none';
+  };
+  document.getElementById('statusForm').dataset.orderId = orderId;
+  openMod('updMod');
+}
+
+document.getElementById('statusForm').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  const id     = ev.target.dataset.orderId;
+  const status = document.getElementById('newStatus').value;
+  if (!status) { alert('Please select a status'); return; }
+  const payload = {
+    status,
+    trackingNumber:  document.getElementById('trackNo').value   || undefined,
+    shippingCompany: document.getElementById('shipCo').value    || undefined,
+    notes:           document.getElementById('custNote').value  || undefined,
+    updatedBy:       document.getElementById('updBy').value.trim() || undefined,
+    internalNote:    document.getElementById('intNote').value   || undefined
+  };
+  try {
+    const r = await apiFetch(`/api/orders/${id}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': KEY },
+      body: JSON.stringify(payload)
+    });
+    const d = await r.json();
+    if (d.success) { closeMod('updMod'); loadOrders(); alert(d.message || 'Order updated.'); }
+    else alert(d.message || 'Update failed.');
+  } catch (err) { alert('Could not reach server.'); }
+});
+
+// â”€â”€ View Order â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function openView(orderId) {
+  const o = allOrders.find(o2 => String(o2._id) === orderId);
+  if (!o) return;
+  let html = `
+    <div class="dg">
+      <div class="di"><div class="di-l">Order ID</div><div class="di-v gold">${x(oid(o))}</div></div>
+      <div class="di"><div class="di-l">Status</div><div class="di-v">${bh(o.status)}</div></div>
+      <div class="di"><div class="di-l">Customer</div><div class="di-v">${x(o.customerName||'â€”')}</div></div>
+      <div class="di"><div class="di-l">Email</div><div class="di-v"><a href="mailto:${x(o.customerEmail||'')}" style="color:#70b0e8;">${x(o.customerEmail||'â€”')}</a></div></div>
+      <div class="di"><div class="di-l">Total</div><div class="di-v gold">â‚¦${Number(o.totalAmount||0).toLocaleString()}</div></div>
+      <div class="di"><div class="di-l">Date</div><div class="di-v">${new Date(o.createdAt).toLocaleString()}</div></div>
+      ${o.assignedTo ? `<div class="di full"><div class="di-l">Assigned To</div><div class="di-v">${x(o.assignedTo)}</div></div>` : ''}
+    </div>`;
+  if (o.items && o.items.length) {
+    html += `<div class="sec-h">Items</div><table class="dt" style="width:100%;margin-bottom:10px;"><thead><tr><th>Item</th><th>Price</th></tr></thead><tbody>`;
+    html += o.items.map(it => `<tr><td>${x(it.name||'â€”')}</td><td>${x(String(it.price||'â€”'))}</td></tr>`).join('');
+    html += `</tbody></table>`;
+  }
+  if (o.statusHistory && o.statusHistory.length) {
+    html += `<div class="sec-h">Status History</div><ul class="hl">`;
+    html += [...o.statusHistory].reverse().map(h => `
+      <li><div class="hl-dot"></div><div>
+        <div class="hl-st">${x(h.status||'')}</div>
+        <div class="hl-ts">${new Date(h.timestamp).toLocaleString()}</div>
+        ${h.notes ? `<div class="hl-no">${x(h.notes)}</div>` : ''}
+      </div></li>`).join('');
+    html += `</ul>`;
+  }
+  if (o.internalNotes && o.internalNotes.length) {
+    html += `<div class="sec-h">Internal Notes</div><ul class="hl">`;
+    html += o.internalNotes.map(n => `
+      <li><div class="hl-dot" style="background:var(--text-dim);"></div><div>
+        <div class="hl-no">${x(n.note||'')}</div>
+        <div class="hl-ts">by ${x(n.by||'?')} â€” ${new Date(n.at).toLocaleString()}</div>
+      </div></li>`).join('');
+    html += `</ul>`;
+  }
+  document.getElementById('viewContent').innerHTML = html;
+  openMod('viewMod');
+}
+
+// â”€â”€ Util â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function x(v) {
+  return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

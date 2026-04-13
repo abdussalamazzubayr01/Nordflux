@@ -3,7 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NORDLUXE | Product Details</title>
+<meta name="description" content="View NORDLUXE product details, sizing, and craftsmanship for premium royal luxury shorts, longs, and cloaks.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://nordluxe.com/html/product.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NORDLUXE">
+<meta property="og:title" content="NORDLUXE Product Details | Premium Royal Luxury Piece">
+<meta property="og:description" content="View NORDLUXE product details, sizing, and craftsmanship for premium royal luxury shorts, longs, and cloaks.">
+<meta property="og:url" content="https://nordluxe.com/html/product.html">
+<meta property="og:image" content="https://nordluxe.com/assets/images/sa.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NORDLUXE Product Details | Premium Royal Luxury Piece">
+<meta name="twitter:description" content="View NORDLUXE product details, sizing, and craftsmanship for premium royal luxury shorts, longs, and cloaks.">
+<meta name="twitter:image" content="https://nordluxe.com/assets/images/sa.jpg">
+<title>NORDLUXE Product Details | Premium Royal Luxury Piece</title>
 
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -95,31 +108,30 @@ transform:scale(1.05) translateY(-2px) !important;
 box-shadow:0 8px 25px rgba(209,155,72,0.5) !important;
 }
 
-/* PRODUCT PAGE */
-
 .product-container{
-max-width:1200px;
-margin:80px auto;
-padding:0 20px;
+max-width:1180px;
+margin:56px auto 72px;
+padding:0 24px;
 }
 
 .product-grid{
 display:grid;
-grid-template-columns:1fr 1fr;
-gap:60px;
+grid-template-columns:minmax(0, 0.95fr) minmax(320px, 0.85fr);
+gap:44px;
 align-items:start;
 }
 
 .product-images{
-position:relative;
+position:sticky;
+top:110px;
 }
 
 .main-image{
 width:100%;
-height:500px;
+height:clamp(340px, 42vw, 480px);
 object-fit:cover;
-border-radius:20px;
-box-shadow:0 20px 40px rgba(0,0,0,0.1);
+border-radius:18px;
+box-shadow:0 16px 30px rgba(0,0,0,0.1);
 border:1px solid #d19b48;
 transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -132,13 +144,13 @@ box-shadow:0 25px 50px rgba(0,0,0,0.15);
 .thumbnail-grid{
 display:grid;
 grid-template-columns:repeat(4,1fr);
-gap:15px;
-margin-top:20px;
+gap:10px;
+margin-top:14px;
 }
 
 .thumbnail{
 width:100%;
-height:100px;
+height:78px;
 object-fit:cover;
 border-radius:10px;
 cursor:pointer;
@@ -157,7 +169,7 @@ box-shadow:0 0 15px rgba(209,155,72,0.3);
 }
 
 .product-info{
-padding:20px 0;
+padding:4px 0 0;
 }
 
 .product-category{
@@ -170,32 +182,53 @@ margin-bottom:10px;
 }
 
 .product-title{
-font-size:36px;
+font-size:32px;
 font-weight:700;
-margin-bottom:20px;
+margin-bottom:14px;
 color:#000000;
 line-height:1.2;
 }
 
 .product-price{
-font-size:28px;
+display:flex;
+flex-direction:column;
+gap:8px;
+margin-bottom:20px;
+}
+
+.product-price-original{
+font-size:18px;
+color:#999999;
+font-weight:500;
+text-decoration:line-through;
+}
+
+.product-price-current{
+font-size:24px;
 color:#d19b48;
+font-weight:700;
+}
+
+.product-price-note{
+font-size:13px;
+color:#666666;
 font-weight:600;
-margin-bottom:30px;
+letter-spacing:0.2px;
+margin-bottom:22px;
 }
 
 .product-description{
-font-size:16px;
-line-height:1.6;
+font-size:15px;
+line-height:1.7;
 color:#666;
-margin-bottom:30px;
+margin-bottom:22px;
 }
 
 .product-details{
 background:#f9f9f9;
-padding:30px;
+padding:22px;
 border-radius:15px;
-margin-bottom:30px;
+margin-bottom:22px;
 border:1px solid #d19b48;
 }
 
@@ -208,8 +241,8 @@ margin-bottom:20px;
 
 .details-list{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:20px;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:14px;
 }
 
 .detail-item{
@@ -229,7 +262,7 @@ font-weight:500;
 }
 
 .size-guide{
-margin-bottom:30px;
+margin-bottom:22px;
 }
 
 .size-title{
@@ -275,7 +308,8 @@ color:#ffffff;
 display:flex;
 align-items:center;
 gap:15px;
-margin-bottom:30px;
+margin-bottom:22px;
+flex-wrap:wrap;
 }
 
 .quantity-label{
@@ -324,22 +358,22 @@ color:#000000;
 
 .action-buttons{
 display:flex;
-gap:20px;
+gap:14px;
 flex-wrap:wrap;
 }
 
 .add-to-cart-btn,
 .buy-now-btn{
-padding:18px 35px;
+padding:15px 28px;
 border-radius:30px;
 font-weight:600;
-font-size:16px;
+font-size:15px;
 cursor:pointer;
 transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 text-decoration:none;
 display:inline-block;
 text-align:center;
-min-width:180px;
+min-width:160px;
 position:relative;
 overflow:hidden;
 }
@@ -385,29 +419,11 @@ color:#ffffff;
 transform:translateY(-3px);
 }
 
-.wishlist-btn{
-background:#ffffff;
-color:#d19b48;
-border:1px solid #d19b48;
-padding:15px 25px;
-border-radius:25px;
-cursor:pointer;
-font-weight:600;
-transition:all 0.3s ease;
-margin-left:auto;
-}
-
-.wishlist-btn:hover{
-background:#d19b48;
-color:#ffffff;
-transform:translateY(-2px);
-}
-
 /* SIMILAR PRODUCTS */
 
 .similar-products{
-margin-top:100px;
-padding-top:60px;
+margin-top:72px;
+padding-top:42px;
 border-top:1px solid #d19b48;
 }
 
@@ -481,6 +497,172 @@ font-weight:600;
 color:#d19b48;
 font-weight:600;
 font-size:18px;
+}
+
+.preorder-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.72);
+  z-index: 2001;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+}
+
+.preorder-modal.show {
+  display: flex;
+}
+
+.preorder-content {
+  background: #ffffff;
+  border: 2px solid #d19b48;
+  border-radius: 18px;
+  padding: 30px;
+  width: min(92vw, 640px);
+  max-height: 82vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+
+.preorder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #d19b48;
+}
+
+.preorder-header h2 {
+  color: #d19b48;
+  font-size: 24px;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.preorder-close {
+  background: none;
+  border: none;
+  font-size: 30px;
+  color: #000000;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.preorder-close:hover {
+  color: #d19b48;
+}
+
+.preorder-product-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 14px;
+}
+
+.preorder-price-summary {
+  background: #fffaf1;
+  border: 1px solid #edd4a4;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.preorder-price-summary p {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #333333;
+}
+
+.preorder-price-summary p:last-child {
+  margin-bottom: 0;
+}
+
+.preorder-price-summary .original {
+  color: #999999;
+  text-decoration: line-through;
+}
+
+.preorder-price-summary .active {
+  color: #d19b48;
+  font-weight: 700;
+}
+
+.preorder-terms-list {
+  background: #f9f9f9;
+  border-left: 4px solid #d19b48;
+  padding: 18px;
+  border-radius: 10px;
+  margin: 18px 0;
+}
+
+.preorder-terms-list h3 {
+  color: #d19b48;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.preorder-terms-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.preorder-terms-list li {
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 10px;
+  color: #333333;
+}
+
+.preorder-terms-list li::before {
+  content: '✓';
+  color: #d19b48;
+  font-weight: 700;
+  margin-right: 10px;
+}
+
+.preorder-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.preorder-confirm,
+.preorder-cancel {
+  flex: 1;
+  padding: 14px 18px;
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.preorder-confirm {
+  background: #d19b48;
+  color: #ffffff;
+  border: none;
+}
+
+.preorder-confirm:hover {
+  background: #ffd700;
+  color: #000000;
+}
+
+.preorder-cancel {
+  background: #f5f5f5;
+  color: #000000;
+  border: 2px solid #d19b48;
+}
+
+.preorder-cancel:hover {
+  background: #ececec;
 }
 
 /* CART ANIMATION */
@@ -581,19 +763,15 @@ transform:translateY(-2px);
 @media (max-width:768px){
 .product-grid{
 grid-template-columns:1fr;
-gap:40px;
+gap:28px;
 }
 
 .product-images{
-order:2;
-}
-
-.product-info{
-order:1;
+position:static;
 }
 
 .main-image{
-height:400px;
+height:360px;
 }
 
 .thumbnail-grid{
@@ -888,7 +1066,7 @@ gap:20px;
 <div class="logo">
 <a href="index.html"><img src="/assets/images/sa.jpg" alt="Nordluxe Logo"></a>
 </div>
-<div>
+<div class="nav-links">
 <a href="index.html">Home</a>
 <a href="collections.html">Collection</a>
 <a href="about.html">About</a>
@@ -914,27 +1092,31 @@ gap:20px;
 
 <!-- PRODUCT IMAGES -->
 <div class="product-images" data-aos="fade-right" data-aos-delay="200">
-<img id="mainImage" class="main-image" src="/assets/images/ChatGPT Image Feb 1, 2026, 03_19_23 PM.png" alt="Product Image">
+<img id="mainImage" class="main-image" src="/assets/images/white%20long.png" alt="Product Image">
 
 <div class="thumbnail-grid">
-<img class="thumbnail active" src="/assets/images/ChatGPT Image Feb 1, 2026, 03_19_23 PM.png" alt="Thumbnail 1" onclick="changeImage(this.src, this)">
-<img class="thumbnail" src="/assets/images/ChatGPT Image Feb 1, 2026, 03_19_23 PM.png" alt="Thumbnail 2" onclick="changeImage(this.src, this)">
-<img class="thumbnail" src="/assets/images/ChatGPT Image Feb 1, 2026, 03_19_23 PM.png" alt="Thumbnail 3" onclick="changeImage(this.src, this)">
-<img class="thumbnail" src="/assets/images/ChatGPT Image Feb 1, 2026, 03_19_23 PM.png" alt="Thumbnail 4" onclick="changeImage(this.src, this)">
+<img class="thumbnail active" src="/assets/images/white%20long.png" alt="Thumbnail 1" onclick="changeImage(this.src, this)">
+<img class="thumbnail" src="/assets/images/wite%20short.png" alt="Thumbnail 2" onclick="changeImage(this.src, this)">
+<img class="thumbnail" src="/assets/images/cloak%20white.png" alt="Thumbnail 3" onclick="changeImage(this.src, this)">
+<img class="thumbnail" src="/assets/images/sa.jpg" alt="Thumbnail 4" onclick="changeImage(this.src, this)">
 </div>
 </div>
 
 <!-- PRODUCT INFO -->
 <div class="product-info" data-aos="fade-left" data-aos-delay="400">
 
-<div class="product-category" id="productCategory">Bottoms & Trousers</div>
+<div class="product-category" id="productCategory">Nordluxe Ascensions</div>
 
-<h1 class="product-title" id="productTitle">Premium Trousers</h1>
+<h1 class="product-title" id="productTitle">Nordluxe Long Ascension White</h1>
 
-<div class="product-price" id="productPrice">$450</div>
+<div class="product-price" id="productPrice">
+<span class="product-price-original">Regular Price: ₦120,000</span>
+<span class="product-price-current">Preorder Price: ₦100,000</span>
+</div>
+<div class="product-price-note" id="productPriceNote">NORDLUXE is currently accepting preorders for this piece.</div>
 
 <div class="product-description" id="productDescription">
-Experience unparalleled comfort and style with our Premium Trousers. Crafted from the finest Scandinavian wool blends, these trousers offer perfect tailoring with a modern silhouette. The luxurious fabric drapes beautifully while providing all-day comfort and exceptional durability.
+Commanding full-length white silhouette with couture-level tailoring and signature NORDLUXE detailing. This piece is crafted for bold presence, ceremonial elegance, and premium comfort.
 </div>
 
 <div class="product-details">
@@ -989,8 +1171,7 @@ Experience unparalleled comfort and style with our Premium Trousers. Crafted fro
 
 <div class="action-buttons">
 <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
-<a href="/html/cart.html" class="buy-now-btn">Buy Now</a>
-<button class="wishlist-btn" onclick="addToWishlist()">♡ Add to Wishlist</button>
+<button class="buy-now-btn" onclick="buyNow()">Buy Now</button>
 </div>
 
 </div>
@@ -1002,35 +1183,35 @@ Experience unparalleled comfort and style with our Premium Trousers. Crafted fro
 <h2 class="similar-title">You Might Also Like</h2>
 
 <div class="similar-grid">
-<a href="/html/product.html?id=heritage-sweater" class="similar-product">
-<img src="/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_16_33%20PM.png" alt="Heritage Sweater">
+<a href="/html/product.html?id=nordluxe-short-black" class="similar-product">
+<img src="/assets/images/black%20short.png" alt="Nordluxe Short Ascension Black">
 <div class="similar-info">
-<h4>Heritage Sweater</h4>
-<div class="similar-price">$450</div>
+<h4>Nordluxe Short Ascension Black</h4>
+<div class="similar-price">Preorder: ₦80,000</div>
 </div>
 </a>
 
-<a href="/html/product.html?id=arctic-boots" class="similar-product">
-<img src="/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_19_23%20PM.png" alt="Arctic Boots">
+<a href="/html/product.html?id=cloak-black" class="similar-product">
+<img src="/assets/images/cloak%20black.png" alt="Cloak Black">
 <div class="similar-info">
-<h4>Arctic Boots</h4>
-<div class="similar-price">$620</div>
+<h4>Cloak Black</h4>
+<div class="similar-price">Preorder: ₦110,000</div>
 </div>
 </a>
 
-<a href="/html/product.html?id=wool-scarf" class="similar-product">
-<img src="/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_19_35%20PM.png" alt="Wool Scarf">
+<a href="/html/product.html?id=nordluxe-full-white-bundle" class="similar-product">
+<img src="/assets/images/cloak%20white.png" alt="Cloak White">
 <div class="similar-info">
-<h4>Wool Scarf</h4>
-<div class="similar-price">$180</div>
+<h4>Full Ascension White Bundle</h4>
+<div class="similar-price">Bundle Price: ₦380,000</div>
 </div>
 </a>
 
-<a href="/html/product.html?id=minimalist-coat" class="similar-product">
-<img src="/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_19_35%20PM.png" alt="Minimalist Coat">
+<a href="/html/product.html?id=full-package" class="similar-product">
+<img src="/assets/images/Full%20package.png" alt="Full Package Bundle">
 <div class="similar-info">
-<h4>Minimalist Coat</h4>
-<div class="similar-price">$980</div>
+<h4>Full Package (White + Black)</h4>
+<div class="similar-price">Preorder: ₦580,000</div>
 </div>
 </a>
 </div>
@@ -1056,135 +1237,150 @@ AOS.init({
 
 // Product data
 const products = {
-  'nordic-parka': {
-    title: 'Nordic Parka',
-    category: 'Outerwear',
-    price: '$890',
-    description: 'Experience the pinnacle of Scandinavian outerwear with our Nordic Parka. Designed for extreme Nordic climates yet styled for urban sophistication, this parka combines traditional fur-trimmed hoods with modern waterproof technology. The premium down filling provides exceptional warmth while maintaining a sleek silhouette.',
+  'nordluxe-long-white': {
+    title: 'Nordluxe Long Ascension White',
+    category: 'Nordluxe Ascensions',
+    originalPrice: '₦120,000',
+    preorderPrice: '₦100,000',
+    price: '₦100,000',
+    description: 'Commanding full-length white silhouette with couture-level tailoring and signature NORDLUXE detailing. This piece is crafted for bold presence, ceremonial elegance, and premium comfort.',
     images: [
-      '/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_15_39%20PM.png',
-      '/assets/images/photo-1548883354-94bcfe321cbb.png',
-      '/assets/images/photo-1529139574466-a303027c1d8b.png',
-      '/assets/images/photo-1544966503-7cc5ac882d5f.png'
+      '/assets/images/white%20long.png',
+      '/assets/images/wite%20short.png',
+      '/assets/images/cloak%20white.png',
+      '/assets/images/sa.jpg'
     ],
-    details: ['Genuine down filling', 'Waterproof membrane', 'Fur-trimmed hood', 'Made in Norway', 'Extreme weather protection', '5-year warranty']
+    details: ['Premium ceremonial fabric', 'Full-length luxury cut', 'Signature embroidered accents', 'Royal silhouette', 'Crafted for standout occasions', 'Limited preorder run']
   },
-  'premium-trousers': {
-    title: 'Premium Trousers',
-    category: 'Bottoms & Trousers',
-    price: '$450',
-    description: 'Experience unparalleled comfort and style with our Premium Trousers. Crafted from the finest Scandinavian wool blends, these trousers offer perfect tailoring with a modern silhouette. The luxurious fabric drapes beautifully while providing all-day comfort and exceptional durability.',
+  'nordluxe-short-white': {
+    title: 'Nordluxe Short Ascension White',
+    category: 'Nordluxe Ascensions',
+    originalPrice: '₦100,000',
+    preorderPrice: '₦80,000',
+    price: '₦80,000',
+    description: 'A refined short-set expression of the Ascension line, designed for warm-weather luxury and effortless confidence. Clean lines and elevated finishing define this modern statement look.',
     images: [
-      '/assets/images/photo-1542272604-787c3835535d.png',
-      '/assets/images/photo-1523381210434-271e8be1f52b.png',
-      '/assets/images/photo-1515347619252-60a4bf4fff4f.png',
-      '/assets/images/photo-1584464491033-06628f3a6b7b.png'
+      '/assets/images/wite%20short.png',
+      '/assets/images/white%20long.png',
+      '/assets/images/cloak%20white.png',
+      '/assets/images/sa.jpg'
     ],
-    details: ['Premium wool blend', 'Tailored fit', 'Hand-finished details', 'Made in Scandinavia', 'Sustainable materials', '2-year warranty']
+    details: ['Premium lightweight fabric', 'Modern short-set profile', 'Minimal and regal finishing', 'Breathable luxury comfort', 'Event-ready tailoring', 'Limited preorder run']
   },
-  'heritage-sweater': {
-    title: 'Heritage Sweater',
-    category: 'Tops & Shirts',
-    price: '$450',
-    description: 'Our Heritage Sweater combines traditional Nordic knitting techniques with contemporary design. Made from the softest merino wool, this sweater provides warmth without weight, featuring intricate cable patterns that tell stories of Scandinavian craftsmanship.',
+  'nordluxe-long-black': {
+    title: 'Nordluxe Long Ascension Black',
+    category: 'Nordluxe Ascensions',
+    originalPrice: '₦120,000',
+    preorderPrice: '₦100,000',
+    price: '₦100,000',
+    description: 'A deep black long-form Ascension look engineered for dramatic entrance and timeless authority. Structured lines, rich texture, and premium finishing create a powerful formal aesthetic.',
     images: [
-      '/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_16_33%20PM.png',
-      '/assets/images/photo-1523381210434-271e8be1f52b.png',
-      '/assets/images/photo-1515347619252-60a4bf4fff4f.png',
-      '/assets/images/photo-1584464491033-06628f3a6b7b.png'
+      '/assets/images/long%20black.png',
+      '/assets/images/black%20short.png',
+      '/assets/images/cloak%20black.png',
+      '/assets/images/sa.jpg'
     ],
-    details: ['100% Merino wool', 'Cable knit pattern', 'Traditional Nordic design', 'Made in Norway', 'Eco-friendly dyes', 'Lifetime durability']
+    details: ['Premium ceremonial fabric', 'Dramatic full-length profile', 'Signature dark tonal styling', 'Luxury tailored structure', 'High-impact formal expression', 'Limited preorder run']
   },
-  'arctic-boots': {
-    title: 'Arctic Boots',
-    category: 'Accessories',
-    price: '$620',
-    description: 'Conquer any terrain with our Arctic Boots, designed for the harshest Scandinavian winters yet styled for urban elegance. Waterproof leather uppers meet insulated interiors, providing both protection and sophistication.',
+  'nordluxe-short-black': {
+    title: 'Nordluxe Short Ascension Black',
+    category: 'Nordluxe Ascensions',
+    originalPrice: '₦100,000',
+    preorderPrice: '₦80,000',
+    price: '₦80,000',
+    description: 'A sharp black short-set crafted for sleek confidence and contemporary luxury. Designed for versatility while preserving the bold NORDLUXE identity.',
     images: [
-      '/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_19_23%20PM.png',
-      '/assets/images/photo-1542272604-787c3835535d.png',
-      '/assets/images/photo-1523381210434-271e8be1f52b.png',
-      '/assets/images/photo-1515347619252-60a4bf4fff4f.png'
+      '/assets/images/black%20short.png',
+      '/assets/images/long%20black.png',
+      '/assets/images/cloak%20black.png',
+      '/assets/images/sa.jpg'
     ],
-    details: ['Waterproof leather', 'Thinsulate insulation', 'Vibram sole', 'Made in Sweden', 'Weather-resistant', '5-year warranty']
+    details: ['Premium lightweight fabric', 'Tailored short-set architecture', 'Dark monochrome finish', 'Comfort-first fit', 'Modern luxury styling', 'Limited preorder run']
   },
-  'wool-scarf': {
-    title: 'Wool Scarf',
-    category: 'Accessories',
-    price: '$180',
-    description: 'Elevate your winter wardrobe with our luxurious Wool Scarf. Hand-woven from the finest Norwegian wool, this scarf offers unparalleled warmth and style. The subtle pattern reflects traditional Nordic motifs while maintaining modern elegance.',
+  'cloak-white': {
+    title: 'Cloak White',
+    category: 'Cloaks',
+    originalPrice: '₦140,000',
+    preorderPrice: '₦110,000',
+    price: '₦110,000',
+    description: 'An opulent white cloak designed to create movement, volume, and regal impact. Ornamental finishing and luxurious texture make this a true signature statement piece.',
     images: [
-      '/assets/images/ChatGPT%20Image%20Feb%201%2C%202026%2C%2003_19_35%20PM.png',
-      '/assets/images/photo-1542272604-787c3835535d.png',
-      '/assets/images/photo-1523381210434-271e8be1f52b.png',
-      '/assets/images/photo-1515347619252-60a4bf4fff4f.png'
+      '/assets/images/cloak%20white.png',
+      '/assets/images/white%20long.png',
+      '/assets/images/wite%20short.png',
+      '/assets/images/sa.jpg'
     ],
-    details: ['Pure Norwegian wool', 'Hand-woven', 'Traditional pattern', 'Ultra-soft', 'Wind-resistant', 'Care instructions included']
+    details: ['Premium plush texture', 'Flowing dramatic drape', 'Signature ornamental detailing', 'Ceremonial luxury construction', 'High-impact runway presence', 'Limited preorder run']
   },
-  'minimalist-coat': {
-    title: 'Minimalist Coat',
-    category: 'Outerwear',
-    price: '$980',
-    description: 'Our Minimalist Coat represents the essence of Scandinavian design philosophy. Clean lines, premium materials, and thoughtful construction create a timeless piece that transcends seasons and trends.',
+  'cloak-black': {
+    title: 'Cloak Black',
+    category: 'Cloaks',
+    originalPrice: '₦140,000',
+    preorderPrice: '₦110,000',
+    price: '₦110,000',
+    description: 'A commanding black cloak with rich texture and theatrical movement, built to elevate any ceremonial or formal look with unmistakable presence.',
     images: [
-      '/assets/images/photo-1548883354-94bcfe321cbb.png',
-      '/assets/images/photo-1529139574466-a303027c1d8b.png',
-      '/assets/images/photo-1544966503-7cc5ac882d5f.png',
-      '/assets/images/photo-1584464491033-06628f3a6b7b.png'
+      '/assets/images/cloak%20black.png',
+      '/assets/images/long%20black.png',
+      '/assets/images/black%20short.png',
+      '/assets/images/sa.jpg'
     ],
-    details: ['Premium cashmere blend', 'Minimalist design', 'Water-repellent', 'Made in Denmark', 'Sustainable sourcing', '3-year warranty']
+    details: ['Premium plush texture', 'Dramatic oversized silhouette', 'Luxury ornamental finish', 'Statement ceremonial build', 'Striking visual depth', 'Limited preorder run']
   },
-  'nordluxe-hoodie': {
-    title: 'Nordluxe Hoodie',
-    category: 'Tops & Shirts',
-    price: '$390',
-    description: 'Comfort meets luxury in our Nordluxe Hoodie. Crafted from organic cotton with a touch of cashmere, this hoodie offers the perfect balance of casual comfort and elevated style.',
+  'nordluxe-full-white-bundle': {
+    title: 'Nordluxe Full Ascension White Bundle',
+    category: 'Bundle Collections',
+    preorderPrice: '₦380,000',
+    price: '₦380,000',
+    description: 'The complete white Ascension expression in one coordinated set: long, short, and cloak. Built for clients who want the full white ceremonial statement with unified NORDLUXE detailing.',
     images: [
-      '/assets/images/photo-1523381210434-271e8be1f52b.png',
-      '/assets/images/photo-1542272604-787c3835535d.png',
-      '/assets/images/photo-1515347619252-60a4bf4fff4f.png',
-      '/assets/images/photo-1584464491033-06628f3a6b7b.png'
+      '/assets/images/cloak%20white.png',
+      '/assets/images/white%20long.png',
+      '/assets/images/wite%20short.png',
+      '/assets/images/Full%20package.png'
     ],
-    details: ['Organic cotton blend', 'Cashmere touch', 'Kangaroo pocket', 'Made in Finland', 'Eco-friendly', 'Machine washable']
+    details: ['Includes white long piece', 'Includes white short set', 'Includes white cloak', 'Coordinated three-piece bundle', 'High-value signature package', 'Limited preorder run']
   },
-  'designer-dress': {
-    title: 'Designer Dress',
-    category: 'Dresses & Full Wear',
-    price: '$780',
-    description: 'Make a statement with our Designer Dress, featuring innovative draping and Scandinavian elegance. The silk-blend fabric moves with you while maintaining its sophisticated silhouette.',
+  'nordluxe-full-black-bundle': {
+    title: 'Nordluxe Full Ascension Black Bundle',
+    category: 'Bundle Collections',
+    preorderPrice: '₦380,000',
+    price: '₦380,000',
+    description: 'A complete black Ascension set combining the long, short, and cloak pieces into one bold ceremonial wardrobe package with strong monochrome presence.',
     images: [
-      '/assets/images/photo-1595777457583-95e059d581b8.png',
-      '/assets/images/photo-1588854337221-4cf9fa96059c.png',
-      '/assets/images/photo-1529139574466-a303027c1d8b.png',
-      '/assets/images/photo-1544966503-7cc5ac882d5f.png'
+      '/assets/images/cloak%20black.png',
+      '/assets/images/long%20black.png',
+      '/assets/images/black%20short.png',
+      '/assets/images/Full%20package.png'
     ],
-    details: ['Silk blend fabric', 'Asymmetrical design', 'Hand-stitched', 'Made in Sweden', 'Dry clean only', 'Designer packaging']
+    details: ['Includes black long piece', 'Includes black short set', 'Includes black cloak', 'Coordinated three-piece bundle', 'High-value signature package', 'Limited preorder run']
   },
-  'luxury-blazer': {
-    title: 'Luxury Blazer',
-    category: 'Dresses & Full Wear',
-    price: '$650',
-    description: 'Our Luxury Blazer combines Italian tailoring with Nordic minimalism. Perfectly structured yet comfortably wearable, this blazer elevates any outfit to new heights of sophistication.',
+  'full-package': {
+    title: 'Full Package (White + Black)',
+    category: 'Bundle Collections',
+    originalPrice: '₦610,000',
+    preorderPrice: '₦580,000',
+    price: '₦580,000',
+    description: 'The complete six-piece NORDLUXE wardrobe package bringing together both white and black Ascension sets. Designed for buyers who want the entire collection in one acquisition.',
     images: [
-      '/assets/images/photo-1529139574466-a303027c1d8b.png',
-      '/assets/images/photo-1548883354-94bcfe321cbb.png',
-      '/assets/images/photo-1544966503-7cc5ac882d5f.png',
-      '/assets/images/photo-1584464491033-06628f3a6b7b.png'
+      '/assets/images/Full%20package.png',
+      '/assets/images/white%20long.png',
+      '/assets/images/long%20black.png',
+      '/assets/images/cloak%20white.png'
     ],
-    details: ['Italian wool', 'Structured shoulders', 'Working buttons', 'Made in Italy', 'Professional tailoring', '2-year warranty']
+    details: ['Includes all 6 signature pieces', 'White and black full sets', 'Best-value collection package', 'Ceremonial and editorial ready', 'Premium bundled offering', 'Limited preorder run']
   }
 };
 
 // Get product ID from URL
 const urlParams = new URLSearchParams(window.location.search);
-const productId = urlParams.get('id') || 'premium-trousers';
+const productId = urlParams.get('id') || 'nordluxe-long-white';
 
 // Load product data
 function loadProduct(productId) {
   const product = products[productId];
   if (!product) {
-    // Default to premium trousers if product not found
-    loadProduct('premium-trousers');
+    loadProduct('nordluxe-long-white');
     return;
   }
 
@@ -1194,7 +1390,17 @@ function loadProduct(productId) {
   // Update product info
   document.getElementById('productCategory').textContent = product.category;
   document.getElementById('productTitle').textContent = product.title;
-  document.getElementById('productPrice').textContent = product.price;
+  const priceHtml = [];
+  if (product.originalPrice) {
+    priceHtml.push(`<span class="product-price-original">Regular Price: ${product.originalPrice}</span>`);
+  }
+  if (product.preorderPrice) {
+    priceHtml.push(`<span class="product-price-current">Preorder Price: ${product.preorderPrice}</span>`);
+  } else {
+    priceHtml.push(`<span class="product-price-current">Current Price: ${product.price}</span>`);
+  }
+  document.getElementById('productPrice').innerHTML = priceHtml.join('');
+  document.getElementById('productPriceNote').textContent = 'NORDLUXE is currently accepting preorders for this piece.';
   document.getElementById('productDescription').textContent = product.description;
 
   // Update main image
@@ -1300,15 +1506,111 @@ function updateQuantity(change) {
   input.value = newValue;
 }
 
+let pendingProductPreorder = null;
+
 // Add to cart functionality
 function addToCart() {
+  var _u = {}; try { _u = JSON.parse(localStorage.getItem('nordluxeUser') || '{}'); } catch(e){}
+  if (!_u.uid && !_u.id) { window.location.href = 'login.html'; return; }
   const product = products[productId];
   const quantity = document.getElementById('quantity').value;
   const selectedSize = document.querySelector('.size-btn.active').textContent;
+  const preorderPrice = product.preorderPrice || product.price;
+  const originalPrice = product.originalPrice || '';
+
+  pendingProductPreorder = {
+    product,
+    quantity,
+    selectedSize,
+    preorderPrice,
+    originalPrice,
+    action: 'add-to-cart'
+  };
+
+  showPreorderModal(product.title, originalPrice, preorderPrice);
+}
+
+function buyNow() {
+  var _u = {}; try { _u = JSON.parse(localStorage.getItem('nordluxeUser') || '{}'); } catch(e){}
+  if (!_u.uid && !_u.id) { window.location.href = 'login.html'; return; }
+  const product = products[productId];
+  const quantity = document.getElementById('quantity').value;
+  const selectedSize = document.querySelector('.size-btn.active').textContent;
+  const preorderPrice = product.preorderPrice || product.price;
+  const originalPrice = product.originalPrice || '';
+
+  pendingProductPreorder = {
+    product,
+    quantity,
+    selectedSize,
+    preorderPrice,
+    originalPrice,
+    action: 'buy-now'
+  };
+
+  showPreorderModal(product.title, originalPrice, preorderPrice, 'Confirm & Buy Now');
+}
+
+function showPreorderModal(productName, originalPrice, preorderPrice, confirmLabel) {
+  const modal = document.getElementById('preorderModal');
+  const paymentBreakdown = calculatePreorderBreakdown(preorderPrice || originalPrice);
+  document.getElementById('preorderModalProductName').textContent = productName;
+  document.getElementById('preorderModalPriceSummary').innerHTML = `
+    ${originalPrice ? `<p class="original">Regular Price: ${originalPrice}</p>` : ''}
+    <p class="active">Preorder Price: ${paymentBreakdown.fullLabel}</p>
+    <p>Pay 40% now: ${paymentBreakdown.depositLabel}</p>
+    <p>Remaining 60%: ${paymentBreakdown.remainingLabel}</p>
+  `;
+  document.getElementById('preorderConfirmButton').textContent = confirmLabel || 'Confirm & Add to Cart';
+  modal.classList.add('show');
+}
+
+function calculatePreorderBreakdown(priceLabel) {
+  const normalized = (priceLabel || '₦0').replace(/,/g, '');
+  const numeric = normalized.match(/[0-9]+(?:\.[0-9]+)?/);
+  const amount = numeric ? parseFloat(numeric[0]) : 0;
+  const currencySymbol = '₦';
+  const depositAmount = Math.round(amount * 0.4);
+  const remainingAmount = Math.max(amount - depositAmount, 0);
+  const formatAmount = (value) => `${currencySymbol}${value.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+
+  return {
+    fullLabel: formatAmount(amount),
+    depositLabel: formatAmount(depositAmount),
+    remainingLabel: formatAmount(remainingAmount)
+  };
+}
+
+function closePreorderModal() {
+  const modal = document.getElementById('preorderModal');
+  modal.classList.remove('show');
+  pendingProductPreorder = null;
+}
+
+function confirmPreorder() {
+  if (!pendingProductPreorder) {
+    return;
+  }
+
+  const { product, quantity, selectedSize, preorderPrice, originalPrice, action } = pendingProductPreorder;
+  const paymentBreakdown = calculatePreorderBreakdown(preorderPrice || originalPrice);
 
   // Add to cart with size and quantity
   for (let i = 0; i < quantity; i++) {
-    addToCartItem(`${product.title} (${selectedSize})`, product.price);
+    addToCartItem(`${product.title} (${selectedSize})`, {
+      originalPrice: originalPrice,
+      preorderPrice: paymentBreakdown.fullLabel,
+      depositPrice: paymentBreakdown.depositLabel,
+      remainingBalancePrice: paymentBreakdown.remainingLabel,
+      finalPrice: paymentBreakdown.depositLabel,
+      isPreorder: true
+    });
+  }
+
+  closePreorderModal();
+  if (action === 'buy-now') {
+    window.location.href = '/html/cart.html';
+    return;
   }
 
   // Show success animation
@@ -1316,10 +1618,27 @@ function addToCart() {
 }
 
 // Add item to cart (similar to collections page)
-function addToCartItem(productName, price) {
-  let cart = JSON.parse(localStorage.getItem('nordluxeCart') || '[]');
-  cart.push({name: productName, price: price, date: new Date().toISOString()});
-  localStorage.setItem('nordluxeCart', JSON.stringify(cart));
+function addToCartItem(productName, pricing) {
+  function nordluxeKey(base) {
+    try {
+      var u = JSON.parse(localStorage.getItem('nordluxeUser') || '{}');
+      var uid = u.uid || u.id || '';
+      return uid ? base + '_' + uid : base;
+    } catch(e) { return base; }
+  }
+  let cart = JSON.parse(localStorage.getItem(nordluxeKey('nordluxeCart')) || '[]');
+  cart.push({
+    name: productName,
+    price: pricing.finalPrice,
+    originalPrice: pricing.originalPrice,
+    preorderPrice: pricing.preorderPrice,
+    depositPrice: pricing.depositPrice,
+    remainingBalancePrice: pricing.remainingBalancePrice,
+    finalPrice: pricing.finalPrice,
+    isPreorder: true,
+    date: new Date().toISOString()
+  });
+  localStorage.setItem(nordluxeKey('nordluxeCart'), JSON.stringify(cart));
 }
 
 // Add to cart animation
@@ -1364,22 +1683,6 @@ function showAddToCartAnimation() {
   }, 1200);
 }
 
-// Add to wishlist
-function addToWishlist() {
-  const button = document.querySelector('.wishlist-btn');
-  const originalText = button.textContent;
-
-  button.textContent = 'Added to Wishlist! ♡';
-  button.style.background = '#d19b48';
-  button.style.color = '#ffffff';
-
-  setTimeout(() => {
-    button.textContent = originalText;
-    button.style.background = '#ffffff';
-    button.style.color = '#d19b48';
-  }, 2000);
-}
-
 // Initialize product page
 loadProduct(productId);
 
@@ -1404,6 +1707,11 @@ document.addEventListener('click', function(event) {
     if (event.target === modal) {
         closeLoginModal();
     }
+
+  const preorderModal = document.getElementById('preorderModal');
+  if (event.target === preorderModal) {
+    closePreorderModal();
+  }
 });
 
 function switchTab(tabName) {
@@ -1570,6 +1878,33 @@ document.addEventListener('click', function(event) {
 
 </script>
 
+<!-- PREORDER TERMS MODAL -->
+<div id="preorderModal" class="preorder-modal">
+  <div class="preorder-content">
+    <div class="preorder-header">
+      <h2>Preorder Terms</h2>
+      <button class="preorder-close" onclick="closePreorderModal()">&times;</button>
+    </div>
+    <div class="preorder-product-name" id="preorderModalProductName">Product Name</div>
+    <div class="preorder-price-summary" id="preorderModalPriceSummary"></div>
+    <div class="preorder-terms-list">
+      <h3>Important Information</h3>
+      <ul>
+        <li>NORDLUXE is currently accepting preorders only.</li>
+        <li>The crossed-out price is the regular price for the piece.</li>
+        <li>The highlighted price is the full preorder price for the piece.</li>
+        <li>Only 40% is charged now as your preorder deposit.</li>
+        <li>The remaining 60% is paid when your piece is ready and fully made.</li>
+        <li>Delivery occurs within 8-15 days once delivery has started.</li>
+      </ul>
+    </div>
+    <div class="preorder-actions">
+      <button id="preorderConfirmButton" class="preorder-confirm" onclick="confirmPreorder()">Confirm & Add to Cart</button>
+      <button class="preorder-cancel" onclick="closePreorderModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- LOGIN/SIGNUP MODAL -->
 <div id="loginModal" class="modal">
     <div class="modal-content">
@@ -1651,6 +1986,8 @@ document.addEventListener('click', function(event) {
     </div>
 </div>
 
+<script src="/assets/js/site-shell.js" defer></script>
+<script src="/assets/js/site-audio.js" defer></script>
 <script src="/assets/js/site-nav.js"></script>
 </body>
 </html>

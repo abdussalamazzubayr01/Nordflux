@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NORDLUXE Status Page</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --gold: #d4af37;
+      --gold-border: rgba(212,175,55,0.35);
+      --bg: #0c0c0e;
+      --surface: #161410;
+      --surface2: #1d1b12;
+      --border: rgba(212,175,55,0.14);
+      --text: #f0ddb0;
+      --text-muted: #9a8560;
+      --text-dim: #5a4e35;
+      --red: #e05858;
+    }
+
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; min-height: 100vh; }
+
+    #authScreen { display: none; min-height: 100vh; align-items: center; justify-content: center; background: linear-gradient(135deg,#0c0c0e,#13100c,#1a1408); }
+    #authScreen.show { display: flex; }
+    .auth-card { width: 420px; max-width: 92vw; background: linear-gradient(160deg,#1b1810,#111015); border: 1px solid var(--gold-border); border-radius: 20px; overflow: hidden; }
+    .auth-head { background: linear-gradient(135deg,#1c1608,#2b1e07); padding: 30px; text-align: center; border-bottom: 1px solid var(--border); }
+    .auth-brand { color: var(--gold); letter-spacing: 5px; font-weight: 700; }
+    .auth-body { padding: 26px; }
+    .auth-input { width: 100%; padding: 12px 14px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 9px; color: var(--text); outline: none; }
+    .auth-input:focus { border-color: var(--gold); }
+    .auth-btn { width: 100%; margin-top: 12px; padding: 11px; border: none; border-radius: 9px; background: linear-gradient(145deg,#7f5a22,#c49a38); color: #fff7e2; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; }
+    .auth-err { display: none; margin-top: 10px; font-size: 12px; color: var(--red); text-align: center; }
+    .auth-err.show { display: block; }
+
+    #page { display: none; }
+    #page.show { display: block; }
+
+    .top { position: sticky; top: 0; z-index: 20; display: flex; gap: 10px; align-items: center; padding: 14px 22px; background: #0e0c08; border-bottom: 1px solid var(--border); }
+    .brand { color: var(--gold); letter-spacing: 4px; font-size: 13px; font-weight: 700; }
+    .sub { color: var(--text-muted); font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; }
+    .nav { margin-left: auto; display: flex; gap: 8px; }
+    .btn { padding: 7px 11px; border: 1px solid var(--border); border-radius: 7px; background: rgba(255,255,255,0.03); color: var(--text-muted); font-size: 12px; text-decoration: none; cursor: pointer; }
+    .btn:hover { color: var(--gold); border-color: var(--gold-border); }
+
+    .wrap { padding: 20px 22px 26px; }
+    .head { display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .title { font-size: 24px; color: var(--gold); text-transform: capitalize; }
+    .meta { color: var(--text-dim); font-size: 12px; }
+
+    .status-links { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 10px; margin-bottom: 16px; }
+    .status-link { display: flex; justify-content: space-between; align-items: center; padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px; color: var(--text-muted); text-decoration: none; text-transform: capitalize; background: var(--surface); }
+    .status-link strong { color: var(--gold); }
+    .status-link:hover { border-color: var(--gold-border); color: var(--gold); }
+    .status-link.on { border-color: var(--gold-border); color: var(--gold); }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: var(--surface2); padding: 11px 14px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    td { padding: 12px 14px; border-bottom: 1px solid rgba(212,175,55,0.06); font-size: 13px; }
+    tr:last-child td { border-bottom: none; }
+    .empty td { text-align: center; color: var(--text-dim); padding: 30px; }
+
+    .badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 11px; border: 1px solid var(--gold-border); color: var(--gold); background: rgba(212,175,55,0.12); }
+    .bold { font-weight: 600; }
+    .dim { color: var(--text-dim); font-size: 12px; }
+    .mail { color: #70b0e8; text-decoration: none; border: 1px solid rgba(80,160,220,0.35); padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+    .mail:hover { background: rgba(80,160,220,0.1); }
+    .upd { color: var(--gold); text-decoration: none; border: 1px solid var(--gold-border); padding: 4px 8px; border-radius: 6px; font-size: 12px; background: rgba(212,175,55,0.12); margin-right: 6px; }
+    .upd:hover { background: rgba(212,175,55,0.2); }
+
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 120; align-items: center; justify-content: center; }
+    .modal.open { display: flex; }
+    .mbox { background: linear-gradient(160deg,#1e1b14,#131108); border: 1px solid var(--gold-border); border-radius: 14px; width: 520px; max-width: 92vw; padding: 20px; }
+    .mh { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .mh h3 { color: var(--gold); font-size: 14px; letter-spacing: 1px; }
+    .mc { border: none; background: none; color: var(--text-dim); font-size: 18px; cursor: pointer; }
+    .mc:hover { color: var(--text); }
+    .fg { margin-bottom: 10px; }
+    .fg label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase; }
+    .fi, .fs, .ft { width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.35); color: var(--text); outline: none; }
+    .fi:focus, .fs:focus, .ft:focus { border-color: var(--gold); }
+    .ft { min-height: 64px; resize: vertical; }
+    .acts { display: flex; gap: 8px; margin-top: 14px; }
+    .acts button { flex: 1; }
+
+    @media (max-width: 720px) {
+      .top, .wrap { padding-left: 12px; padding-right: 12px; }
+      .title { font-size: 20px; }
+      .nav { width: 100%; margin-left: 0; }
+      .nav .btn { flex: 1; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div id="authScreen">
+    <div class="auth-card">
+      <div class="auth-head">
+        <div class="auth-brand">NORDLUXE</div>
+        <div style="color:#5a4e35;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-top:6px;">Status Page Access</div>
+      </div>
+      <div class="auth-body">
+        <input id="keyIn" class="auth-input" type="password" placeholder="Enter admin key" autofocus>
+        <button class="auth-btn" onclick="doAuth()">Enter</button>
+        <div class="auth-err" id="err">Invalid key.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="page">
+    <div class="top">
+      <div class="brand">NORDLUXE</div>
+      <div class="sub">Status Orders</div>
+      <div class="nav">
+        <a class="btn" href="admin-orders.html">Dashboard</a>
+        <button class="btn" onclick="load()">Refresh</button>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <div class="title" id="pageTitle">pending orders</div>
+          <div class="meta" id="meta">Loading...</div>
+        </div>
+      </div>
+
+      <div class="status-links" id="statusLinks"></div>
+
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tb">
+            <tr class="empty"><td colspan="6">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="updMod">
+    <div class="mbox">
+      <div class="mh"><h3>Quick Status Update</h3><button class="mc" onclick="closeUpd()">X</button></div>
+      <div id="updHead" class="dim" style="margin-bottom:10px;"></div>
+      <form id="updForm">
+        <div class="fg">
+          <label for="newStatus">New Status</label>
+          <select id="newStatus" class="fs" required>
+            <option value="">Select status</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="packed">Packed</option>
+            <option value="dispatched">Dispatched</option>
+            <option value="in-transit">In Transit</option>
+            <option value="delivered">Delivered</option>
+            <option value="received">Received</option>
+          </select>
+        </div>
+        <div class="fg" id="trackWrap" style="display:none;">
+          <label for="trackNo">Tracking Number</label>
+          <input id="trackNo" class="fi" placeholder="e.g. 1234567890">
+        </div>
+        <div class="fg" id="shipWrap" style="display:none;">
+          <label for="shipCo">Shipping Company</label>
+          <input id="shipCo" class="fi" placeholder="e.g. DHL, FedEx, GIG">
+        </div>
+        <div class="fg">
+          <label for="updBy">Updated By</label>
+          <input id="updBy" class="fi" placeholder="Team member name">
+        </div>
+        <div class="fg">
+          <label for="custNote">Customer Note (sent by email)</label>
+          <textarea id="custNote" class="ft" placeholder="Your order has been updated."></textarea>
+        </div>
+        <div class="fg">
+          <label for="intNote">Internal Note</label>
+          <textarea id="intNote" class="ft" placeholder="Team note (not sent)"></textarea>
+        </div>
+        <div class="acts">
+          <button type="button" class="btn" onclick="closeUpd()">Cancel</button>
+          <button type="submit" class="btn">Update Now</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_BASES = (() => {
+      const host = window.location.hostname;
+      const protocol = window.location.protocol;
+      const candidates = [];
+
+      if (protocol === 'file:' || !host || host === 'localhost' || host === '127.0.0.1') {
+        candidates.push('http://localhost:3001', 'http://127.0.0.1:3001');
+      }
+
+      if (window.location.origin && window.location.origin !== 'null') {
+        candidates.push(window.location.origin);
+      }
+
+      return Array.from(new Set(candidates));
+    })();
+
+    async function apiFetch(path, options) {
+      let lastError = null;
+      for (const base of API_BASES) {
+        try {
+          return await fetch(`${base}${path}`, options);
+        } catch (err) {
+          lastError = err;
+        }
+      }
+      throw lastError || new Error('No reachable API base.');
+    }
+
+    const STATUSES = ['pending','confirmed','packed','dispatched','in-transit','delivered','received'];
+    const qp = new URLSearchParams(window.location.search);
+    let status = qp.get('status') || 'pending';
+    if (!STATUSES.includes(status)) status = 'pending';
+
+    let KEY = localStorage.getItem('nlxKey') || '';
+    let allOrders = [];
+
+    window.addEventListener('load', () => {
+      if (KEY) {
+        showPage();
+        load();
+      } else {
+        document.getElementById('authScreen').classList.add('show');
+      }
+    });
+
+    document.getElementById('keyIn').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') doAuth();
+    });
+
+    async function doAuth() {
+      const k = (document.getElementById('keyIn').value || '').trim();
+      if (!k) return;
+      const err = document.getElementById('err');
+      err.classList.remove('show');
+      try {
+        const r = await apiFetch('/api/orders', { headers: { 'x-admin-key': k } });
+        if (r.status === 403) { err.classList.add('show'); return; }
+        KEY = k;
+        localStorage.setItem('nlxKey', k);
+        showPage();
+        load();
+      } catch (ex) {
+        err.textContent = 'Cannot reach server.';
+        err.classList.add('show');
+      }
+    }
+
+    function showPage() {
+      document.getElementById('authScreen').classList.remove('show');
+      document.getElementById('page').classList.add('show');
+      document.getElementById('pageTitle').textContent = status.replace(/-/g, ' ') + ' orders';
+    }
+
+    function statusUrl(s) {
+      return 'admin-status.html?status=' + encodeURIComponent(s);
+    }
+
+    async function load() {
+      try {
+        const res = await apiFetch('/api/orders', { headers: { 'x-admin-key': KEY } });
+        if (res.status === 403) {
+          localStorage.removeItem('nlxKey');
+          KEY = '';
+          location.reload();
+          return;
+        }
+        const data = await res.json();
+        if (!data.success) return;
+        const orders = data.orders || [];
+        allOrders = orders;
+        const counts = {};
+        orders.forEach(function (o) {
+          const s = o.status || 'pending';
+          counts[s] = (counts[s] || 0) + 1;
+        });
+
+        renderStatusLinks(counts);
+
+        const filtered = orders.filter(function (o) {
+          return (o.status || 'pending') === status;
+        });
+
+        document.getElementById('meta').textContent = filtered.length + ' order(s) in this status · Updated ' + new Date().toLocaleTimeString();
+
+        const tb = document.getElementById('tb');
+        if (!filtered.length) {
+          tb.innerHTML = '<tr class="empty"><td colspan="6">No orders in this status</td></tr>';
+          return;
+        }
+
+        tb.innerHTML = filtered.map(function (o) {
+          return `
+            <tr>
+              <td class="bold">${x(oid(o))}</td>
+              <td><div class="bold">${x(o.customerName || '—')}</div><div class="dim">${x(o.customerEmail || '')}</div></td>
+              <td>₦${Number(o.totalAmount || 0).toLocaleString()}</td>
+              <td><span class="badge">${x((o.status || 'pending').replace(/-/g, ' '))}</span></td>
+              <td class="dim">${new Date(o.createdAt).toLocaleDateString()}</td>
+              <td>
+                <button class="upd" onclick="openUpd('${x(String(o._id || ''))}')">Update</button>
+                <a class="mail" href="mailto:${x(o.customerEmail || '')}?subject=Your%20NORDLUXE%20Order%20${x(oid(o))}">Email</a>
+              </td>
+            </tr>`;
+        }).join('');
+      } catch (err) {
+        document.getElementById('tb').innerHTML = '<tr class="empty"><td colspan="6">Could not load orders</td></tr>';
+      }
+    }
+
+    function renderStatusLinks(counts) {
+      const wrap = document.getElementById('statusLinks');
+      wrap.innerHTML = STATUSES.map(function (s) {
+        const on = s === status ? ' on' : '';
+        return `<a class="status-link${on}" href="${statusUrl(s)}"><span>${s.replace(/-/g, ' ')}</span><strong>${counts[s] || 0}</strong></a>`;
+      }).join('');
+    }
+
+    function oid(o) {
+      if (o && o.orderCode) return o.orderCode;
+      if (o && o._id) return String(o._id).slice(-8).toUpperCase();
+      return 'N/A';
+    }
+
+    function openUpd(orderId) {
+      const o = allOrders.find(function (it) { return String(it._id || '') === String(orderId); });
+      if (!o) return;
+      document.getElementById('updHead').textContent = oid(o) + ' · ' + (o.customerName || 'Customer') + ' · ' + (o.customerEmail || '');
+      document.getElementById('newStatus').value = '';
+      document.getElementById('trackNo').value = o.trackingNumber || '';
+      document.getElementById('shipCo').value = o.shippingCompany || '';
+      document.getElementById('updBy').value = localStorage.getItem('nlxOp') || o.assignedTo || '';
+      document.getElementById('custNote').value = '';
+      document.getElementById('intNote').value = '';
+      document.getElementById('trackWrap').style.display = 'none';
+      document.getElementById('shipWrap').style.display = 'none';
+      document.getElementById('updForm').dataset.orderId = String(o._id || '');
+      document.getElementById('updMod').classList.add('open');
+    }
+
+    function closeUpd() {
+      document.getElementById('updMod').classList.remove('open');
+    }
+
+    document.getElementById('newStatus').addEventListener('change', function () {
+      const show = this.value === 'in-transit' || this.value === 'dispatched';
+      document.getElementById('trackWrap').style.display = show ? 'block' : 'none';
+      document.getElementById('shipWrap').style.display = show ? 'block' : 'none';
+    });
+
+    document.getElementById('updForm').addEventListener('submit', async function (ev) {
+      ev.preventDefault();
+      const orderId = ev.target.dataset.orderId;
+      const nextStatus = document.getElementById('newStatus').value;
+      if (!orderId || !nextStatus) return;
+
+      const payload = {
+        status: nextStatus,
+        trackingNumber: document.getElementById('trackNo').value || undefined,
+        shippingCompany: document.getElementById('shipCo').value || undefined,
+        notes: document.getElementById('custNote').value || undefined,
+        updatedBy: document.getElementById('updBy').value.trim() || undefined,
+        internalNote: document.getElementById('intNote').value || undefined
+      };
+
+      try {
+        const resp = await apiFetch(`/api/orders/${orderId}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': KEY },
+          body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+        if (!data.success) {
+          alert(data.message || 'Update failed.');
+          return;
+        }
+        closeUpd();
+        load();
+        alert(data.message || 'Order updated.');
+      } catch (e) {
+        alert('Could not reach server.');
+      }
+    });
+
+    window.addEventListener('click', function (e) {
+      if (e.target && e.target.id === 'updMod') closeUpd();
+    });
+
+    function x(v) {
+      return String(v == null ? '' : v)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>

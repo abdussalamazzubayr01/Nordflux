@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NORDLUXE | Cart & Checkout</title>
+<meta name="description" content="Review your selected NORDLUXE products and complete secure checkout for premium royal luxury shorts, longs, and cloaks.">
+<meta name="robots" content="noindex, nofollow">
+<title>Cart & Checkout | NORDLUXE</title>
 
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -27,25 +29,14 @@
   const auth = getAuth(app);
 
   window.cartFirebaseUser = null;
+  window.cartFirebaseAuthResolved = false;
 
   onAuthStateChanged(auth, (user) => {
     window.cartFirebaseUser = user;
-    const checkoutBtn = document.querySelector('.checkout-btn');
-    if (checkoutBtn) {
-      if (user) {
-        checkoutBtn.disabled = false;
-        checkoutBtn.style.opacity = '1';
-        checkoutBtn.textContent = 'Complete Purchase';
-      } else {
-        checkoutBtn.disabled = true;
-        checkoutBtn.style.opacity = '0.5';
-        checkoutBtn.textContent = 'Login to Checkout';
-      }
-    }
-
+    window.cartFirebaseAuthResolved = true;
     const loginHint = document.getElementById('authHint');
     if (loginHint) {
-      loginHint.textContent = user ? `Logged in as ${user.displayName || user.email}` : 'You must sign in before checking out.';
+      loginHint.style.display = 'none';
     }
   });
 </script>
@@ -364,6 +355,21 @@ background:#f9f9f9;
 transform:translateY(-2px);
 }
 
+.cart-item-left{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.cart-item-thumb{
+width:56px;
+height:56px;
+object-fit:cover;
+border-radius:8px;
+border:1px solid #d19b48;
+background:#f5f5f5;
+}
+
 .cart-total{
 text-align:right;
 font-size:22px;
@@ -372,6 +378,34 @@ padding-top:25px;
 border-top:2px solid #d19b48;
 color:#d19b48;
 font-weight:700;
+}
+
+.preorder-notice{
+background:#fffaf1;
+border:1px solid #d19b48;
+border-radius:14px;
+padding:22px;
+margin-top:30px;
+}
+
+.preorder-notice h4{
+color:#d19b48;
+margin-bottom:12px;
+font-size:18px;
+}
+
+.preorder-notice ul{
+margin:0 0 15px 18px;
+color:#333333;
+line-height:1.7;
+}
+
+.preorder-agreement{
+display:flex;
+align-items:flex-start;
+gap:10px;
+color:#000000;
+font-weight:500;
 }
 
 /* FOOTER */
@@ -413,7 +447,7 @@ transform:translateY(-2px);
 <div class="logo">
 <a href="index.html"><img src="/assets/images/sa.jpg" alt="Nordluxe Logo"></a>
 </div>
-<div>
+<div class="nav-links">
 <a href="index.html">Home</a>
 <a href="collections.html">Collection</a>
 <a href="about.html">About</a>
@@ -736,48 +770,14 @@ Add some items from our collection to get started!
 
 <div class="form-section" data-aos="fade-up" data-aos-delay="800">
 <h3>💳 Payment Information</h3>
-<div class="form-row single">
-<div class="form-group">
-<label for="cardNumber">Card Number *</label>
-<input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required>
-</div>
-</div>
-<div class="form-row">
-<div class="form-group">
-<label for="expiryMonth">Expiry Month *</label>
-<select id="expiryMonth" required>
-<option value="">Month</option>
-<option value="01">01 - January</option>
-<option value="02">02 - February</option>
-<option value="03">03 - March</option>
-<option value="04">04 - April</option>
-<option value="05">05 - May</option>
-<option value="06">06 - June</option>
-<option value="07">07 - July</option>
-<option value="08">08 - August</option>
-<option value="09">09 - September</option>
-<option value="10">10 - October</option>
-<option value="11">11 - November</option>
-<option value="12">12 - December</option>
-</select>
-</div>
-<div class="form-group">
-<label for="expiryYear">Expiry Year *</label>
-<select id="expiryYear" required>
-<option value="">Year</option>
-<option value="2026">2026</option>
-<option value="2027">2027</option>
-<option value="2028">2028</option>
-<option value="2029">2029</option>
-<option value="2030">2030</option>
-<option value="2031">2031</option>
-</select>
-</div>
-</div>
-<div class="form-row single">
-<div class="form-group">
-<label for="cvv">CVV *</label>
-<input type="text" id="cvv" placeholder="123" maxlength="4" required>
+<div style="background:#fffaf1; border:1px solid #d19b48; border-radius:12px; padding:16px; color:#333333; line-height:1.7;">
+<p style="margin-bottom:8px;"><strong>Secure Flutterwave Checkout</strong></p>
+<p style="margin-bottom:8px;">After you click <strong>Pay 40% Deposit</strong>, you will be redirected to Flutterwave to complete payment securely.</p>
+<p style="margin-bottom:8px;">Your card details are entered on Flutterwave, not on this page.</p>
+<p style="margin:0; font-size:14px; color:#6b6b6b;">Test mode is enabled. Use Flutterwave test cards in the Flutterwave payment window.</p>
+<div style="margin-top:12px; display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid rgba(209,155,72,0.45); border-radius:999px; background:#ffffff; font-size:12px; color:#5b4427; letter-spacing:0.2px;">
+<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#2dbf64;"></span>
+<span>Powered by Flutterwave</span>
 </div>
 </div>
 </div>
@@ -792,7 +792,23 @@ Add some items from our collection to get started!
 </div>
 </div>
 
-<button class="checkout-btn" onclick="processOrder()" data-aos="fade-up" data-aos-delay="1000">Complete Purchase</button>
+<div class="preorder-notice" data-aos="fade-up" data-aos-delay="950">
+<h4>Preorder Terms</h4>
+<ul>
+<li>NORDLUXE is currently accepting preorders only.</li>
+<li>The crossed-out price is the regular product price.</li>
+<li>The highlighted price in your cart is the full preorder price.</li>
+<li>Only 40% is charged at checkout as your preorder deposit.</li>
+<li>The remaining 60% is paid when your piece is ready and fully made.</li>
+<li>Delivery occurs within 8-15 days once delivery has started.</li>
+</ul>
+<label class="preorder-agreement" for="preorderAgreement">
+<input type="checkbox" id="preorderAgreement">
+<span>I have read and accept the preorder terms and conditions.</span>
+</label>
+</div>
+
+<button type="button" class="checkout-btn" onclick="processOrder(event)" data-aos="fade-up" data-aos-delay="1000">Pay 40% Deposit</button>
 
 </div>
 
@@ -813,12 +829,82 @@ AOS.init({
   mirror: false
 });
 
-// Cart management with localStorage
-let cartItems = JSON.parse(localStorage.getItem('nordluxeCart') || '[]');
+// Per-user storage key helper
+function nordluxeKey(base) {
+  try {
+    var u = JSON.parse(localStorage.getItem('nordluxeUser') || '{}');
+    var uid = u.uid || u.id || '';
+    return uid ? base + '_' + uid : base;
+  } catch(e) { return base; }
+}
+
+// Cart management with user-scoped localStorage
+let cartItems = JSON.parse(localStorage.getItem(nordluxeKey('nordluxeCart')) || '[]');
+
+const cartImageMap = {
+  'Nordluxe Long Ascension White': '/assets/images/white%20long.png',
+  'Nordluxe Short Ascension White': '/assets/images/wite%20short.png',
+  'Nordluxe Long Ascension Black': '/assets/images/long%20black.png',
+  'Nordluxe Short Ascension Black': '/assets/images/black%20short.png',
+  'Cloak White': '/assets/images/cloak%20white.png',
+  'Cloak Black': '/assets/images/cloak%20black.png',
+  'Nordluxe Full Ascension White Bundle': '/assets/images/cloak%20white.png',
+  'Nordluxe Full Ascension Black Bundle': '/assets/images/cloak%20black.png',
+  'Full Package (White + Black) Complete Collection': '/assets/images/Full%20package.png'
+};
+
+function getCartItemImage(productName) {
+  const normalizedName = (productName || '').replace(/\s*\([^)]*\)\s*$/, '');
+  return cartImageMap[normalizedName] || cartImageMap[productName] || '/assets/images/sa.jpg';
+}
+
+function getCartItemPriceLabel(item) {
+  return item.preorderPrice || item.originalPrice || item.finalPrice || item.price || '₦0';
+}
+
+function getCartItemChargePriceLabel(item) {
+  return item.depositPrice || item.finalPrice || item.price || item.preorderPrice || item.originalPrice || '₦0';
+}
+
+function getCartItemBalancePriceLabel(item) {
+  return item.remainingBalancePrice || '₦0';
+}
+
+function parsePriceValue(priceLabel) {
+  if (typeof priceLabel !== 'string') {
+    return 0;
+  }
+
+  const normalized = priceLabel.replace(/,/g, '');
+  const numeric = normalized.match(/[0-9]+(?:\.[0-9]+)?/);
+  return numeric ? parseFloat(numeric[0]) : 0;
+}
+
+function getPriceCurrencySymbol(priceLabel) {
+  if (typeof priceLabel !== 'string') {
+    return '₦';
+  }
+
+  if (priceLabel.includes('₦')) return '₦';
+  return '₦';
+}
+
+function formatCartTotal(total, currencySymbol) {
+  return `${currencySymbol}${total.toLocaleString('en-US')}`;
+}
+
+function createPriceLabelFromAmount(amount, currencySymbol) {
+  const normalizedAmount = Number.isFinite(amount) ? amount : 0;
+  const fractionDigits = normalizedAmount % 1 === 0 ? 0 : 2;
+  return `${currencySymbol}${normalizedAmount.toLocaleString('en-US', {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits
+  })}`;
+}
 
 function addToCart(productName, price) {
   cartItems.push({name: productName, price: price});
-  localStorage.setItem('nordluxeCart', JSON.stringify(cartItems));
+  localStorage.setItem(nordluxeKey('nordluxeCart'), JSON.stringify(cartItems));
   updateCartDisplay();
 }
 
@@ -834,38 +920,87 @@ function updateCartDisplay() {
     `;
   } else {
     let cartHTML = '<div class="cart-items-list">';
-    let total = 0;
+    let preorderTotal = 0;
+    let depositTotal = 0;
+    let remainingTotal = 0;
+    let totalCurrencySymbol = '₦';
 
     cartItems.forEach((item, index) => {
-      const price = parseFloat(item.price.replace('$', ''));
+      const priceLabel = getCartItemPriceLabel(item);
+      const chargeLabel = getCartItemChargePriceLabel(item);
+      const remainingLabel = getCartItemBalancePriceLabel(item);
+      const price = parsePriceValue(priceLabel);
+      const chargePrice = parsePriceValue(chargeLabel);
+      const remainingPrice = parsePriceValue(remainingLabel);
+      totalCurrencySymbol = getPriceCurrencySymbol(priceLabel);
+      const itemImage = getCartItemImage(item.name);
       cartHTML += `
         <div class="cart-item">
-          <div>
+          <div class="cart-item-left">
+            <img class="cart-item-thumb" src="${itemImage}" alt="${item.name}">
+            <div>
             <strong>${item.name}</strong><br>
-            <span style="color: #d19b48;">${item.price}</span>
+            <span style="color: #d19b48;">Preorder total: ${priceLabel}</span>
+            ${item.isPreorder ? `<br><span style="color: #666; font-size: 13px;">Pay now: ${chargeLabel} • Remaining 60%: ${remainingLabel}</span>` : ''}
+            </div>
           </div>
           <button onclick="removeFromCart(${index})" style="background: #d19b48; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Remove</button>
         </div>
       `;
-      total += price;
+      preorderTotal += price;
+      depositTotal += chargePrice;
+      remainingTotal += remainingPrice;
     });
 
-    cartHTML += `<div class="cart-total"><strong>Total: $${total.toFixed(2)}</strong></div></div>`;
+    cartHTML += `
+      <div class="cart-total">
+        <strong>Preorder Total: ${formatCartTotal(preorderTotal, totalCurrencySymbol)}</strong><br>
+        <strong>Due Today (40%): ${formatCartTotal(depositTotal, totalCurrencySymbol)}</strong><br>
+        <span style="color: #666; font-size: 14px;">Remaining 60% before delivery: ${formatCartTotal(remainingTotal, totalCurrencySymbol)}</span>
+      </div>
+    </div>`;
     cartContainer.innerHTML = cartHTML;
   }
 }
 
 function removeFromCart(index) {
   cartItems.splice(index, 1);
-  localStorage.setItem('nordluxeCart', JSON.stringify(cartItems));
+  localStorage.setItem(nordluxeKey('nordluxeCart'), JSON.stringify(cartItems));
   updateCartDisplay();
 }
 
-async function processOrder() {
-  if (!window.cartFirebaseUser) {
-    alert('Please log in first to checkout.');
-    window.location.href = 'ni.html';
-    return;
+function openPaymentLink(paymentLink, checkoutWindow) {
+  if (!paymentLink) return false;
+
+  if (checkoutWindow && !checkoutWindow.closed) {
+    try {
+      checkoutWindow.location.href = paymentLink;
+      checkoutWindow.focus();
+      return true;
+    } catch (error) {
+      // Ignore and continue with fallback popup attempt.
+    }
+  }
+
+  const width = 520;
+  const height = 760;
+  const left = Math.max(0, Math.round((window.screen.width - width) / 2));
+  const top = Math.max(0, Math.round((window.screen.height - height) / 2));
+  const features = `popup=yes,width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
+
+  const popup = window.open(paymentLink, 'nordluxeFlutterwaveCheckout', features);
+  if (popup) {
+    popup.focus();
+    return true;
+  }
+
+  return false;
+}
+
+async function processOrder(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   // Get form values
@@ -875,8 +1010,10 @@ async function processOrder() {
   const phone = document.getElementById('phone').value;
   const address = document.getElementById('address').value;
   const city = document.getElementById('city').value;
+  const state = document.getElementById('state').value;
   const zipCode = document.getElementById('zipCode').value;
   const country = document.getElementById('country').value;
+  const notes = document.getElementById('notes').value;
 
   // Basic validation
   if (!firstName || !lastName || !email || !address || !city || !zipCode || !country) {
@@ -889,39 +1026,132 @@ async function processOrder() {
     return;
   }
 
-  // Calculate total
-  const total = cartItems.reduce((sum, item) => sum + parseFloat(item.price.replace('$', '')), 0);
+  const preorderAgreement = document.getElementById('preorderAgreement');
+  if (!preorderAgreement || !preorderAgreement.checked) {
+    alert('Please accept the preorder terms and conditions before completing your order.');
+    return;
+  }
 
+  // Calculate total
+  const total = cartItems.reduce((sum, item) => sum + parsePriceValue(getCartItemChargePriceLabel(item)), 0);
+  const preorderTotal = cartItems.reduce((sum, item) => sum + parsePriceValue(getCartItemPriceLabel(item)), 0);
+  const balanceTotal = cartItems.reduce((sum, item) => sum + parsePriceValue(getCartItemBalancePriceLabel(item)), 0);
+  const checkoutCurrencySymbol = getPriceCurrencySymbol(
+    getCartItemChargePriceLabel(cartItems[0]) || getCartItemPriceLabel(cartItems[0])
+  );
   // Show loading state
   const checkoutBtn = document.querySelector('.checkout-btn');
   const originalText = checkoutBtn.textContent;
   checkoutBtn.textContent = 'Processing...';
   checkoutBtn.disabled = true;
 
+  let checkoutWindow = null;
   try {
-    // Prepare payment data
+    const width = 520;
+    const height = 760;
+    const left = Math.max(0, Math.round((window.screen.width - width) / 2));
+    const top = Math.max(0, Math.round((window.screen.height - height) / 2));
+    const features = `popup=yes,width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
+    checkoutWindow = window.open('', 'nordluxeFlutterwaveCheckout', features);
+    if (checkoutWindow && !checkoutWindow.closed) {
+      checkoutWindow.document.title = 'NORDLUXE Checkout';
+      checkoutWindow.document.body.style.cssText = 'margin:0;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#fffaf1;color:#5b4427;';
+      checkoutWindow.document.body.innerHTML = '<div style="text-align:center;padding:24px;"><h3 style="margin:0 0 8px;">Preparing secure checkout...</h3><p style="margin:0;">Please wait while we connect to Flutterwave.</p></div>';
+    }
+  } catch (popupInitError) {
+    checkoutWindow = null;
+  }
+
+  try {
     const paymentData = {
       amount: total,
-      currency: 'USD',
+      currency: 'NGN',
       customer: {
         name: `${firstName} ${lastName}`,
         email: email,
         phone: phone || ''
       },
       items: cartItems,
-      redirect_url: window.location.origin + '/thank-you.html'
+      paymentPlan: {
+        type: 'preorder-deposit',
+        depositPercentage: 40,
+        balancePercentage: 60,
+        preorderTotal: preorderTotal,
+        depositAmount: total,
+        remainingBalance: balanceTotal
+      },
+      redirect_url: new URL('thank-you.html', window.location.href).href
     };
 
-    // Call backend API to initiate payment
-    const response = await fetch('http://localhost:3001/api/initiate-payment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(paymentData)
-    });
+    const configuredApiBase = (window.NORDLUXE_API_BASE || '').trim();
+    const host = String(window.location.hostname || '').trim();
+    const protocol = String(window.location.protocol || '').trim();
 
-    const result = await response.json();
+    const apiBaseCandidates = [];
+    if (configuredApiBase) {
+      apiBaseCandidates.push(configuredApiBase);
+    }
+
+    if (!host || protocol === 'file:') {
+      apiBaseCandidates.push('http://localhost:3001', 'http://127.0.0.1:3001');
+    } else if (host === 'localhost' || host === '127.0.0.1') {
+      apiBaseCandidates.push('', 'http://localhost:3001', 'http://127.0.0.1:3001');
+    } else {
+      // Prefer same-origin in deployment, then common local fallbacks for dev tunnels.
+      apiBaseCandidates.push('', 'http://localhost:3001', 'http://127.0.0.1:3001');
+    }
+
+    const uniqueApiBases = apiBaseCandidates.filter((base, index) => apiBaseCandidates.indexOf(base) === index);
+
+    let response = null;
+    let result = null;
+    const attemptErrors = [];
+
+    for (const apiBase of uniqueApiBases) {
+      const endpoint = `${apiBase}/api/initiate-payment`;
+
+      try {
+        response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(paymentData)
+        });
+      } catch (networkError) {
+        attemptErrors.push(`${endpoint} -> network error: ${networkError && networkError.message ? networkError.message : 'Failed to fetch'}`);
+        continue;
+      }
+
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        result = await response.json();
+      } else {
+        const rawText = await response.text();
+        result = {
+          success: false,
+          message: `Unexpected server response (${response.status}) from ${endpoint}: ${rawText.slice(0, 140)}`
+        };
+      }
+
+      // Try all candidates before failing, because some hosts only serve static pages
+      // and return 404/405 for API paths while the real backend runs elsewhere.
+      if (!response.ok) {
+        const reason = (result && result.message)
+          ? result.message
+          : `HTTP ${response.status}`;
+        attemptErrors.push(`${endpoint} -> ${reason}`);
+        response = null;
+        result = null;
+        continue;
+      }
+
+      break;
+    }
+
+    if (!response || !result) {
+      throw new Error(`Unable to reach payment API. Attempts: ${attemptErrors.join(' | ')}`);
+    }
 
     if (result.success) {
       const pendingOrder = {
@@ -933,26 +1163,53 @@ async function processOrder() {
           phone,
           address,
           city,
+          state,
           zipCode,
           country
         },
         items: cartItems,
         total,
-        totalLabel: `$${total.toFixed(2)}`,
+        preorderTotal,
+        balanceTotal,
+        totalLabel: createPriceLabelFromAmount(total, checkoutCurrencySymbol),
+        preorderTotalLabel: createPriceLabelFromAmount(preorderTotal, checkoutCurrencySymbol),
+        balanceTotalLabel: createPriceLabelFromAmount(balanceTotal, checkoutCurrencySymbol),
+        paymentPlan: {
+          type: 'preorder-deposit',
+          depositPercentage: 40,
+          balancePercentage: 60
+        },
+        notes: notes || '',
         txRef: result.data && result.data.tx_ref ? result.data.tx_ref : null,
         paymentLink: result.data && result.data.link ? result.data.link : null
       };
 
-      localStorage.setItem('nordluxePendingOrder', JSON.stringify(pendingOrder));
-      // Redirect to Flutterwave checkout
-      window.location.href = result.data.link;
+      localStorage.setItem(nordluxeKey('nordluxePendingOrder'), JSON.stringify(pendingOrder));
+      if (result.data && result.data.link) {
+        const navigated = openPaymentLink(result.data.link, checkoutWindow);
+        if (!navigated) {
+          alert('Could not open Flutterwave checkout popup. Please allow popups for this site and try again.');
+        }
+      } else {
+        if (checkoutWindow && !checkoutWindow.closed) {
+          checkoutWindow.close();
+        }
+        alert('Payment link is unavailable. Please try again.');
+      }
     } else {
       alert('Payment initiation failed: ' + result.message);
     }
 
   } catch (error) {
+    if (checkoutWindow && !checkoutWindow.closed) {
+      checkoutWindow.close();
+    }
     console.error('Payment error:', error);
-    alert('An error occurred while processing your payment. Please try again.');
+    const details = error && error.message ? error.message : 'Unknown network/server error';
+    const hint = (details === 'Failed to fetch' || details.indexOf('Unable to reach payment API') >= 0)
+      ? ` Unable to reach payment API. Current host: ${window.location.origin || window.location.href}. If deployed, set window.NORDLUXE_API_BASE to your HTTPS backend origin.`
+      : '';
+    alert(`An error occurred while processing your payment. ${details}${hint}`);
   } finally {
     // Reset button state
     checkoutBtn.textContent = originalText;
@@ -980,6 +1237,8 @@ document.addEventListener('click', function(event) {
 
 </script>
 
+<script src="/assets/js/site-shell.js" defer></script>
+<script src="/assets/js/site-audio.js" defer></script>
 <script src="/assets/js/site-nav.js"></script>
 </body>
 </html>
