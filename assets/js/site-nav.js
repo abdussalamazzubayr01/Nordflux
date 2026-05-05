@@ -333,10 +333,13 @@
     var style = document.createElement('style');
     style.id = 'global-nav-style';
     style.textContent = [
-      '#globalNavHamburgerLeft{display:flex;align-items:center;z-index:1500;margin-right:10px;}',
-      '#globalNavSearchAfterLogo{display:flex;align-items:center;margin-left:10px;z-index:1500;}',
+      'nav{position:relative !important;}',
+      'nav .logo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1501;display:flex;align-items:center;justify-content:center;pointer-events:auto;}',
+      '#globalNavHamburgerLeft{display:flex;align-items:center;gap:10px;z-index:1500;margin-right:0;flex:0 0 auto;}',
+      '#globalNavSearchAfterLogo{display:flex;align-items:center;margin-left:0;z-index:1500;flex:0 0 auto;}',
       '#globalNavUserRight{display:flex;align-items:center;z-index:1500;margin-left:12px;flex-shrink:0;}',
-      '.nav-control-btn{width:40px;height:40px;border-radius:50%;border:1px solid #d19b48;background:#d19b48;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}',
+      '.nav-links{flex:1 1 auto !important;display:flex !important;align-items:center !important;justify-content:flex-end !important;padding-left:120px !important;}',
+      '.nav-control-btn{width:40px;height:40px;border-radius:50%;border:1px solid #d19b48;background:#d19b48;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden;}',
       '.nav-control-btn:hover{filter:brightness(1.08);}',
       '.nav-control-btn img{width:100%;height:100%;border-radius:50%;object-fit:cover;}',
       '#globalSearchBtn{width:40px;height:40px;border-radius:50%;border:1px solid #6e5326;background:linear-gradient(145deg,#1e1a14,#2b241b);color:#e5c78c;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px rgba(255,220,160,.18),0 7px 14px rgba(0,0,0,.28);}',
@@ -388,6 +391,28 @@
       '.footer-tiktok-link svg{width:20px;height:20px;display:block;}',
       '.footer-whatsapp-link{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;color:inherit;vertical-align:middle;}',
       '.footer-whatsapp-link svg{width:20px;height:20px;display:block;}',
+      '.nordluxe-policy-links{margin-top:16px;padding-top:14px;border-top:1px solid rgba(209,155,72,.2);background:transparent !important;background-color:transparent !important;}',
+      '.nordluxe-policy-links-list{list-style:none;margin:0 auto;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px;width:min(100%,760px);background:transparent !important;background-color:transparent !important;}',
+      '.nordluxe-policy-links-item{display:flex;align-items:center;justify-content:center;min-width:0;background:transparent !important;background-color:transparent !important;}',
+      '.nordluxe-policy-links-item:last-child:nth-child(odd){grid-column:1 / -1;justify-self:center;width:calc(50% - 7px);}',
+      '.nordluxe-policy-link{display:inline-flex;align-items:center;justify-content:center;width:100%;color:#efc980;text-decoration:none;font-size:11px;letter-spacing:.48px;text-transform:uppercase;line-height:1.2;padding:11px 14px;white-space:nowrap;border-radius:999px;border:1px solid rgba(214,164,84,.56);background:linear-gradient(145deg,rgba(32,26,18,.92),rgba(54,40,24,.92));box-shadow:inset 0 0 0 1px rgba(255,222,162,.12),0 10px 22px rgba(0,0,0,.24);transition:color .2s ease,border-color .2s ease,transform .18s ease,box-shadow .2s ease;}',
+      '.nordluxe-policy-link:hover{color:#ffe0a6;border-color:rgba(241,190,109,.72);transform:translateY(-1px);box-shadow:inset 0 0 0 1px rgba(255,222,162,.22),0 14px 28px rgba(0,0,0,.3);}',
+      '.policy-pill-grid{width:min(100%,860px) !important;max-width:860px !important;margin:0 auto !important;display:grid !important;grid-template-columns:1fr !important;gap:8px !important;padding:12px !important;box-sizing:border-box !important;background:#2d241e !important;border:1px solid rgba(217,189,132,.4) !important;border-radius:34px !important;box-shadow:0 12px 28px rgba(45,36,30,.16),inset 0 0 0 1px rgba(217,189,132,.08) !important;overflow:visible !important;}',
+      '.policy-pill-grid .pill-center{grid-column:1 / -1 !important;display:flex !important;justify-content:center !important;}',
+      '.policy-pill-btn{display:inline-flex !important;align-items:center !important;justify-content:center !important;text-align:center !important;width:100% !important;min-height:44px !important;padding:10px 16px !important;border-radius:999px !important;background:transparent !important;color:#D4AF37 !important;text-decoration:none !important;font-weight:600 !important;letter-spacing:.14em !important;text-transform:uppercase !important;font-size:13px !important;line-height:1.25 !important;white-space:normal !important;word-break:break-word !important;overflow-wrap:anywhere !important;hyphens:auto !important;border:0 !important;box-shadow:none !important;transition:background .25s ease,color .25s ease,transform .2s ease,box-shadow .2s ease !important;}',
+      '.policy-pill-btn:hover{background:rgba(212,175,55,.08) !important;color:#ffe4a0 !important;transform:translateY(-1px) !important;box-shadow:inset 0 0 0 1px rgba(255,223,165,.18),0 8px 18px rgba(0,0,0,.2) !important;}',
+      '.policy-pill-btn:active{transform:translateY(0) scale(.995) !important;box-shadow:inset 0 0 0 1px rgba(255,223,165,.12) !important;}',
+      '.policy-pill-btn:focus-visible{outline:2px solid rgba(255,221,153,.65) !important;outline-offset:2px !important;}',
+      '.policy-pill-grid .pill-center .policy-pill-btn{width:100% !important;}',
+      '.footer-policy-links{display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;justify-content:center !important;align-items:stretch !important;gap:12px 14px !important;width:min(100%,760px) !important;margin:0 auto 14px !important;padding:0 !important;list-style:none !important;border:0 !important;background:transparent !important;}',
+      '.footer-policy-links a{display:inline-flex !important;align-items:center !important;justify-content:center !important;width:100% !important;color:#efc980 !important;text-decoration:none !important;font-size:11px !important;letter-spacing:.48px !important;line-height:1.2 !important;text-transform:uppercase !important;white-space:nowrap !important;padding:11px 14px !important;border-radius:999px !important;border:1px solid rgba(214,164,84,.56) !important;background:linear-gradient(145deg,rgba(32,26,18,.92),rgba(54,40,24,.92)) !important;box-shadow:inset 0 0 0 1px rgba(255,222,162,.12),0 10px 22px rgba(0,0,0,.24) !important;transition:color .2s ease,border-color .2s ease,transform .18s ease,box-shadow .2s ease !important;}',
+      '.footer-policy-links a:last-child:nth-child(odd){grid-column:1 / -1;justify-self:center;width:calc(50% - 7px) !important;}',
+      '.footer-policy-links a:hover{color:#ffe0a6 !important;border-color:rgba(241,190,109,.72) !important;transform:translateY(-1px);box-shadow:inset 0 0 0 1px rgba(255,222,162,.22),0 14px 28px rgba(0,0,0,.3) !important;}',
+      '@media (min-width:900px){.policy-pill-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:10px 14px !important;padding:16px 18px !important;}.policy-pill-grid .pill-center{grid-column:1 / -1 !important;}.policy-pill-grid .pill-center .policy-pill-btn{width:min(100%,320px) !important;}}',
+      '@media (max-width:680px){.policy-pill-grid{padding:10px 8px !important;gap:8px !important;border-radius:24px !important;}.policy-pill-btn{font-size:11px !important;letter-spacing:.08em !important;min-height:40px !important;padding:9px 10px !important;line-height:1.2 !important;}.policy-pill-grid .pill-center .policy-pill-btn{width:100% !important;}}',
+      '@media (max-width:420px){.policy-pill-grid{padding:8px 6px !important;gap:6px !important;border-radius:20px !important;}.policy-pill-btn{font-size:10px !important;letter-spacing:.05em !important;min-height:38px !important;padding:8px 9px !important;line-height:1.18 !important;}}',
+      '@media (max-width:768px){.nordluxe-policy-links-list{gap:10px 10px;width:min(100%,520px);}.nordluxe-policy-links-item:last-child:nth-child(odd){width:calc(50% - 5px);}.nordluxe-policy-link{font-size:10px;letter-spacing:.42px;padding:10px 10px;}.footer-policy-links{gap:10px 10px !important;width:min(100%,520px) !important;}.footer-policy-links a{font-size:10px !important;letter-spacing:.42px !important;padding:10px 10px !important;}.footer-policy-links a:last-child:nth-child(odd){width:calc(50% - 5px) !important;}}',
+      '@media (max-width:420px){.nordluxe-policy-links-list{gap:8px;width:min(100%,350px);}.nordluxe-policy-link{font-size:9.5px;letter-spacing:.38px;padding:9px 8px;}.footer-policy-links{gap:8px !important;width:min(100%,350px) !important;}.footer-policy-links a{font-size:9.5px !important;letter-spacing:.38px !important;padding:9px 8px !important;}}',
       '#nordluxeCookieNotice{position:fixed;left:16px;right:16px;bottom:16px;z-index:3300;display:none;align-items:flex-start;justify-content:space-between;gap:12px;padding:14px 16px;border-radius:14px;border:1px solid rgba(209,155,72,.45);background:linear-gradient(150deg,rgba(21,18,14,.97),rgba(35,28,19,.96));box-shadow:0 18px 42px rgba(0,0,0,.4);color:#f3dfb8;}',
       '#nordluxeCookieNotice.open{display:flex;}',
       '#nordluxeCookieNotice p{margin:0;font-size:13px;line-height:1.5;}',
@@ -396,7 +421,7 @@
       '#nordluxeCookieNoticeActions button,#nordluxeCookieNoticeActions a{padding:8px 12px;border-radius:8px;border:1px solid #a67a36;font-size:12px;letter-spacing:.4px;font-weight:700;text-transform:uppercase;text-decoration:none;}',
       '#nordluxeCookieNoticeRead{background:transparent;color:#f2d49a;}',
       '#nordluxeCookieNoticeAccept{background:linear-gradient(145deg,#7f5a22,#ba8a3d);color:#fff6e4;cursor:pointer;}',
-      '@media (max-width:768px){#globalNavUserRight{margin-left:8px;}#globalNavSearchAfterLogo{margin-left:6px;}#globalSearchPanel{top:74px;}#nordluxeCookieNotice{left:10px;right:10px;bottom:10px;padding:12px;flex-direction:column;}#nordluxeCookieNoticeActions{width:100%;justify-content:flex-end;}}'
+      '@media (max-width:768px){.global-main-nav{padding:12px 14px !important;overflow-x:hidden !important;position:relative !important;}.global-main-nav::before{content:"";position:absolute;left:calc(50% - 8px);top:50%;transform:translate(-50%,-50%);width:96px;height:58px;border-radius:16px;background:inherit;z-index:1501;pointer-events:none;}.global-main-nav .logo{left:50%;transform:translate(-50%,-50%);z-index:1502;}#globalNavHamburgerLeft{gap:10px;padding-right:10px;min-width:max-content;flex:0 0 auto;}#globalNavSearchAfterLogo{flex:0 0 auto;position:relative;z-index:1503;}#globalSearchBtn{position:relative;z-index:1503;}#globalNavUserRight{margin-left:10px;flex:0 0 auto;}#globalSearchPanel{top:74px;}.global-main-nav .nav-links{justify-content:flex-start !important;flex:1 1 auto !important;overflow-x:auto !important;overflow-y:hidden !important;scrollbar-width:none !important;-ms-overflow-style:none !important;-webkit-overflow-scrolling:touch !important;padding-left:84px !important;padding-right:62px !important;gap:12px !important;z-index:1499;}.global-main-nav .nav-links::-webkit-scrollbar{display:none;width:0;height:0;}.global-main-nav .nav-links a{margin-left:0 !important;padding:8px 12px !important;border-radius:12px !important;flex:0 0 auto !important;}.global-main-nav .nav-links .cart-btn{margin-left:0 !important;padding:8px 14px !important;}.global-main-nav .logo .logo-badge{width:40px !important;height:40px !important;}#nordluxeCookieNotice{left:10px;right:10px;bottom:10px;padding:12px;flex-direction:column;}#nordluxeCookieNoticeActions{width:100%;justify-content:flex-end;}}'
     ].join('');
     document.head.appendChild(style);
   }
@@ -495,47 +520,67 @@
     });
   }
 
-  function ensureFooterPolicyLink() {
-    var footer = document.querySelector('footer');
-    if (!footer) return;
-    if (footer.querySelector('[data-nordluxe-policies-links]')) return;
-
-    var policiesContainer = document.createElement('div');
-    policiesContainer.setAttribute('data-nordluxe-policies-links', 'true');
-    policiesContainer.style.marginTop = '16px';
-    policiesContainer.style.paddingTop = '12px';
-    policiesContainer.style.borderTop = '1px solid rgba(209, 155, 72, 0.2)';
-    policiesContainer.style.fontSize = '13px';
-
-    var policies = [
+  function getFooterPolicies() {
+    return [
       { href: 'payment-policy.html', text: 'Payment Policy' },
       { href: 'preorder-policy.html', text: 'Pre-Order Policy' },
       { href: 'refund-policy.html', text: 'Refund Policy' },
       { href: 'shipping-policy.html', text: 'Shipping Policy' },
       { href: 'cookie-policy.html', text: 'Cookie Policy' }
     ];
+  }
 
-    policies.forEach(function(policy, index) {
-      if (index > 0) {
-        policiesContainer.appendChild(document.createTextNode(' • '));
-      }
+  function renderPolicyPillGrid(container, policies) {
+    if (!container) return;
+
+    container.classList.remove('footer-policy-links', 'nordluxe-policy-links');
+    container.classList.add('policy-pill-grid');
+    container.setAttribute('data-nordluxe-policies-links', 'true');
+    container.setAttribute('aria-label', 'Policy links');
+    container.innerHTML = '';
+
+    policies.forEach(function (policy, index) {
       var a = document.createElement('a');
       a.href = policy.href;
       a.textContent = policy.text;
-      a.style.color = '#d19b48';
-      a.style.textDecoration = 'none';
-      a.style.marginRight = '6px';
-      a.style.marginLeft = '6px';
+      a.className = 'policy-pill-btn';
       a.setAttribute('data-nordluxe-policy-link', policy.href);
-      a.addEventListener('mouseover', function() {
-        this.style.textDecoration = 'underline';
-      });
-      a.addEventListener('mouseout', function() {
-        this.style.textDecoration = 'none';
-      });
-      policiesContainer.appendChild(a);
-    });
 
+      if (index === policies.length - 1) {
+        var centerWrap = document.createElement('div');
+        centerWrap.className = 'pill-center';
+        centerWrap.appendChild(a);
+        container.appendChild(centerWrap);
+        return;
+      }
+
+      container.appendChild(a);
+    });
+  }
+
+  function normalizeFooterPolicyLinks() {
+    var blocks = document.querySelectorAll('.footer-policy-links, .nordluxe-policy-links');
+    if (!blocks.length) return;
+
+    var policies = getFooterPolicies();
+    blocks.forEach(function (block) {
+      renderPolicyPillGrid(block, policies);
+    });
+  }
+
+  function ensureFooterPolicyLink() {
+    var footer = document.querySelector('footer');
+    if (!footer) return;
+    // If the page already defines its own policy link block, do not inject duplicates.
+    if (footer.querySelector('.policy-pill-grid')) return;
+    if (footer.querySelector('.footer-policy-links')) return;
+    if (footer.querySelector('.nordluxe-policy-links')) return;
+    if (footer.querySelector('[data-nordluxe-policies-links]')) return;
+
+    var policiesContainer = document.createElement('nav');
+    policiesContainer.className = 'policy-pill-grid';
+    var policies = getFooterPolicies();
+    renderPolicyPillGrid(policiesContainer, policies);
     footer.appendChild(policiesContainer);
   }
 
@@ -652,7 +697,7 @@
       ? String(el.dataset.currentPrice).trim()
       : String(el.textContent || '').trim();
 
-    if (!currentDisplayPrice || currentDisplayPrice.indexOf('$') === -1) return;
+    if (!currentDisplayPrice || !/^\s*[₦$]\s*\d/.test(currentDisplayPrice)) return;
 
     if (el.dataset) {
       el.dataset.currentPrice = currentDisplayPrice;
@@ -808,7 +853,7 @@
   function renderControls(leftControls, rightControls) {
     var display = userDisplay();
     var iconHtml = display.photo
-      ? '<img src="' + display.photo + '" alt="User" />'
+      ? '<img src="' + display.photo + '" alt="User" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.style.display=\'none\';this.parentNode.textContent=\'👤\'" />'
       : '👤';
 
     leftControls.innerHTML = '<button type="button" id="globalHamburgerBtn" class="nav-control-btn" aria-label="Open menu">☰</button>';
@@ -826,17 +871,22 @@
 
   function renderSearchControl(nav) {
     var searchWrap = document.getElementById('globalNavSearchAfterLogo');
+    var leftControls = document.getElementById('globalNavHamburgerLeft');
     var logo = nav.querySelector('.logo');
-    var host = logo && logo.parentNode ? logo.parentNode : nav;
+    var host = leftControls || (logo && logo.parentNode ? logo.parentNode : nav);
 
     if (!searchWrap) {
       searchWrap = document.createElement('div');
       searchWrap.id = 'globalNavSearchAfterLogo';
-      if (logo && logo.nextSibling) {
+      if (leftControls) {
+        leftControls.appendChild(searchWrap);
+      } else if (logo && logo.nextSibling) {
         host.insertBefore(searchWrap, logo.nextSibling);
       } else {
         host.appendChild(searchWrap);
       }
+    } else if (leftControls && searchWrap.parentNode !== leftControls) {
+      leftControls.appendChild(searchWrap);
     }
 
     searchWrap.innerHTML = '<button type="button" id="globalSearchBtn" aria-label="Search products"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.9 14.5h-.74l-.26-.25a6.47 6.47 0 10-.7.7l.25.26v.74L20 21.5 21.5 20l-5.6-5.5zM10.5 15a4.5 4.5 0 110-9 4.5 4.5 0 010 9z"/></svg></button>';
@@ -898,14 +948,85 @@
     }
   }
 
+  function ensureNavLogoBadge(nav) {
+    if (!nav) return;
+
+    var logoWrap = nav.querySelector('.logo');
+    if (!logoWrap) return;
+
+    var logoLink = logoWrap.querySelector('a');
+    if (!logoLink) return;
+
+    logoLink.classList.add('logo-badge');
+    logoLink.setAttribute('href', 'index.html');
+    logoLink.setAttribute('aria-label', 'NORDLUXE Home');
+
+    if (!logoLink.querySelector('img.logo-mark')) {
+      logoLink.innerHTML = '<img class="logo-mark" src="/assets/images/111.png" alt="NORDLUXE Logo Mark">';
+    }
+  }
+
+  function ensureNavLogoMotion() {
+    var logoBadge = document.querySelector('.logo .logo-badge');
+    if (!logoBadge || logoBadge.getAttribute('data-logo-float-bound') === 'true') return;
+
+    logoBadge.setAttribute('data-logo-float-bound', 'true');
+    logoBadge.addEventListener('click', function () {
+      logoBadge.classList.remove('logo-float-active');
+      void logoBadge.offsetWidth;
+      logoBadge.classList.add('logo-float-active');
+      window.setTimeout(function () {
+        logoBadge.classList.remove('logo-float-active');
+      }, 820);
+    });
+  }
+
+  function ensurePrimaryNavLinks(nav) {
+    if (!nav) return;
+
+    var navLinks = nav.querySelector('.nav-links');
+    if (!navLinks) {
+      navLinks = document.createElement('div');
+      navLinks.className = 'nav-links';
+      nav.appendChild(navLinks);
+    }
+
+    var existingRightSlot = nav.querySelector('#globalNavUserRight');
+
+    navLinks.innerHTML = [
+      '<a href="index.html">Home</a>',
+      '<a href="collections.html">Collection</a>',
+      '<a href="about.html">About</a>',
+      '<a href="contact.html">Contact</a>',
+      '<a href="story.html">Story</a>',
+      '<a href="cart.html" class="cart-btn">🛒 Cart</a>'
+    ].join('');
+
+    if (existingRightSlot) {
+      navLinks.appendChild(existingRightSlot);
+    }
+  }
+
   function init() {
     // Keep analytics/live tracking active on all pages, even those without nav markup.
     bootLiveTrackingOnce();
 
+    // Apply shared styles and footer policy normalization first so mobile footer
+    // behavior remains consistent even on pages with non-standard nav markup.
+    ensureStyle();
+    ensureInstagramLinks();
+    ensureTikTokLinks();
+    ensureWhatsAppLinks();
+    normalizeFooterPolicyLinks();
+    ensureFooterPolicyLink();
+    showCookieNotice();
+
     var nav = document.querySelector('nav');
     if (!nav) return;
+    nav.classList.add('global-main-nav');
 
-    ensureStyle();
+    ensurePrimaryNavLinks(nav);
+    ensureNavLogoBadge(nav);
 
     nav.querySelectorAll('.user-menu,.user-dropdown').forEach(function (el) {
       el.style.display = 'none';
@@ -943,11 +1064,7 @@
 
     renderControls(leftControls, rightControls);
     renderSearchControl(nav);
-    ensureInstagramLinks();
-    ensureTikTokLinks();
-    ensureWhatsAppLinks();
-    ensureFooterPolicyLink();
-    showCookieNotice();
+    ensureNavLogoMotion();
 
     var backdrop = document.getElementById('globalHamburgerBackdrop');
     if (!backdrop) {
@@ -971,6 +1088,7 @@
 
     window.addEventListener('storage', function () {
       renderControls(leftControls, rightControls);
+      renderSearchControl(nav);
       renderMenu(menu);
     });
 

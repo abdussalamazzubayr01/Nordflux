@@ -318,16 +318,16 @@ git push -u origin main
 ## 💰 Cost Breakdown
 
 ### Free Options:
-- **Domain**: ~$10-15/year
+- **Domain**: ~₦10-15/year
 - **Hosting**: Free (Vercel, Netlify, GitHub Pages)
 - **SSL**: Free (included)
-- **Total**: ~$10-15/year
+- **Total**: ~₦10-15/year
 
 ### Premium Options:
-- **Domain**: $15-50/year
-- **Hosting**: $5-20/month
-- **Email**: $5-10/month
-- **Total**: ~$100-300/year
+- **Domain**: ₦15-50/year
+- **Hosting**: ₦5-20/month
+- **Email**: ₦5-10/month
+- **Total**: ~₦100-300/year
 
 ## 📞 Support Resources
 

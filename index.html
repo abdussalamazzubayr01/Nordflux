@@ -729,7 +729,62 @@ to { transform: rotate(360deg); }
 @media (max-width:900px){
 .hero-video{height:56vh;}
 .hero{padding:24px 20px 48px;}
+.hero h1{font-size:52px;}
 .hero p{font-size:18px;}
+}
+
+@media (max-width:768px){
+.hero h1{font-size:44px;}
+}
+
+@media (max-width:600px){
+.hero h1{font-size:38px;}
+}
+
+@media (max-width:480px){
+.hero h1{font-size:32px;}
+}
+
+@media (max-width:360px){
+.hero h1{font-size:28px;}
+}
+
+@media (max-width:768px){
+.hero h1{font-size:44px;}
+}
+
+@media (max-width:600px){
+.hero h1{font-size:38px;}
+}
+
+@media (max-width:480px){
+.hero h1{font-size:32px;}
+}
+
+@media (max-width:360px){
+.hero h1{font-size:28px;}
+}
+
+/* FOOTER RESPONSIVE */
+
+@media (max-width:768px){
+.footer-links{
+grid-template-columns:repeat(2, 1fr);
+gap:15px;
+}
+footer{
+padding:30px 20px;
+}
+}
+
+@media (max-width:480px){
+.footer-links{
+grid-template-columns:repeat(3, 1fr);
+gap:10px;
+}
+.footer-links a{
+font-size:13px;
+}
 }
 
 /* ABOUT */
@@ -1334,9 +1389,9 @@ document.addEventListener('click', function(event) {
 
 </script>
 
-<script src="/assets/js/site-shell.js" defer></script>
-<script src="/assets/js/site-audio.js" defer></script>
-<script src="/assets/js/site-nav.js"></script>
+<script type="module" src="/assets/js/site-shell.js" defer></script>
+<script type="module" src="/assets/js/site-audio.js" defer></script>
+<script type="module" src="/assets/js/site-nav.js"></script>
 </body>
 </html>
 ```

@@ -89,7 +89,7 @@
       loginLink.style.display = 'none';
       logoutOption.style.display = 'block';
       profileOption.style.display = 'block';
-      localStorage.setItem('nordluxeUser', JSON.stringify({ uid: user.uid, email: user.email, displayName, photoURL, provider: user.providerData[0]?.providerId }));
+      localStorage.setItem('nordluxeUser', JSON.stringify({ uid: user.uid, id: user.uid, name: displayName, displayName, email: user.email, photoURL: user.photoURL || '', profilePic: user.photoURL || '', provider: user.providerData[0]?.providerId }));
     } else {
       userBtn.innerHTML = '👤';
       userBtn.style.width = '40px';

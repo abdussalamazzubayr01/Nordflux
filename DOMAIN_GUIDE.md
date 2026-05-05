@@ -5,19 +5,19 @@
 ### Primary Recommendations (Check Availability):
 
 #### 1. **nordluxe.com** ⭐⭐⭐⭐⭐
-- **Price**: ~$12-15/year
+- **Price**: ~₦12-15/year
 - **Why perfect**: Exact brand match, memorable, professional
 - **SEO**: Excellent keyword match
 - **Availability**: Check at Namecheap or GoDaddy
 
 #### 2. **nordluxe.fashion** ⭐⭐⭐⭐
-- **Price**: ~$15-25/year
+- **Price**: ~₦15-25/year
 - **Why great**: Brand name + industry keyword
 - **Modern**: Uses new TLD (.fashion)
 - **Targeted**: Clearly indicates fashion industry
 
 #### 3. **nordluxury.com** ⭐⭐⭐⭐
-- **Price**: ~$12-15/year
+- **Price**: ~₦12-15/year
 - **Why strong**: Combines Nordic + Luxury clearly
 - **Memorable**: Easy to spell and remember
 - **Premium**: Sounds high-end
@@ -25,15 +25,15 @@
 ### Alternative Options (If Primary Unavailable):
 
 #### Premium Alternatives:
-- `nordluxe.style` (~$15/year)
-- `nordluxe.luxury` (~$50/year - premium TLD)
-- `nordic-luxe.com` (~$12/year)
-- `scandinavianluxury.com` (~$12/year)
+- `nordluxe.style` (~₦15/year)
+- `nordluxe.luxury` (~₦50/year - premium TLD)
+- `nordic-luxe.com` (~₦12/year)
+- `scandinavianluxury.com` (~₦12/year)
 
 #### Budget Options:
-- `nordluxe.co` (~$25/year)
-- `nordluxe.shop` (~$15/year)
-- `nordluxuryfashion.com` (~$12/year)
+- `nordluxe.co` (~₦25/year)
+- `nordluxe.shop` (~₦15/year)
+- `nordluxuryfashion.com` (~₦12/year)
 
 ## 🏆 Domain Registrar Recommendations
 
@@ -80,13 +80,13 @@
 
 | TLD | Price Range | Notes |
 |-----|-------------|-------|
-| .com | $10-15/year | Most popular, professional |
-| .fashion | $15-30/year | Industry-specific |
-| .luxury | $50-100/year | Premium, expensive |
-| .style | $15-25/year | Creative, modern |
-| .co | $20-30/year | Trendy, shorter |
-| .shop | $15-25/year | E-commerce focused |
-| .store | $15-25/year | Retail focused |
+| .com | ₦10-15/year | Most popular, professional |
+| .fashion | ₦15-30/year | Industry-specific |
+| .luxury | ₦50-100/year | Premium, expensive |
+| .style | ₦15-25/year | Creative, modern |
+| .co | ₦20-30/year | Trendy, shorter |
+| .shop | ₦15-25/year | E-commerce focused |
+| .store | ₦15-25/year | Retail focused |
 
 ## 🔍 How to Check Domain Availability
 

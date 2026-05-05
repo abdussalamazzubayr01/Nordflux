@@ -144,11 +144,37 @@ tr:hover {
 
 footer {
   text-align: center;
-  padding: 20px;
+  padding: 0 16px;
   color: #6f5128;
   font-size: 13px;
-  margin-top: 28px;
+  margin: 28px auto 20px;
   border-top: 1px solid rgba(209, 155, 72, 0.2);
+}
+
+.footer-policy-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px 18px;
+  width: min(100%, 560px);
+  margin: 14px auto;
+}
+
+.footer-policy-links a {
+  color: #6f5128;
+  text-decoration: none;
+  font-size: 13px;
+  line-height: 1.4;
+  letter-spacing: 0.2px;
+}
+
+.footer-policy-links a:hover {
+  color: #2c2016;
+}
+
+.footer-copy {
+  margin: 0 0 6px;
 }
 
 @media (max-width: 768px) {
@@ -185,8 +211,14 @@ footer {
     padding: 8px;
     font-size: 13px;
   }
+
+  .footer-policy-links {
+    gap: 8px 14px;
+    width: min(100%, 420px);
+  }
 }
 </style>
+<link rel="stylesheet" href="/assets/css/theme-overrides.css">
 </head>
 <body>
 
@@ -369,7 +401,15 @@ footer {
 </div>
 
 <footer>
-  <p>&copy; 2024-2026 NORDLUXE. All rights reserved.</p>
+  <nav class="footer-policy-links" aria-label="Policy links">
+    <a href="privacy-policy.html">Privacy Policy</a>
+    <a href="cookie-policy.html">Cookie Policy</a>
+    <a href="payment-policy.html">Payment Policy</a>
+    <a href="shipping-policy.html">Shipping Policy</a>
+    <a href="refund-policy.html">Refund Policy</a>
+    <a href="preorder-policy.html">Preorder Policy</a>
+  </nav>
+  <p class="footer-copy">&copy; 2026 NORDLUXE. All rights reserved.</p>
 </footer>
 
 <script src="/assets/js/site-nav.js" defer></script>

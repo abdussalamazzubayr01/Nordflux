@@ -36,11 +36,13 @@ ADMIN_EMAIL=your_admin_email@gmail.com
 PORT=3001
 FRONTEND_URL=http://localhost:8000
 
-# Database (Optional)
-MONGODB_URI=mongodb://localhost:27017/nordluxe
+# Database (MongoDB Atlas recommended for Vercel)
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/nordluxe?retryWrites=true&w=majority
 ```
 
 ### 🔧 Step 3: Get Flutterwave Credentials
+
+For Vercel deployments, add the same Atlas connection string to your project environment variables. The backend accepts either `MONGODB_URI` or `MONGO_URI`.
 
 1. **Login to Flutterwave Dashboard**
 2. **Go to Settings > API**

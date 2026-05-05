@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node assets/js/server.js",
+    "start:static": "node static-server.js",
     "dev": "nodemon assets/js/server.js",
     "build": "echo 'Static site - no build needed'",
     "deploy": "bash deploy.sh",
@@ -37,6 +38,7 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "body-parser": "^2.2.2",
+    "cors": "^2.8.6",
     "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
     "express": "^5.2.1",
@@ -49,14 +51,14 @@
     "passport": "^0.7.0",
     "passport-apple": "^2.0.2",
     "passport-google-oauth20": "^2.0.0",
-    "qrcode": "^1.5.4"
+    "qrcode": "^1.5.4",
+    "resend": "^6.12.2"
   },
   "devDependencies": {
     "dotenv": "^17.4.2",
     "nodemon": "^3.1.14"
   },
   "optionalDependencies": {
-    "cors": "^2.8.6",
     "express-rate-limit": "^8.3.2",
     "helmet": "^8.1.0",
     "winston": "^3.19.0"

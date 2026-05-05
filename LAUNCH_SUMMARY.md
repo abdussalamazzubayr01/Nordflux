@@ -37,7 +37,7 @@ Congratulations! Your NORDLUXE luxury fashion website is now **production-ready*
 ```
 Go to: https://www.namecheap.com/
 Search: nordluxe.com
-Purchase: ~$12/year
+Purchase: ~₦12/year
 ```
 
 ### 2. **Deploy to Hosting** (10 minutes)
@@ -125,11 +125,11 @@ Your site will be live at: `https://nordluxe.com`
 
 | Item | Cost | Notes |
 |------|------|-------|
-| Domain | $12/year | nordluxe.com |
+| Domain | ₦12/year | nordluxe.com |
 | Hosting | FREE | Vercel/Netlify/GitHub Pages |
 | SSL Certificate | FREE | Automatic |
-| Email | $5/month | Optional (Gmail, etc.) |
-| **Total** | **~$12/year** | Professional website! |
+| Email | ₦5/month | Optional (Gmail, etc.) |
+| **Total** | **~₦12/year** | Professional website! |
 
 ---
 

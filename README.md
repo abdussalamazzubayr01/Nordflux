@@ -22,7 +22,7 @@ NORDLUXE now includes customer account login with multiple authentication method
    - `EMAIL_USER` & `EMAIL_PASS` - Gmail credentials (use app password)
    - `GOOGLE_CLIENT_ID` & `GOOGLE_CLIENT_SECRET` - From Google Cloud Console
    - `APPLE_CLIENT_ID`, `APPLE_TEAM_ID`, etc. - From Apple Developer Console
-   - `MONGODB_URI` - MongoDB connection string
+   - `MONGODB_URI` or `MONGO_URI` - MongoDB Atlas connection string
 
 3. **Start Server**
    ```bash

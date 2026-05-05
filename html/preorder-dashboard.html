@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders - NORDLUXE</title>
+  <link rel="stylesheet" href="../assets/css/theme-overrides.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f1e8 0%, #f0ede5 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #6e4b1e;
+    }
+    .header .logo {
+      margin-bottom: 15px;
+    }
+    .header .logo img {
+      height: 60px;
+      width: auto;
+    }
+    .header h1 { 
+      font-size: 2.5em; 
+      margin-bottom: 10px; 
+      color: #d19b48;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+    .login-section, .dashboard-section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 15px rgba(209, 155, 72, 0.1);
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #6e4b1e;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e8dcc7;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #d19b48;
+    }
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-primary {
+      background: #d19b48;
+      color: white;
+      width: 100%;
+    }
+    .btn-primary:hover {
+      background: #c18934;
+      transform: translateY(-2px);
+    }
+    .btn-pay {
+      background: #2dbf64;
+      color: white;
+      margin-top: 20px;
+    }
+    .btn-pay:hover {
+      background: #27a654;
+    }
+    .btn-logout {
+      background: #999;
+      color: white;
+      width: auto;
+      padding: 8px 16px;
+      font-size: 0.9em;
+    }
+    .hidden { display: none; }
+    .order-card {
+      background: #f8f4eb;
+      border: 1px solid #e8dcc7;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #e8dcc7;
+      padding-bottom: 15px;
+    }
+    .order-id { font-weight: 600; color: #d19b48; font-size: 1.1em; }
+    .order-status {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: 600;
+    }
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+    .status-partial {
+      background: #fff3cd;
+      color: #856404;
+    }
+    .status-completed {
+      background: #d4edda;
+      color: #155724;
+    }
+    .payment-section {
+      background: white;
+      border: 1px solid #d19b48;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+    }
+    .payment-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 8px 0;
+    }
+    .payment-row:last-child {
+      margin-bottom: 0;
+      border-top: 1px solid #e8dcc7;
+      padding-top: 15px;
+    }
+    .payment-label { font-weight: 600; color: #6e4b1e; }
+    .payment-amount { color: #d19b48; font-weight: 700; }
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e8dcc7;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2dbf64 0%, #27a654 100%);
+      transition: width 0.3s;
+    }
+    .items-list {
+      margin: 15px 0;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+    }
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 15px;
+      margin: 15px 0;
+    }
+    .item-card {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background: white;
+      border: 1px solid #e8dcc7;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(209, 155, 72, 0.1);
+    }
+    .item-image {
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+    .item-details {
+      flex: 1;
+    }
+    .item-name {
+      font-weight: 600;
+      color: #6e4b1e;
+      margin-bottom: 5px;
+      font-size: 1.1em;
+    }
+    .item-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .item-qty {
+      color: #999;
+      font-size: 0.9em;
+    }
+    .item-price {
+      font-weight: 600;
+      color: #d19b48;
+    }
+    .order-reference-section {
+      background: #f8f4eb;
+      border: 2px solid #d19b48;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .reference-number {
+      font-size: 1.4em;
+      font-weight: 700;
+      color: #d19b48;
+      font-family: 'Cinzel', serif;
+      letter-spacing: 1px;
+      background: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: 1px solid #e8dcc7;
+      display: inline-block;
+      margin: 10px 0;
+    }
+    .delivery-info {
+      background: #f0f8f4;
+      border-left: 4px solid #2dbf64;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .delivery-info strong { color: #27a654; }
+    .error { color: #dc3545; font-size: 0.9em; margin-top: 5px; }
+    .success { color: #2dbf64; font-size: 0.9em; margin-top: 5px; }
+    .loading { text-align: center; color: #999; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <img src="/assets/images/sa.jpg" alt="Nordluxe Logo">
+      </div>
+      <h1>NORDLUXE</h1>
+      <p>Orders</p>
+    </div>
+
+    <!-- Login Section -->
+    <div id="loginSection" class="login-section">
+      <h2 style="margin-bottom: 20px; color: #6e4b1e;">Access Your Orders</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="orderId">Order ID *</label>
+          <input type="text" id="orderId" placeholder="e.g., nl-1776368856646-tk2b0k" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address *</label>
+          <input type="email" id="email" placeholder="your.email@example.com" required>
+        </div>
+        <button type="submit" class="btn btn-primary" id="accessBtn">🔓 Access Your Orders</button>
+        <div id="loginError" class="error hidden"></div>
+      </form>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboardSection" class="dashboard-section hidden">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+          <h2 style="color: #6e4b1e; margin-bottom: 10px;">Your Orders</h2>
+          <div style="background: #f8f4eb; border: 2px solid #d19b48; border-radius: 8px; padding: 15px; margin-bottom: 10px;">
+            <div style="font-size: 0.9em; color: #666; margin-bottom: 5px; font-weight: 600;">📋 ORDER REFERENCE NUMBER:</div>
+            <div id="displayOrderId" style="font-weight: 700; color: #d19b48; font-size: 1.2em; font-family: 'Cinzel', serif; letter-spacing: 1px;"></div>
+            <div id="displayEmail" style="font-size: 0.9em; color: #666; margin-top: 5px;"></div>
+          </div>
+        </div>
+        <button class="btn btn-logout" onclick="logout()">Logout</button>
+      </div>
+
+      <div id="orderLoading" class="loading" style="display: none;">Loading your order details...</div>
+
+      <div id="orderContent" style="display: none;">
+        <!-- Order will be dynamically inserted here -->
+      </div>
+
+      <div id="orderError" class="error hidden" style="padding: 20px; background: #f8d7da; border-radius: 8px;"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = getApiBase();
+
+    function getApiBase() {
+      const candidates = [
+        `http://${window.location.hostname}:3001`,
+        'http://localhost:3001',
+        window.location.origin
+      ];
+      return candidates[0];
+    }
+
+    function formatNaira(amount) {
+      const numericAmount = Number(amount);
+      const safeAmount = Number.isFinite(numericAmount) ? numericAmount : 0;
+      return `₦${safeAmount.toLocaleString('en-NG', { maximumFractionDigits: 2 })}`;
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const orderId = document.getElementById('orderId').value.trim();
+      const email = document.getElementById('email').value.trim();
+
+      if (!orderId || !email) {
+        showLoginError('Please fill in all fields');
+        return;
+      }
+
+      try {
+        document.getElementById('orderLoading').style.display = 'block';
+        document.getElementById('orderContent').style.display = 'none';
+        document.getElementById('orderError').style.display = 'none';
+
+        const response = await fetch(`${API_BASE}/api/preorder-dashboard`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId, email })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Failed to load order');
+        }
+
+        loadDashboard(data.order, data.masterOrderId, email);
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('dashboardSection').classList.remove('hidden');
+        localStorage.setItem('nordluxeSession', JSON.stringify({ orderId, email }));
+
+      } catch (error) {
+        document.getElementById('orderLoading').style.display = 'none';
+        showOrderError(error.message || 'Unable to access order. Please check your Order ID and email.');
+      }
+    });
+
+    function loadDashboard(order, masterOrderId, customerEmail) {
+      document.getElementById('orderLoading').style.display = 'none';
+      document.getElementById('orderContent').style.display = 'block';
+      document.getElementById('displayOrderId').textContent = masterOrderId;
+      document.getElementById('displayEmail').textContent = customerEmail;
+
+      // Calculate delivery date (20 days from order)
+      const orderDate = new Date(order.createdAt);
+      const deliveryDate = new Date(orderDate);
+      deliveryDate.setDate(deliveryDate.getDate() + 20);
+      const today = new Date();
+      const daysLeft = Math.ceil((deliveryDate - today) / (1000 * 60 * 60 * 24));
+
+      // Enhanced items display with images and details
+      const itemsHtml = order.items.map(item => {
+        // Get item image based on name
+        const itemImages = {
+          'Nordluxe Long Ascension White': '/assets/images/white%20long.png',
+          'Nordluxe Short Ascension White': '/assets/images/wite%20short.png',
+          'Nordluxe Long Ascension Black': '/assets/images/long%20black.png',
+          'Nordluxe Short Ascension Black': '/assets/images/black%20short.png',
+          'Cloak White': '/assets/images/cloak%20white.png',
+          'Cloak Black': '/assets/images/cloak%20black.png'
+        };
+
+        const itemImage = itemImages[item.itemName] || '/assets/images/sa.jpg';
+
+        return `
+          <div class="item-card">
+            <div class="item-image">
+              <img src="${itemImage}" alt="${item.itemName}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+            </div>
+            <div class="item-details">
+              <div class="item-name">${item.itemName}</div>
+              <div class="item-info">
+                <span class="item-qty">Qty: ${item.quantity}</span>
+                <span class="item-price">${formatNaira(item.unitPrice)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Create comprehensive order card
+      const orderHtml = `
+        <div class="order-card">
+          <div class="order-header">
+            <div>
+              <div class="order-id">Order Details</div>
+              <div style="font-size: 0.9em; color: #999; margin-top: 5px;">${orderDate.toLocaleDateString()}</div>
+            </div>
+            <div class="order-status status-partial">Awaiting Final Payment</div>
+          </div>
+
+          <!-- Order Reference Number -->
+          <div class="order-reference-section">
+            <h3 style="color: #6e4b1e; margin-bottom: 10px;">📋 Order Reference</h3>
+            <div class="reference-number">${masterOrderId}</div>
+            <div style="font-size: 0.9em; color: #666; margin-top: 5px;">Use this reference number for all communications</div>
+          </div>
+
+          <!-- Items Section -->
+          <div>
+            <h3 style="color: #6e4b1e; margin-bottom: 15px;">🛍️ Your Items</h3>
+            <div class="items-grid">${itemsHtml}</div>
+          </div>
+
+          <!-- Payment Section -->
+          <div class="payment-section">
+            <h3 style="color: #6e4b1e; margin-bottom: 15px;">💳 Payment Status</h3>
+
+            <div class="payment-row">
+              <span class="payment-label">Total Amount:</span>
+              <span class="payment-amount">${formatNaira(order.totalAmount)}</span>
+            </div>
+
+            <div class="payment-row">
+              <span class="payment-label">40% Deposit (Paid):</span>
+              <span class="payment-amount" style="color: #2dbf64;">${formatNaira(order.totalAmount * 0.4)}</span>
+            </div>
+
+            <div class="payment-row">
+              <span class="payment-label">Remaining Balance (60%):</span>
+              <span class="payment-amount" style="color: #dc3545;">${formatNaira(order.totalAmount * 0.6)}</span>
+            </div>
+
+            <div style="margin-top: 15px;">
+              <p style="font-size: 0.9em; color: #666; margin-bottom: 5px;">Payment Progress</p>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 40%;"></div>
+              </div>
+              <p style="font-size: 0.85em; color: #999; text-align: right;">40% Complete</p>
+            </div>
+          </div>
+
+          <!-- Delivery Info -->
+          <div class="delivery-info">
+            <strong>📅 Estimated Delivery:</strong>
+            <div style="margin-top: 8px;">${deliveryDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+            <div style="margin-top: 5px; font-size: 0.9em;">${daysLeft > 0 ? `${daysLeft} days from today` : 'Delivery expected soon!'}</div>
+          </div>
+
+          <!-- Pay Button -->
+          <button class="btn btn-pay" onclick="initiateRemainingPayment('${order.flutterwaveRef}')">
+            💰 Pay Remaining 60% Balance
+          </button>
+        </div>
+      `;
+
+      // Replace the content with the enhanced order
+    async function initiateRemainingPayment(orderId) {
+      const session = JSON.parse(localStorage.getItem('nordluxeSession'));
+      if (!session) return;
+
+      try {
+        // Find the pay button for this specific order
+        const payBtn = event.target;
+        payBtn.disabled = true;
+        payBtn.textContent = 'Processing...';
+
+        const response = await fetch(`${API_BASE}/api/initiate-remaining-payment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId: orderId })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Failed to initiate payment');
+        }
+
+        // Open payment popup
+        const paymentWindow = window.open(data.paymentLink, 'Flutterwave Payment', 'width=520,height=760');
+        if (!paymentWindow) {
+          alert('Please allow pop-ups to complete payment');
+        }
+
+        payBtn.disabled = false;
+        payBtn.textContent = '💰 Pay Remaining 60% Balance';
+
+      } catch (error) {
+        // Reset all pay buttons on error
+        const payBtns = document.querySelectorAll('.btn-pay');
+        payBtns.forEach(btn => {
+          btn.disabled = false;
+          btn.textContent = '💰 Pay Remaining 60% Balance';
+        });
+        alert('Payment Error: ' + error.message);
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('nordluxeSession');
+      document.getElementById('loginSection').style.display = 'block';
+      document.getElementById('dashboardSection').classList.add('hidden');
+      document.getElementById('loginForm').reset();
+      document.getElementById('loginError').classList.add('hidden');
+    }
+
+    function showLoginError(msg) {
+      document.getElementById('loginError').textContent = msg;
+      document.getElementById('loginError').classList.remove('hidden');
+    }
+
+    function showOrderError(msg) {
+      document.getElementById('orderError').textContent = msg;
+      document.getElementById('orderError').classList.remove('hidden');
+      document.getElementById('orderLoading').style.display = 'none';
+    }
+
+    // Auto-login if session exists
+    window.addEventListener('load', () => {
+      const session = JSON.parse(localStorage.getItem('nordluxeSession'));
+      if (session) {
+        document.getElementById('orderId').value = session.orderId;
+        document.getElementById('email').value = session.email;
+        document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+      }
+    });
+  </script>
+</body>
+</html>

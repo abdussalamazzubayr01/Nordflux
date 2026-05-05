@@ -825,9 +825,9 @@ transform:translateY(-2px);
     }
     
     .product-grid {
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 25px;
-        padding: 0 20px 60px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        padding: 0 14px 60px;
     }
     
     .section-title {
@@ -860,27 +860,30 @@ transform:translateY(-2px);
 
 @media (max-width: 480px) {
     nav {
-        flex-direction: column;
-        gap: 15px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0;
         padding: 15px 20px;
     }
     
     .nav-links {
-        width: 100%;
+        width: auto;
         display: flex;
-        flex-direction: column;
-        gap: 10px;
+        flex-direction: row;
+        align-items: center;
+        gap: 0;
     }
     
     nav a {
-        margin-left: 0;
+        margin-left: 10px;
         font-size: 12px;
     }
     
     .product-grid {
         grid-template-columns: 1fr;
-        gap: 20px;
-        padding: 0 15px 50px;
+        gap: 16px;
+        padding: 0 14px 50px;
     }
     
     .section-title {
@@ -925,12 +928,15 @@ transform:translateY(-2px);
 <a href="contact.html">Contact</a>
 <a href="story.html">Story</a>
 <a href="cart.html" class="cart-btn">🛒 Cart</a>
-<div class="user-menu" id="userMenuContainer">
-<button class="user-btn" id="userBtn" onclick="toggleUserMenu()">👤</button>
+<div class="user-menu">
+<button class="user-btn" onclick="toggleUserMenu()">👤</button>
 <div class="user-dropdown" id="userDropdown">
-<a href="#" onclick="openLoginModal(); return false;">Login/Signup</a>
-<a href="#" onclick="logout(); return false;" id="logoutOption" style="display:none;">Logout</a>
-<a href="#" onclick="goToProfile(); return false;" id="profileOption" style="display:none;">My Profile</a>
+<a href="login.html">Login / Signup</a>
+<a href="cart.html">Cart</a>
+<a href="collections.html">Collection</a>
+<a href="story.html">Story</a>
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
 </div>
 </div>
 </div>
@@ -1250,6 +1256,7 @@ function calculatePreorderBreakdown(priceLabel) {
 // AUTHENTICATION SYSTEM
 function toggleUserMenu() {
     const dropdown = document.getElementById('userDropdown');
+    if (!dropdown) return;
     dropdown.classList.toggle('open');
 }
 
@@ -1399,11 +1406,20 @@ function goToProfile() {
 function updateUserUI() {
     const isLoggedIn = localStorage.getItem('nordluxeLoggedIn') === 'true';
     const user = JSON.parse(localStorage.getItem('nordluxeUser') || '{}');
-    
-    const loginLink = document.querySelector('[onclick="openLoginModal(); return false;"]').parentElement;
+
+    const loginAnchor = document.querySelector('[onclick="openLoginModal(); return false;"]');
+    if (!loginAnchor) {
+        return;
+    }
+
+    const loginLink = loginAnchor.parentElement;
     const logoutLink = document.getElementById('logoutOption');
     const profileLink = document.getElementById('profileOption');
     const userBtn = document.getElementById('userBtn');
+
+    if (!loginLink || !logoutLink || !profileLink || !userBtn) {
+        return;
+    }
     
     if (isLoggedIn && user.name) {
         loginLink.style.display = 'none';
@@ -1425,10 +1441,11 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 document.addEventListener('click', function(event) {
-    const userMenu = document.getElementById('userMenuContainer');
-    if (userMenu && !userMenu.contains(event.target)) {
-        const dropdown = document.getElementById('userDropdown');
-        if (dropdown) dropdown.classList.remove('open');
+    const dropdown = document.getElementById('userDropdown');
+    const userBtn = document.querySelector('.user-btn');
+    if (!dropdown || !userBtn) return;
+    if (!dropdown.contains(event.target) && !userBtn.contains(event.target)) {
+        dropdown.classList.remove('open');
     }
 });
 

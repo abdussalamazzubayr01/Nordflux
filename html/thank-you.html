@@ -530,24 +530,84 @@ const urlParams = new URLSearchParams(window.location.search);
 const transactionId = urlParams.get('transaction_id');
 const txRef = urlParams.get('tx_ref');
 
-function resolveApiBase() {
-  const configuredApiBase = (window.NORDLUXE_API_BASE || '').trim();
-  if (configuredApiBase) {
-    return configuredApiBase;
-  }
-
+function resolveApiBases() {
+  const configuredApiBase = (window.NORDLUXE_API_BASE || '').trim().replace(/\/$/, '');
   const host = String(window.location.hostname || '').trim();
   const protocol = String(window.location.protocol || '').trim();
+  const origin = String(window.location.origin || '').trim();
+  const port = String(window.location.port || '').trim();
+
+  const candidates = [];
+  const productionFallbacks = ['https://nordluxe.com', 'https://www.nordluxe.com'];
+  const staticDevPorts = ['5500', '5501', '8080', '8000', '4200', '3000'];
+  const isLocalHost = host === 'localhost' || host === '127.0.0.1';
+  const isStaticDevServer = isLocalHost && staticDevPorts.includes(port);
+
+  function pushCandidate(value) {
+    if (typeof value !== 'string') return;
+    const cleaned = value.trim().replace(/\/$/, '');
+    if (!cleaned && value !== '') return;
+    candidates.push(cleaned);
+  }
+
+  if (configuredApiBase) {
+    pushCandidate(configuredApiBase);
+  }
 
   if (!host || protocol === 'file:') {
-    return 'http://localhost:3001';
+    pushCandidate('http://localhost:3001');
+    pushCandidate('http://127.0.0.1:3001');
+    productionFallbacks.forEach(pushCandidate);
+  } else if (isStaticDevServer) {
+    // Static dev servers (like :5500) do not handle POST /api routes.
+    pushCandidate(`${window.location.protocol}//${window.location.hostname}:3001`);
+    pushCandidate('http://localhost:3001');
+    pushCandidate('http://127.0.0.1:3001');
+    productionFallbacks.forEach(pushCandidate);
+  } else if (isLocalHost) {
+    pushCandidate('');
+    pushCandidate(`${window.location.protocol}//${window.location.hostname}:3001`);
+    pushCandidate('http://localhost:3001');
+    pushCandidate('http://127.0.0.1:3001');
+    productionFallbacks.forEach(pushCandidate);
+  } else {
+    pushCandidate('');
   }
 
-  if (host === 'localhost' || host === '127.0.0.1') {
-    return window.location.port === '3001' ? '' : 'http://localhost:3001';
+  return candidates.filter((base, index) => candidates.indexOf(base) === index);
+}
+
+async function fetchWithApiBaseFallback(path, options) {
+  const apiBases = resolveApiBases();
+  const attempts = [];
+  let lastError = null;
+
+  for (const apiBase of apiBases) {
+    const endpoint = `${apiBase}${path}`;
+    try {
+      const response = await fetch(endpoint, options);
+      if (!response.ok) {
+        let reason = `HTTP ${response.status}`;
+        try {
+          const raw = await response.text();
+          if (raw) {
+            reason = `HTTP ${response.status}: ${raw.slice(0, 140)}`;
+          }
+        } catch (readError) {
+          // Ignore body read issues and keep HTTP status reason.
+        }
+        attempts.push(`${endpoint} -> ${reason}`);
+        continue;
+      }
+      return response;
+    } catch (error) {
+      lastError = error;
+      attempts.push(`${endpoint} -> ${error && error.message ? error.message : 'Failed to fetch'}`);
+    }
   }
 
-  return '';
+  const detail = attempts.length ? attempts.join(' | ') : (lastError && lastError.message ? lastError.message : 'Failed to fetch');
+  throw new Error(`Unable to reach payment API. Attempts: ${detail}`);
 }
 
 function readList(key) {
@@ -688,8 +748,6 @@ async function createOrderInDatabase() {
   }
 
   try {
-    const apiBase = resolveApiBase();
-
     const orderPayload = {
       customerEmail: pendingOrder.customer.email,
       customerName: `${pendingOrder.customer.firstName} ${pendingOrder.customer.lastName}`,
@@ -701,7 +759,7 @@ async function createOrderInDatabase() {
       paymentReference: transactionId || txRef || pendingOrder.txRef
     };
 
-    const response = await fetch(`${apiBase}/api/orders`, {
+    const response = await fetchWithApiBaseFallback('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(orderPayload)
@@ -742,22 +800,24 @@ async function createOrderInDatabase() {
 }
 
 if (transactionId) {
-  // Verify payment with backend
-  fetch(`${resolveApiBase()}/api/verify-payment/${transactionId}`)
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        console.log('Payment verified successfully');
-        // Create order in database
-        createOrderInDatabase();
-      } else {
-        console.log('Payment verification failed');
-      }
+  // Save order first so confirmation emails can include full item breakdown.
+  createOrderInDatabase()
+    .catch((orderError) => {
+      console.error('Order creation before verification failed:', orderError);
     })
-    .catch(error => {
-      console.error('Verification error:', error);
-      // Create order anyway in case verification endpoint has issues
-      createOrderInDatabase();
+    .finally(() => {
+      fetchWithApiBaseFallback(`/api/verify-payment/${transactionId}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            console.log('Payment verified successfully');
+          } else {
+            console.log('Payment verification failed');
+          }
+        })
+        .catch(error => {
+          console.error('Verification error:', error);
+        });
     });
 } else {
   // If no transaction ID, still try to create order

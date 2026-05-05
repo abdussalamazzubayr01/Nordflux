@@ -1,7 +1,9 @@
 const express = require('express');
+const helmet = require('helmet');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const Flutterwave = require('flutterwave-node-v3');
+const { Resend } = require('resend');
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
@@ -23,19 +25,139 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 const IS_PRODUCTION = NODE_ENV === 'production';
 const REQUEST_BODY_LIMIT = process.env.REQUEST_BODY_LIMIT || '1mb';
 const REQUEST_PARAMETER_LIMIT = Number(process.env.REQUEST_PARAMETER_LIMIT || 100);
-const SHUTDOWN_TIMEOUT_MS = Number(process.env.SHUTDOWN_TIMEOUT_MS || 15000);
 const KEEP_ALIVE_TIMEOUT_MS = Number(process.env.KEEP_ALIVE_TIMEOUT_MS || 65000);
 const HEADERS_TIMEOUT_MS = Number(process.env.HEADERS_TIMEOUT_MS || 66000);
+const SHUTDOWN_TIMEOUT_MS = Number(process.env.SHUTDOWN_TIMEOUT_MS || 15000);
+const SESSION_MAX_AGE_MS = Number(process.env.SESSION_MAX_AGE_MS || 1000 * 60 * 60 * 24 * 7);
+const OTP_MAX_ATTEMPTS = Number(process.env.OTP_MAX_ATTEMPTS || 5);
+const OTP_TTL_MS = Number(process.env.OTP_TTL_MS || 10 * 60 * 1000);
+const ALLOWED_ORIGINS = String(process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 let isShuttingDown = false;
 let server = null;
+const serverStartedAt = Date.now();
 
 function resolvePositiveInteger(rawValue, defaultValue) {
   const parsed = Number(rawValue);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : defaultValue;
 }
 
+function safeCompareSecrets(left, right) {
+  const leftValue = String(left || '');
+  const rightValue = String(right || '');
+  if (!leftValue || !rightValue) return false;
+
+  const leftBuffer = Buffer.from(leftValue);
+  const rightBuffer = Buffer.from(rightValue);
+  if (leftBuffer.length !== rightBuffer.length) return false;
+
+  try {
+    return crypto.timingSafeEqual(leftBuffer, rightBuffer);
+  } catch (error) {
+    return false;
+  }
+}
+
+function normalizeUserId(value) {
+  return String(value || '').trim();
+}
+
+function resolveSessionUserEmail(req) {
+  return extractSingleEmail(req && req.user ? req.user.email : '');
+}
+
+function isOrderOwnedBySessionUser(order, req) {
+  if (!order || !req || !req.user) return false;
+  const sessionUserId = normalizeUserId(req.user._id);
+  const sessionEmail = resolveSessionUserEmail(req);
+  const orderUserId = normalizeUserId(order.userId);
+  const orderEmail = extractSingleEmail(order.customerEmail);
+
+  return (sessionUserId && orderUserId && sessionUserId === orderUserId)
+    || (sessionEmail && orderEmail && sessionEmail === orderEmail);
+}
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
+  if (!ALLOWED_ORIGINS.length) {
+    return !IS_PRODUCTION;
+  }
+  return ALLOWED_ORIGINS.includes(origin);
+}
+
+function isAdminRequest(req) {
+  const configuredAdminKey = String(process.env.NEWSLETTER_ADMIN_KEY || '').trim();
+  const requestAdminKey = String(req && req.headers ? (req.headers['x-admin-key'] || '') : '').trim();
+  return safeCompareSecrets(requestAdminKey, configuredAdminKey);
+}
+
+function rejectUnauthorizedAdmin(res) {
+  return res.status(403).json({ success: false, message: 'Unauthorized' });
+}
+
+function extractOrderAccessToken(req) {
+  const headerToken = normalizeText(req && req.headers ? req.headers['x-order-access-token'] : '');
+  if (headerToken) return headerToken;
+  const queryToken = normalizeText(req && req.query ? req.query.accessToken : '');
+  if (queryToken) return queryToken;
+  return normalizeText(req && req.body ? req.body.accessToken : '');
+}
+
+function canAccessOrderAsGuest(order, req) {
+  const incomingToken = extractOrderAccessToken(req);
+  const storedToken = normalizeText(order && order.orderAccessToken);
+  if (!incomingToken || !storedToken) {
+    return false;
+  }
+  return safeCompareSecrets(incomingToken, storedToken);
+}
+
+function sanitizeOrderForClient(order) {
+  const normalized = normalizeStoredOrder(order);
+  if (!normalized || typeof normalized !== 'object') {
+    return normalized;
+  }
+  const sanitized = { ...normalized };
+  delete sanitized.orderAccessToken;
+  delete sanitized.internalNotes;
+  return sanitized;
+}
+
 const safeRequestParameterLimit = resolvePositiveInteger(REQUEST_PARAMETER_LIMIT, 100);
+const safeSessionMaxAgeMs = resolvePositiveInteger(SESSION_MAX_AGE_MS, 1000 * 60 * 60 * 24 * 7);
+
+let createRateLimit = null;
+try {
+  createRateLimit = require('express-rate-limit');
+} catch (error) {
+  console.warn('express-rate-limit is not installed. Request throttling middleware disabled.');
+}
+
+if (IS_PRODUCTION && !createRateLimit) {
+  throw new Error('express-rate-limit is required in production. Install it before deploying.');
+}
+
+if (IS_PRODUCTION && (!process.env.SESSION_SECRET || process.env.SESSION_SECRET === 'nordluxe-secret')) {
+  throw new Error('SESSION_SECRET must be set to a strong random value in production.');
+}
+
+if (!process.env.NEWSLETTER_ADMIN_KEY) {
+  throw new Error('NEWSLETTER_ADMIN_KEY is required and must be configured before startup.');
+}
+
+if (IS_PRODUCTION && !process.env.ALLOWED_ORIGINS) {
+  throw new Error('ALLOWED_ORIGINS must be configured in production.');
+}
+
+function createOptionalRateLimit(config) {
+  if (!createRateLimit) {
+    return (req, res, next) => next();
+  }
+  return createRateLimit(config);
+}
 
 let firebaseAdminAuth = null;
 if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
@@ -56,7 +178,34 @@ if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && proc
 // Middleware
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
-app.use(cors());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'", 'https:'],
+      objectSrc: ["'none'"],
+      frameSrc: ["'none'"],
+      upgradeInsecureRequests: IS_PRODUCTION ? [] : null
+    }
+  },
+  crossOriginEmbedderPolicy: false,
+  hsts: IS_PRODUCTION ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false
+}));
+app.use(cors({
+  origin: (origin, callback) => {
+    if (isAllowedOrigin(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('CORS origin denied'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Admin-Key', 'X-Order-Access-Token']
+}));
 app.use(bodyParser.json({ limit: REQUEST_BODY_LIMIT }));
 app.use(bodyParser.urlencoded({
   extended: true,
@@ -75,8 +224,36 @@ app.use((req, res, next) => {
   return next();
 });
 
+const apiLimiter = createOptionalRateLimit({
+  windowMs: 60 * 1000,
+  max: resolvePositiveInteger(process.env.API_RATE_LIMIT_MAX, 300),
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+const authLimiter = createOptionalRateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: resolvePositiveInteger(process.env.AUTH_RATE_LIMIT_MAX, 60),
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+const paymentLimiter = createOptionalRateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: resolvePositiveInteger(process.env.PAYMENT_RATE_LIMIT_MAX, 80),
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+app.use('/api', apiLimiter);
+app.use('/auth', authLimiter);
+app.use(['/api/create-payment-link', '/api/initiate-remaining-payment', '/api/initiate-payment'], paymentLimiter);
+
 // Serve static files
-app.use(express.static('.'));
+// Map /assets/images to the actual public/images directory
+app.use('/assets/images', express.static(path.join(__dirname, '..', 'public', 'images')));
+app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Session
 app.use(session({
@@ -88,7 +265,7 @@ app.use(session({
     httpOnly: true,
     secure: IS_PRODUCTION,
     sameSite: 'lax',
-    maxAge: 1000 * 60 * 60 * 24 * 7
+    maxAge: safeSessionMaxAgeMs
   }
 }));
 
@@ -108,14 +285,18 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     callbackURL: '/auth/google/callback'
   }, async (accessToken, refreshToken, profile, done) => {
     try {
-      let user = await User.findOne({ googleId: profile.id });
+      const users = readUsers();
+      let user = users.find((u) => u.googleId === profile.id);
       if (!user) {
-        user = new User({
+        user = {
+          _id: crypto.randomBytes(12).toString('hex'),
           googleId: profile.id,
           email: profile.emails[0].value,
-          name: profile.displayName
-        });
-        await user.save();
+          name: profile.displayName,
+          createdAt: new Date().toISOString()
+        };
+        users.push(user);
+        writeUsers(users);
       }
       return done(null, user);
     } catch (err) {
@@ -133,14 +314,18 @@ if (process.env.APPLE_CLIENT_ID && process.env.APPLE_TEAM_ID && process.env.APPL
     privateKeyLocation: process.env.APPLE_PRIVATE_KEY_PATH
   }, async (accessToken, refreshToken, idToken, profile, done) => {
     try {
-      let user = await User.findOne({ appleId: profile.id });
+      const users = readUsers();
+      let user = users.find((u) => u.appleId === profile.id);
       if (!user) {
-        user = new User({
+        user = {
+          _id: crypto.randomBytes(12).toString('hex'),
           appleId: profile.id,
           email: profile.email,
-          name: profile.name
-        });
-        await user.save();
+          name: profile.name,
+          createdAt: new Date().toISOString()
+        };
+        users.push(user);
+        writeUsers(users);
       }
       return done(null, user);
     } catch (err) {
@@ -150,13 +335,14 @@ if (process.env.APPLE_CLIENT_ID && process.env.APPLE_TEAM_ID && process.env.APPL
 }
 
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+  done(null, user._id);
 });
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await User.findById(id);
-    done(null, user);
+    const users = readUsers();
+    const user = users.find((u) => String(u._id) === String(id));
+    done(null, user || null);
   } catch (err) {
     done(err, null);
   }
@@ -168,28 +354,34 @@ const flw = new Flutterwave(
   process.env.FLUTTERWAVE_SECRET_KEY
 );
 
-// Email transporter — port 587 STARTTLS is used instead of 465 SMTPS
-// because port 465 is frequently blocked by ISPs and firewalls.
-// Gmail requires an App Password when 2-Step Verification is enabled.
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  requireTLS: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  tls: {
-    minVersion: 'TLSv1.2',
-    rejectUnauthorized: false
-  }
-});
+function hasConfiguredEnvValue(value) {
+  const normalized = String(value || '').trim();
+  if (!normalized) return false;
+  if (/your_|_here|replace_with|example/i.test(normalized)) return false;
+  return true;
+}
 
-const EMAIL_FROM = process.env.EMAIL_FROM || `NORDLUXE <${process.env.EMAIL_USER || 'noreply@nordluxe.io'}>`;
+// Resend email client — set RESEND_API_KEY in your environment.
+// The 'from' address must use a domain verified in your Resend dashboard.
+const resend = hasConfiguredEnvValue(process.env.RESEND_API_KEY)
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
+
+// Gmail email client
+const gmailTransporter = hasConfiguredEnvValue(process.env.EMAIL_USER) && hasConfiguredEnvValue(process.env.EMAIL_PASS)
+  ? nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    })
+  : null;
+
+const EMAIL_FROM = process.env.EMAIL_FROM || 'NORDLUXE <noreply@nordluxe.io>';
 const ORDERS_FALLBACK_FILE = path.join(__dirname, '..', '..', 'data', 'orders.json');
-let mongoReady = false;
 const mongoConnectionUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+let mongoReady = false;
 
 const LIVE_ACTIVITY_TTL_MS = Number(process.env.LIVE_ACTIVITY_TTL_MS || 120000);
 const liveSessions = new Map();
@@ -197,6 +389,75 @@ const MAX_LIVE_EVENTS = Number(process.env.MAX_LIVE_EVENTS || 5000);
 const liveEvents = [];
 const confirmationEmailSentTxRefs = new Set();
 const internalNotificationSentTxRefs = new Set();
+
+if (mongoConnectionUri) {
+  mongoose.connect(mongoConnectionUri)
+    .then(() => {
+      mongoReady = true;
+      console.log('MongoDB connected');
+    })
+    .catch((err) => {
+      mongoReady = false;
+      console.log('MongoDB connection error:', err.message);
+      console.log('Using fallback file order store:', ORDERS_FALLBACK_FILE);
+    });
+} else {
+  console.log('MONGODB_URI or MONGO_URI not set. Using fallback file order store:', ORDERS_FALLBACK_FILE);
+}
+
+const orderSchema = new mongoose.Schema({
+  customerEmail: String,
+  customerName: String,
+  orderCode: { type: String, unique: true, sparse: true },
+  orderAccessToken: { type: String, index: true, sparse: true },
+  userId: String,
+  items: Array,
+  totalAmount: Number,
+  paymentPlan: Object,
+  flutterwaveRef: String,
+  paymentReference: String,
+  currency: String,
+  customerPhone: String,
+  reminderEmailSent: { type: Boolean, default: false },
+  reminderSentAt: Date,
+  status: {
+    type: String,
+    enum: ['pending', 'confirmed', 'packed', 'dispatched', 'in-transit', 'delivered', 'received'],
+    default: 'pending'
+  },
+  statusHistory: [{
+    status: String,
+    timestamp: { type: Date, default: Date.now },
+    notes: String
+  }],
+  trackingNumber: String,
+  trackingUrl: String,
+  shippingCompany: String,
+  assignedTo: { type: String, default: '' },
+  internalNotes: [{
+    note: String,
+    by: String,
+    at: { type: Date, default: Date.now }
+  }],
+  customerConfirmedReceived: { type: Boolean, default: false },
+  confirmedReceivedAt: Date,
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: Date,
+  confirmedAt: Date,
+  packedAt: Date,
+  dispatchedAt: Date,
+  deliveredAt: Date,
+  notificationsSent: {
+    confirmed: { type: Boolean, default: false },
+    packed: { type: Boolean, default: false },
+    dispatched: { type: Boolean, default: false },
+    inTransit: { type: Boolean, default: false },
+    delivered: { type: Boolean, default: false },
+    received: { type: Boolean, default: false }
+  }
+});
+
+const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
 
 function parseEmailList(rawValue) {
   return Array.from(new Set(
@@ -248,7 +509,22 @@ async function sendTransactionalEmail(mailOptions) {
     });
   }
 
-  return transporter.sendMail(normalized);
+  console.log('Attempting to send transactional email to:', normalized.to, {
+    resendConfigured: !!resend,
+    gmailConfigured: !!gmailTransporter
+  });
+
+  if (resend) {
+    await resend.emails.send(normalized);
+    return 'resend';
+  }
+
+  if (gmailTransporter) {
+    await gmailTransporter.sendMail(normalized);
+    return 'gmail';
+  }
+
+  throw new Error('No email provider configured. Set RESEND_API_KEY or EMAIL_USER and EMAIL_PASS.');
 }
 
 async function sendBuyerTransactionalEmail(mailOptions) {
@@ -320,101 +596,46 @@ function postJson(url, payload, headers) {
   });
 }
 
-// MongoDB connection (optional - for storing orders)
-if (mongoConnectionUri) {
-  mongoose.connect(mongoConnectionUri)
-    .then(() => {
-      mongoReady = true;
-      console.log('MongoDB connected');
-    })
-    .catch(err => {
-      mongoReady = false;
-      console.log('MongoDB connection error:', err);
-      console.log('Using fallback file order store:', ORDERS_FALLBACK_FILE);
-    });
-} else {
-  console.log('MONGODB_URI or MONGO_URI not set. Using fallback file order store:', ORDERS_FALLBACK_FILE);
+// ─── File-based User Storage ─────────────────────────────────────────────────
+
+const USERS_FILE = path.join(__dirname, '..', '..', 'data', 'users.json');
+const SUBSCRIBERS_FILE = path.join(__dirname, '..', '..', 'data', 'subscribers.json');
+
+function ensureDataFile(filePath) {
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  if (!fs.existsSync(filePath)) fs.writeFileSync(filePath, '[]', 'utf8');
 }
 
-// Order Schema with automatic tracking
-const orderSchema = new mongoose.Schema({
-  customerEmail: String,
-  customerName: String,
-  orderCode: { type: String, unique: true, sparse: true },
-  userId: String,
-  items: Array,
-  totalAmount: Number,
-  paymentPlan: Object,
-  flutterwaveRef: String,
-  paymentReference: String,
-  
-  // Status tracking with timestamps for progressive stages
-  status: { type: String, enum: ['pending', 'confirmed', 'packed', 'dispatched', 'in-transit', 'delivered', 'received'], default: 'pending' },
-  statusHistory: [{
-    status: String,
-    timestamp: { type: Date, default: Date.now },
-    notes: String
-  }],
-  
-  // Tracking information
-  trackingNumber: String,
-  trackingUrl: String,
-  shippingCompany: String,
+function readUsers() {
+  try {
+    ensureDataFile(USERS_FILE);
+    const raw = fs.readFileSync(USERS_FILE, 'utf8');
+    const parsed = JSON.parse(raw || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (err) { return []; }
+}
 
-  // Team workflow
-  assignedTo: { type: String, default: '' },
-  internalNotes: [{
-    note: String,
-    by: String,
-    at: { type: Date, default: Date.now }
-  }],
-  
-  // Customer confirmation
-  customerConfirmedReceived: { type: Boolean, default: false },
-  confirmedReceivedAt: Date,
-  
-  // Dates
-  createdAt: { type: Date, default: Date.now },
-  confirmedAt: Date,
-  packedAt: Date,
-  dispatchedAt: Date,
-  deliveredAt: Date,
-  
-  // Notifications tracking
-  notificationsSent: {
-    confirmed: { type: Boolean, default: false },
-    packed: { type: Boolean, default: false },
-    dispatched: { type: Boolean, default: false },
-    inTransit: { type: Boolean, default: false },
-    delivered: { type: Boolean, default: false },
-    received: { type: Boolean, default: false }
-  }
-});
+function writeUsers(users) {
+  ensureDataFile(USERS_FILE);
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf8');
+}
 
-const Order = mongoose.model('Order', orderSchema);
+function readSubscribers() {
+  try {
+    ensureDataFile(SUBSCRIBERS_FILE);
+    const raw = fs.readFileSync(SUBSCRIBERS_FILE, 'utf8');
+    const parsed = JSON.parse(raw || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (err) { return []; }
+}
 
-// User Schema
-const userSchema = new mongoose.Schema({
-  email: { type: String, unique: true },
-  name: String,
-  password: String,
-  googleId: String,
-  appleId: String,
-  otpSecret: String,
-  isFirstLogin: { type: Boolean, default: true },
-  createdAt: { type: Date, default: Date.now }
-});
+function writeSubscribers(subscribers) {
+  ensureDataFile(SUBSCRIBERS_FILE);
+  fs.writeFileSync(SUBSCRIBERS_FILE, JSON.stringify(subscribers, null, 2), 'utf8');
+}
 
-const User = mongoose.model('User', userSchema);
-
-// Newsletter Subscriber Schema
-const subscriberSchema = new mongoose.Schema({
-  email: { type: String, unique: true, lowercase: true, trim: true },
-  name: { type: String, trim: true },
-  subscribedAt: { type: Date, default: Date.now },
-  active: { type: Boolean, default: true }
-});
-const Subscriber = mongoose.model('Subscriber', subscriberSchema);
+// ─── End File-based Storage ───────────────────────────────────────────────────
 
 function escapeHtml(value) {
   return String(value || '')
@@ -570,6 +791,63 @@ function parseMoneyValue(value) {
   return null;
 }
 
+const PRODUCT_PRICE_CATALOG = Object.freeze({
+  'nordluxe long ascension white': 100000,
+  'nordluxe long ascension black': 100000,
+  'nordluxe short ascension white': 80000,
+  'nordluxe short ascension black': 80000,
+  'cloak white': 70000,
+  'cloak black': 70000,
+  'nordluxe full ascension white bundle': 160000,
+  'nordluxe full ascension black bundle': 160000,
+  'full package (white + black) complete collection': 280000
+});
+
+function normalizeCatalogItemName(value) {
+  return normalizeText(value).toLowerCase();
+}
+
+function resolveCatalogUnitPrice(item) {
+  const itemName = normalizeCatalogItemName(item && item.name ? item.name : item && item.itemName ? item.itemName : '');
+  if (!itemName || !Object.prototype.hasOwnProperty.call(PRODUCT_PRICE_CATALOG, itemName)) {
+    return null;
+  }
+  return PRODUCT_PRICE_CATALOG[itemName];
+}
+
+function computeCatalogOrderTotal(items) {
+  const list = Array.isArray(items) ? items : [];
+  let total = 0;
+
+  for (const item of list) {
+    const unitPrice = resolveCatalogUnitPrice(item);
+    if (unitPrice === null) {
+      return null;
+    }
+    const quantity = resolvePositiveInteger(item && item.quantity, 1);
+    total += unitPrice * quantity;
+  }
+
+  return Math.round(total * 100) / 100;
+}
+
+function computeExpectedChargeAmount(fullTotal, paymentPlan) {
+  if (!Number.isFinite(fullTotal) || fullTotal <= 0) {
+    return null;
+  }
+
+  const planType = normalizeText(paymentPlan && paymentPlan.type);
+  if (planType === 'preorder-deposit') {
+    return Math.round(fullTotal * 0.4 * 100) / 100;
+  }
+
+  return Math.round(fullTotal * 100) / 100;
+}
+
+function createOrderAccessToken() {
+  return crypto.randomBytes(24).toString('hex');
+}
+
 function resolveItemUnitPrice(item) {
   if (!item || typeof item !== 'object') return null;
 
@@ -609,8 +887,7 @@ function buildGroupedOrderLines(items) {
   const list = Array.isArray(items) ? items : [];
 
   list.forEach((item, index) => {
-    const rawName = normalizeText(item && item.name ? item.name : `Item ${index + 1}`) || `Item ${index + 1}`;
-    const name = rawName.replace(/\(\s*[A-Za-z]?\s*undefined\s*\)$/i, '').trim() || `Item ${index + 1}`;
+    const name = normalizeText(item && item.name ? item.name : `Item ${index + 1}`) || `Item ${index + 1}`;
     const quantity = Number.isFinite(Number(item && item.quantity)) && Number(item.quantity) > 0
       ? Number(item.quantity)
       : 1;
@@ -622,7 +899,8 @@ function buildGroupedOrderLines(items) {
         name,
         quantity: 0,
         unitPrice,
-        lineTotal: 0
+        lineTotal: 0,
+        isPreorder: false
       });
     }
 
@@ -630,6 +908,9 @@ function buildGroupedOrderLines(items) {
     current.quantity += quantity;
     if (!current.imageUrl) {
       current.imageUrl = resolveOrderItemImageUrl(item);
+    }
+    if (item && item.isPreorder) {
+      current.isPreorder = true;
     }
     if (unitPrice !== null) {
       current.lineTotal += unitPrice * quantity;
@@ -662,35 +943,46 @@ function buildOrderItemsTableHtml(items, currencyCode) {
       ? formatEmailCurrency(line.lineTotal, currencyCode)
       : 'N/A';
 
+    // Extract size/variant from name, e.g. "Product Name (L)" → variant = "L"
+    const variantMatch = line.name.match(/\(([^)]+)\)\s*$/);
+    const rawVariant = variantMatch ? normalizeText(variantMatch[1]) : '';
+    const variant = (!rawVariant || /undefined|null|nan/i.test(rawVariant)) ? '' : rawVariant;
+    const displayName = variantMatch
+      ? line.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
+      : line.name;
+
     return `
       <tr>
-        <td style="padding:8px;border-bottom:1px solid #ececec;width:72px;">
-          <img src="${escapeHtml(line.imageUrl || resolveAbsoluteAssetUrl('/assets/images/sa.jpg'))}" alt="${escapeHtml(line.name)}" width="56" height="56" style="display:block;border-radius:8px;object-fit:cover;border:1px solid #e6dcc8;">
+        <td style="padding:10px 8px;border-bottom:1px solid #f0e6d3;width:68px;vertical-align:top;">
+          <img src="${escapeHtml(line.imageUrl || resolveAbsoluteAssetUrl('/assets/images/sa.jpg'))}" alt="${escapeHtml(line.name)}" width="60" height="60" style="display:block;border-radius:8px;object-fit:cover;border:1px solid #e6dcc8;">
         </td>
-        <td style="padding:8px;border-bottom:1px solid #ececec;">${escapeHtml(line.name)}</td>
-        <td style="padding:8px;border-bottom:1px solid #ececec;text-align:center;">${line.quantity}</td>
-        <td style="padding:8px;border-bottom:1px solid #ececec;text-align:right;">${unitPriceHtml}</td>
-        <td style="padding:8px;border-bottom:1px solid #ececec;text-align:right;">${totalHtml}</td>
+        <td style="padding:10px 8px;border-bottom:1px solid #f0e6d3;vertical-align:top;">
+          <div style="font-weight:600;color:#2d1f11;font-size:13px;line-height:1.4;">${escapeHtml(displayName)}</div>
+          ${variant ? `<div style="color:#9e7a4c;font-size:11px;margin-top:3px;">Size / Variant: ${escapeHtml(variant)}</div>` : ''}
+          ${line.isPreorder ? `<span style="display:inline-block;background:#fef3e2;border:1px solid #f0c97a;border-radius:10px;padding:1px 8px;font-size:10px;color:#a06b1a;margin-top:5px;font-weight:600;letter-spacing:0.3px;">PREORDER</span>` : ''}
+        </td>
+        <td style="padding:10px 8px;border-bottom:1px solid #f0e6d3;text-align:center;vertical-align:top;color:#2d1f11;font-size:13px;">${line.quantity}</td>
+        <td style="padding:10px 8px;border-bottom:1px solid #f0e6d3;text-align:right;vertical-align:top;color:#5b4427;font-size:13px;">${unitPriceHtml}</td>
+        <td style="padding:10px 8px;border-bottom:1px solid #f0e6d3;text-align:right;vertical-align:top;font-weight:600;color:#2d1f11;font-size:13px;">${totalHtml}</td>
       </tr>
     `;
   }).join('');
 
   return `
-    <table style="width:100%;border-collapse:collapse;margin-top:10px;">
+    <table style="width:100%;border-collapse:collapse;margin-top:4px;">
       <thead>
-        <tr style="background:#f3f3f3;">
-          <th style="padding:8px;text-align:left;border-bottom:1px solid #ddd;">Image</th>
-          <th style="padding:8px;text-align:left;border-bottom:1px solid #ddd;">Product</th>
-          <th style="padding:8px;text-align:center;border-bottom:1px solid #ddd;">Qty</th>
-          <th style="padding:8px;text-align:right;border-bottom:1px solid #ddd;">Unit Price</th>
-          <th style="padding:8px;text-align:right;border-bottom:1px solid #ddd;">Line Total</th>
+        <tr style="background:#f2e8d8;">
+          <th colspan="2" style="padding:9px 8px;text-align:left;border-bottom:1px solid #e8dcc7;color:#6e4b1e;font-size:10px;letter-spacing:0.8px;text-transform:uppercase;font-weight:700;">Product</th>
+          <th style="padding:9px 8px;text-align:center;border-bottom:1px solid #e8dcc7;color:#6e4b1e;font-size:10px;letter-spacing:0.8px;text-transform:uppercase;font-weight:700;">Qty</th>
+          <th style="padding:9px 8px;text-align:right;border-bottom:1px solid #e8dcc7;color:#6e4b1e;font-size:10px;letter-spacing:0.8px;text-transform:uppercase;font-weight:700;">Unit Price</th>
+          <th style="padding:9px 8px;text-align:right;border-bottom:1px solid #e8dcc7;color:#6e4b1e;font-size:10px;letter-spacing:0.8px;text-transform:uppercase;font-weight:700;">Total</th>
         </tr>
       </thead>
       <tbody>${rows}</tbody>
       <tfoot>
-        <tr style="background:#fbfbfb;">
-          <td colspan="4" style="padding:10px;border-top:2px solid #ddd;text-align:right;font-weight:bold;">Grand Total:</td>
-          <td style="padding:10px;border-top:2px solid #ddd;text-align:right;font-weight:bold;">${grandTotalHtml}</td>
+        <tr>
+          <td colspan="4" style="padding:12px 8px;border-top:2px solid #e8dcc7;text-align:right;font-weight:700;color:#2d1f11;font-size:13px;">Grand Total</td>
+          <td style="padding:12px 8px;border-top:2px solid #e8dcc7;text-align:right;font-weight:700;color:#6e4b1e;font-size:14px;">${grandTotalHtml}</td>
         </tr>
       </tfoot>
     </table>
@@ -724,13 +1016,91 @@ function writeFallbackOrders(orders) {
   fs.writeFileSync(ORDERS_FALLBACK_FILE, JSON.stringify(orders, null, 2), 'utf8');
 }
 
+function normalizeStoredOrder(record) {
+  if (!record) return null;
+  const normalized = typeof record.toObject === 'function' ? record.toObject() : { ...record };
+  if (normalized._id) {
+    normalized._id = String(normalized._id);
+  }
+  return normalized;
+}
+
+async function createStoredOrder(orderPayload) {
+  if (mongoReady) {
+    const created = await Order.create(orderPayload);
+    return normalizeStoredOrder(created);
+  }
+
+  const all = readFallbackOrders();
+  const order = Object.assign({ _id: crypto.randomBytes(12).toString('hex') }, orderPayload);
+  all.unshift(order);
+  writeFallbackOrders(all);
+  return order;
+}
+
+async function saveStoredOrder(order) {
+  if (!order || !order._id) return null;
+
+  if (mongoReady) {
+    const updated = await Order.findByIdAndUpdate(order._id, order, {
+      new: true,
+      runValidators: false,
+      lean: true
+    });
+    return normalizeStoredOrder(updated);
+  }
+
+  const list = readFallbackOrders();
+  const index = list.findIndex((item) => String(item._id) === String(order._id));
+  if (index >= 0) {
+    list[index] = order;
+    writeFallbackOrders(list);
+    return order;
+  }
+
+  return null;
+}
+
+async function updateStoredOrderByFlutterwaveRef(txRef, updates) {
+  const normalizedRef = normalizeText(txRef);
+  if (!normalizedRef) return null;
+
+  if (mongoReady) {
+    const updated = await Order.findOneAndUpdate(
+      { flutterwaveRef: normalizedRef },
+      { $set: updates },
+      { new: true, lean: true }
+    );
+    return normalizeStoredOrder(updated);
+  }
+
+  const list = readFallbackOrders();
+  const index = list.findIndex((item) => normalizeText(item && item.flutterwaveRef) === normalizedRef);
+  if (index >= 0) {
+    list[index] = Object.assign({}, list[index], updates);
+    writeFallbackOrders(list);
+    return list[index];
+  }
+
+  return null;
+}
+
+async function orderCodeExists(orderCode) {
+  if (mongoReady) {
+    return !!(await Order.exists({ orderCode }));
+  }
+
+  return readFallbackOrders().some((item) => String(item.orderCode || '').toUpperCase() === String(orderCode || '').toUpperCase());
+}
+
 function sortByCreatedDesc(items) {
   return items.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 }
 
 async function getOrdersForQuery(query) {
   if (mongoReady) {
-    return Order.find(query).sort({ createdAt: -1 });
+    const orders = await Order.find(query || {}).sort({ createdAt: -1 }).lean();
+    return orders.map(normalizeStoredOrder);
   }
 
   const list = readFallbackOrders();
@@ -853,7 +1223,7 @@ app.post('/api/request-checkout-link', async (req, res) => {
       });
     }
 
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    if (!resend && !gmailTransporter) {
       return res.status(500).json({
         success: false,
         message: 'Email service is not configured on server'
@@ -930,6 +1300,7 @@ app.post('/api/initiate-payment', async (req, res) => {
     const { amount, customer, items, paymentPlan, redirect_url } = req.body;
     const customerEmail = extractSingleEmail(customer && customer.email);
     const customerName = normalizeText(customer && customer.name);
+    const authenticatedEmail = extractSingleEmail(req && req.user && req.user.email);
 
     if (!customerEmail) {
       return res.status(400).json({
@@ -945,9 +1316,45 @@ app.post('/api/initiate-payment', async (req, res) => {
       });
     }
 
+    if (!Array.isArray(items) || !items.length) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one valid order item is required.'
+      });
+    }
+
+    // Optional but recommended: if session user exists, require checkout email to match.
+    if (authenticatedEmail && authenticatedEmail !== customerEmail) {
+      return res.status(403).json({
+        success: false,
+        message: 'Checkout email must match the signed-in account email.'
+      });
+    }
+
+    const catalogOrderTotal = computeCatalogOrderTotal(items);
+    if (catalogOrderTotal === null) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cart contains an unsupported product. Please refresh and try again.'
+      });
+    }
+
+    const expectedChargeAmount = computeExpectedChargeAmount(catalogOrderTotal, paymentPlan);
+    const requestedAmount = parseMoneyValue(amount);
+    if (requestedAmount === null || expectedChargeAmount === null || Math.abs(requestedAmount - expectedChargeAmount) > 0.01) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid payment amount for selected items.'
+      });
+    }
+
+    // Always create a fresh transaction reference so Flutterwave returns
+    // a new hosted checkout link instead of an old/expired session.
+    const tx_ref = `nl-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+
     const payload = {
-      tx_ref: `nordluxe-${Date.now()}-${Math.random().toString(36).substring(7)}`,
-      amount: amount,
+      tx_ref: tx_ref,
+      amount: expectedChargeAmount,
       currency: 'NGN',
       redirect_url: redirect_url || `${process.env.FRONTEND_URL}/thank-you.html`,
       payment_options: 'card,mobilemoney,ussd',
@@ -960,12 +1367,13 @@ app.post('/api/initiate-payment', async (req, res) => {
         paymentType: paymentPlan && paymentPlan.type ? paymentPlan.type : 'standard',
         customerEmail: customerEmail,
         customerName: customerName,
+        authenticatedUserEmail: authenticatedEmail || null,
         orderItems: Array.isArray(items) ? items : [],
         depositPercentage: paymentPlan && paymentPlan.depositPercentage ? paymentPlan.depositPercentage : null,
         balancePercentage: paymentPlan && paymentPlan.balancePercentage ? paymentPlan.balancePercentage : null,
-        preorderTotal: paymentPlan && typeof paymentPlan.preorderTotal === 'number' ? paymentPlan.preorderTotal : null,
-        depositAmount: paymentPlan && typeof paymentPlan.depositAmount === 'number' ? paymentPlan.depositAmount : amount,
-        remainingBalance: paymentPlan && typeof paymentPlan.remainingBalance === 'number' ? paymentPlan.remainingBalance : null
+        preorderTotal: catalogOrderTotal,
+        depositAmount: expectedChargeAmount,
+        remainingBalance: Math.max(catalogOrderTotal - expectedChargeAmount, 0)
       },
       customizations: {
         title: paymentPlan && paymentPlan.type === 'preorder-deposit' ? 'NORDLUXE Preorder Deposit' : 'NORDLUXE Purchase',
@@ -987,34 +1395,29 @@ app.post('/api/initiate-payment', async (req, res) => {
       throw new Error(response.message || `Flutterwave request failed with status ${flutterwaveResponse.status}`);
     }
 
-    // Save order (MongoDB when available, fallback file otherwise)
-    if (mongoose.connection.readyState === 1) {
-      const order = new Order({
-        customerEmail: customerEmail,
-        customerName: customerName,
-        items: items,
-        totalAmount: amount,
-        paymentPlan: paymentPlan || null,
-        flutterwaveRef: payload.tx_ref
-      });
-      await order.save();
-    } else {
-      const fallbackOrders = readFallbackOrders();
-      fallbackOrders.unshift({
-        _id: `fallback-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-        customerEmail: customerEmail,
-        customerName: customerName,
-        items: Array.isArray(items) ? items : [],
-        totalAmount: Number(amount) || 0,
-        paymentPlan: paymentPlan || null,
-        flutterwaveRef: payload.tx_ref,
-        paymentReference: payload.tx_ref,
-        status: 'pending',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      });
-      writeFallbackOrders(fallbackOrders);
-    }
+    // Always create a new order — never merge items across sessions or users.
+    const authenticatedUserId = req && req.user ? String(req.user._id || '') : null;
+    console.log('[initiate-payment] Creating new order', {
+      userId: authenticatedUserId,
+      email: customerEmail
+    });
+
+    const createdOrder = await createStoredOrder({
+      userId: authenticatedUserId,
+      customerEmail: customerEmail,
+      customerName: customerName,
+      orderAccessToken: createOrderAccessToken(),
+      items: Array.isArray(items) ? items : [],
+      totalAmount: catalogOrderTotal,
+      currency: payload.currency,
+      customerPhone: normalizeText(customer && customer.phone),
+      paymentPlan: paymentPlan || null,
+      flutterwaveRef: payload.tx_ref,
+      paymentReference: payload.tx_ref,
+      status: 'pending',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    });
 
     const responseData = response && response.data ? response.data : null;
     const paymentLink = responseData && responseData.link ? responseData.link : null;
@@ -1028,6 +1431,7 @@ app.post('/api/initiate-payment', async (req, res) => {
       data: {
         link: paymentLink,
         tx_ref: payload.tx_ref,
+        accessToken: normalizeText(createdOrder && createdOrder.orderAccessToken),
         raw: responseData
       }
     });
@@ -1049,24 +1453,23 @@ app.get('/api/verify-payment/:transactionId', async (req, res) => {
     const response = await flw.Transaction.verify({ id: transactionId });
 
     if (response.data.status === 'successful') {
-      // Update order status
-      if (mongoose.connection.readyState === 1) {
-        await Order.findOneAndUpdate(
-          { flutterwaveRef: response.data.tx_ref },
-          { status: 'confirmed', confirmedAt: new Date() }
-        );
-      }
+      // Update order status in file store
+      await updateStoredOrderByFlutterwaveRef(response.data.tx_ref, {
+        status: 'confirmed',
+        confirmedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
 
       try {
-        await sendOrderConfirmationEmail(response.data);
-      } catch (mailErr) {
-        console.error('verify-payment buyer confirmation send error:', mailErr && mailErr.message ? mailErr.message : mailErr);
+        await sendOrderConfirmationEmail(response.data, req && req.user ? req.user.email : null);
+      } catch (mailError) {
+        console.error('Buyer confirmation send error (verify-payment):', mailError && mailError.message ? mailError.message : mailError);
       }
 
       try {
         await sendPaymentNotificationEmail(response.data);
-      } catch (mailErr) {
-        console.error('verify-payment internal notification send error:', mailErr && mailErr.message ? mailErr.message : mailErr);
+      } catch (mailError) {
+        console.error('Internal notification send error (verify-payment):', mailError && mailError.message ? mailError.message : mailError);
       }
 
       res.json({
@@ -1102,76 +1505,115 @@ app.post('/api/webhook', async (req, res) => {
   const signature = req.headers['verif-hash'];
 
   if (!signature || signature !== secretHash) {
-    console.log('Warning: Webhook signature validation failed');
     return res.status(401).json({ message: 'Invalid signature' });
   }
 
   const payload = req.body;
-  console.log('Webhook received:', {
-    event: payload && payload.event,
-    status: payload && payload.data && payload.data.status,
-    tx_ref: payload && payload.data && payload.data.tx_ref
-  });
 
   // Verify the event
   if (payload.event === 'charge.completed' && payload.data.status === 'successful') {
-    console.log('Payment completed webhook:', payload.data);
+    console.log('Payment completed:', payload.data);
 
-    // Send buyer confirmation from webhook as reliable fallback.
+    // Update order status in file store
     try {
-      console.log('Sending buyer confirmation email from webhook...');
-      await sendOrderConfirmationEmail(payload.data);
-    } catch (emailErr) {
-      console.error('Webhook: Failed to send buyer confirmation email:', {
-        error: emailErr && emailErr.message ? emailErr.message : String(emailErr),
-        tx_ref: payload && payload.data && payload.data.tx_ref
+      const txRef = normalizeText(payload && payload.data && payload.data.tx_ref);
+      await updateStoredOrderByFlutterwaveRef(txRef, {
+        status: 'confirmed',
+        confirmedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       });
+    } catch (err) {
+      console.error('File store status update error:', err.message);
     }
 
-    // Send notification email
     try {
-      console.log('Sending admin notification email from webhook...');
+      await sendOrderConfirmationEmail(payload.data, null);
+    } catch (mailError) {
+      console.error('Buyer confirmation send error (webhook):', mailError && mailError.message ? mailError.message : mailError);
+    }
+
+    try {
       await sendPaymentNotificationEmail(payload.data);
-    } catch (notifErr) {
-      console.error('Webhook: Failed to send admin notification email:', {
-        error: notifErr && notifErr.message ? notifErr.message : String(notifErr),
-        tx_ref: payload && payload.data && payload.data.tx_ref
-      });
+    } catch (mailError) {
+      console.error('Internal notification send error (webhook):', mailError && mailError.message ? mailError.message : mailError);
     }
-
-    // Update order status
-    if (mongoose.connection.readyState === 1) {
-      Order.findOneAndUpdate(
-        { flutterwaveRef: payload.data.tx_ref },
-        { status: 'confirmed', confirmedAt: new Date() }
-      ).catch(err => console.error('Database update error:', err));
-    } else {
-      try {
-        const fallbackOrders = readFallbackOrders();
-        const txRef = normalizeText(payload && payload.data && payload.data.tx_ref);
-        const index = fallbackOrders.findIndex((item) => normalizeText(item && item.flutterwaveRef) === txRef);
-        if (index >= 0) {
-          fallbackOrders[index] = {
-            ...fallbackOrders[index],
-            status: 'confirmed',
-            confirmedAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          };
-          writeFallbackOrders(fallbackOrders);
-          console.log('Order status updated in fallback store');
-        }
-      } catch (err) {
-        console.error('Fallback status update error:', err.message);
-      }
-    }
-  } else {
-    console.log('Webhook event not processed (not charge.completed or not successful):', {
-      event: payload && payload.event,
-      status: payload && payload.data && payload.data.status
-    });
   }
 
   res.status(200).json({ status: 'ok' });
+});
+
+app.post('/send-confirmation', async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const sessionEmail = extractSingleEmail(req && req.user ? req.user.email : '');
+    const bodyEmail = extractSingleEmail(req && req.body ? req.body.email : '');
+
+    // Always send to the authenticated user's email when a session exists.
+    // Never allow the request body to override a signed-in user's email.
+    const email = sessionEmail || bodyEmail;
+
+    if (!email) {
+      return res.status(400).json({ error: 'No email provided' });
+    }
+
+    // Block cross-user send: if both a session email and a body email exist, they must match.
+    if (sessionEmail && bodyEmail && sessionEmail !== bodyEmail) {
+      return res.status(403).json({ error: 'Checkout email must match signed-in account email' });
+    }
+
+    console.log('[send-confirmation] Sending confirmation email', {
+      userId: req && req.user ? String(req.user._id || '') : null,
+      email
+    });
+
+    const customerName = derivePreferredCustomerName([
+      req && req.body ? req.body.name : '',
+      req && req.user ? req.user.name : ''
+    ]);
+
+    await sendBuyerTransactionalEmail({
+      from: EMAIL_FROM,
+      to: email,
+      subject: 'NORDLUXE - Order Confirmation',
+      html: renderEmailLayout({
+        title: 'Thank You For Your Purchase',
+        subtitle: 'Order Confirmation',
+        preheader: 'Your NORDLUXE order has been confirmed.',
+        contentHtml: `
+          <p style="margin:0 0 14px;line-height:1.7;">Dear ${escapeHtml(customerName)},</p>
+          <p style="margin:0 0 14px;line-height:1.7;">Your order has been successfully received and confirmed.</p>
+          <p style="margin:0 0 14px;line-height:1.7;">Our team is now preparing your order details. You will receive delivery and status updates as your order progresses.</p>
+          <p style="margin:0;line-height:1.7;">Thank you for choosing NORDLUXE.</p>
+        `
+      })
+    });
+
+    try {
+      await sendInternalTransactionalEmail({
+        from: EMAIL_FROM,
+        subject: 'NORDLUXE - Buyer Confirmation Triggered',
+        html: renderEmailLayout({
+          title: 'Buyer Confirmation Triggered',
+          subtitle: 'Store Team Notification',
+          preheader: 'A buyer confirmation email was sent from the manual confirmation route.',
+          contentHtml: `
+            <p style="margin:0 0 14px;line-height:1.7;">A confirmation email has been sent to the buyer.</p>
+            <p style="margin:0;"><strong>Buyer Email:</strong> ${escapeHtml(email)}</p>
+          `
+        })
+      });
+    } catch (internalError) {
+      console.error('Manual confirmation internal notification failed:', internalError && internalError.message ? internalError.message : internalError);
+    }
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Email failed' });
+  }
 });
 
 async function findOrderByFlutterwaveRef(txRef) {
@@ -1179,8 +1621,8 @@ async function findOrderByFlutterwaveRef(txRef) {
   if (!normalized) return null;
 
   if (mongoReady) {
-    const dbOrder = await Order.findOne({ flutterwaveRef: normalized });
-    if (dbOrder) return dbOrder;
+    const order = await Order.findOne({ flutterwaveRef: normalized }).lean();
+    return normalizeStoredOrder(order);
   }
 
   const fallbackOrders = readFallbackOrders();
@@ -1188,18 +1630,38 @@ async function findOrderByFlutterwaveRef(txRef) {
 }
 
 // Send order confirmation email
-async function sendOrderConfirmationEmail(paymentData) {
-  console.log('📬 sendOrderConfirmationEmail called with:', {
-    tx_ref: paymentData && paymentData.tx_ref,
-    transactionId: paymentData && paymentData.id,
-    paymentStatus: paymentData && paymentData.status
-  });
-
+async function sendOrderConfirmationEmail(paymentData, authenticatedUserEmail) {
   const paymentMeta = paymentData.meta || {};
   const isPreorderDeposit = paymentMeta.paymentType === 'preorder-deposit';
   const txRef = paymentData && paymentData.tx_ref ? String(paymentData.tx_ref).trim() : '';
   const currencyCode = paymentData && paymentData.currency ? String(paymentData.currency) : 'NGN';
 
+  // Strict rule: confirmation goes only to checkout form email.
+  const formEmail = extractSingleEmail(paymentMeta && paymentMeta.customerEmail);
+  const sessionEmail = extractSingleEmail(authenticatedUserEmail || (paymentMeta && paymentMeta.authenticatedUserEmail));
+
+  if (!formEmail) {
+    console.error('Order confirmation email skipped: missing checkout form email', {
+      tx_ref: txRef || null,
+      transactionId: paymentData && paymentData.id ? paymentData.id : null,
+      metaKeys: Object.keys(paymentMeta),
+      rawMeta: JSON.stringify(paymentMeta).slice(0, 400)
+    });
+    return;
+  }
+
+  // Optional protection: if session email exists, require exact match.
+  if (sessionEmail && sessionEmail !== formEmail) {
+    console.error('Order confirmation email blocked: form email does not match session user email', {
+      tx_ref: txRef || null,
+      transactionId: paymentData && paymentData.id ? paymentData.id : null,
+      sessionEmail,
+      formEmail
+    });
+    return;
+  }
+
+  // Get order details if available
   const matchedOrder = txRef ? await findOrderByFlutterwaveRef(txRef) : null;
   const metaOrderItems = Array.isArray(paymentMeta.orderItems) ? paymentMeta.orderItems : [];
   const orderItems = matchedOrder && Array.isArray(matchedOrder.items) && matchedOrder.items.length
@@ -1216,8 +1678,9 @@ async function sendOrderConfirmationEmail(paymentData) {
     });
   }
 
+  // Prevent duplicate sends for same transaction
   if (txRef && confirmationEmailSentTxRefs.has(txRef)) {
-    console.log('⏭️ Skipping duplicate confirmation email send', { tx_ref: txRef });
+    console.log('Skipping duplicate confirmation email send', { tx_ref: txRef });
     return;
   }
 
@@ -1225,57 +1688,29 @@ async function sendOrderConfirmationEmail(paymentData) {
     confirmationEmailSentTxRefs.add(txRef);
   }
 
-  let recipientEmail = extractSingleEmail(paymentMeta && paymentMeta.customerEmail);
-
-  if (!recipientEmail) {
-    recipientEmail = extractSingleEmail(paymentData && paymentData.customer && paymentData.customer.email);
-  }
-
-  if (!recipientEmail && txRef) {
-    recipientEmail = extractSingleEmail(matchedOrder && matchedOrder.customerEmail);
-  }
-
+  // Use form-provided name, fallback to payment data if needed
   const customerDisplayName = derivePreferredCustomerName([
     paymentMeta && paymentMeta.customerName,
-    matchedOrder && matchedOrder.customerName,
-    paymentData && paymentData.customer && paymentData.customer.name,
-    matchedOrder && matchedOrder.customerEmail ? String(matchedOrder.customerEmail).split('@')[0] : ''
+    paymentData && paymentData.customer && paymentData.customer.name
   ]);
 
-  if (!recipientEmail) {
-    console.error('❌ Order confirmation email skipped: missing customer email', {
-      tx_ref: txRef || null,
-      transactionId: paymentData && paymentData.id ? paymentData.id : null,
-      paymentMeta,
-      paymentDataCustomer: paymentData && paymentData.customer,
-      matchedOrderEmail: matchedOrder && matchedOrder.customerEmail
-    });
-    return;
-  }
-  console.log('✓ Recipient email resolved:', recipientEmail);
-
   const buyerEmail = resolveBuyerEmail(
-    recipientEmail,
+    formEmail,
     paymentMeta && paymentMeta.customerEmail,
     paymentData && paymentData.customer && paymentData.customer.email,
     matchedOrder && matchedOrder.customerEmail
   );
 
   if (!buyerEmail) {
-    console.error('❌ Order confirmation email skipped: missing buyer email after resolution', {
+    console.error('Order confirmation email skipped: missing buyer email', {
       tx_ref: txRef || null,
-      transactionId: paymentData && paymentData.id ? paymentData.id : null,
-      recipientEmail,
-      paymentMetaEmail: paymentMeta && paymentMeta.customerEmail,
-      paymentDataCustomerEmail: paymentData && paymentData.customer && paymentData.customer.email,
-      matchedOrderEmail: matchedOrder && matchedOrder.customerEmail
+      transactionId: paymentData && paymentData.id ? paymentData.id : null
     });
     if (txRef) {
       confirmationEmailSentTxRefs.delete(txRef);
     }
     return;
   }
-  console.log('✓ Buyer email confirmed:', buyerEmail);
 
   const paidAmountValue = parseMoneyValue(paymentData && paymentData.amount);
   const preorderTotalValue = parseMoneyValue(paymentMeta && paymentMeta.preorderTotal);
@@ -1307,19 +1742,19 @@ async function sendOrderConfirmationEmail(paymentData) {
         <p style="margin:0 0 14px;line-height:1.7;">${isPreorderDeposit ? 'Your 40% preorder deposit has been successfully processed. Here are your order details:' : 'Your order has been successfully processed. Here are your order details:'}</p>
 
         <div style="background:#f8f4eb;border:1px solid #e8dcc7;border-radius:12px;padding:16px;margin:16px 0;">
-          <h3 style="margin:0 0 10px;color:#6e4b1e;">Payment Summary</h3>
-          <p style="margin:0 0 6px;"><strong>Order ID:</strong> ${orderIdHtml}</p>
-          <p style="margin:0 0 6px;"><strong>Reference:</strong> ${referenceHtml}</p>
-          <p style="margin:0 0 6px;"><strong>Amount Paid:</strong> ${paidAmountHtml}</p>
-          ${isPreorderDeposit ? `<p style="margin:0 0 6px;"><strong>Full Preorder Total:</strong> ${preorderTotalHtml}</p>` : ''}
-          ${isPreorderDeposit ? `<p style="margin:0 0 6px;"><strong>Remaining Balance:</strong> ${remainingBalanceHtml}</p>` : ''}
-          <p style="margin:0 0 6px;"><strong>Payment Method:</strong> ${escapeHtml(paymentData.payment_type || 'N/A')}</p>
-          <p style="margin:0;"><strong>Date:</strong> ${paymentDateHtml}</p>
+          <h3 style="margin:0 0 12px;color:#6e4b1e;font-size:14px;letter-spacing:0.3px;">Payment Summary</h3>
+          <p style="margin:0 0 7px;font-size:13px;"><strong>Order ID:</strong> ${orderIdHtml}</p>
+          <p style="margin:0 0 7px;font-size:13px;"><strong>Reference:</strong> ${referenceHtml}</p>
+          <p style="margin:0 0 7px;font-size:13px;"><strong>Amount Paid:</strong> ${paidAmountHtml}</p>
+          ${isPreorderDeposit ? `<p style="margin:0 0 7px;font-size:13px;"><strong>Full Preorder Total:</strong> ${preorderTotalHtml}</p>` : ''}
+          ${isPreorderDeposit ? `<p style="margin:0 0 7px;font-size:13px;"><strong>Remaining Balance:</strong> ${remainingBalanceHtml}</p>` : ''}
+          <p style="margin:0 0 7px;font-size:13px;"><strong>Payment Method:</strong> ${escapeHtml(paymentData.payment_type || 'N/A')}</p>
+          <p style="margin:0 0 0;font-size:13px;"><strong>Date:</strong> ${paymentDateHtml}</p>
           <p style="margin:10px 0 0;font-size:11px;color:#a08060;border-top:1px solid #e8dcc7;padding-top:8px;">Transaction ID: ${transactionIdHtml}</p>
         </div>
 
         <div style="background:#f8f4eb;border:1px solid #e8dcc7;border-radius:12px;padding:16px;margin:16px 0;">
-          <h3 style="margin:0 0 10px;color:#6e4b1e;">Items Ordered</h3>
+          <h3 style="margin:0 0 4px;color:#6e4b1e;font-size:14px;letter-spacing:0.3px;">Items Ordered</h3>
           ${orderedItemsHtml}
         </div>
 
@@ -1329,33 +1764,23 @@ async function sendOrderConfirmationEmail(paymentData) {
   };
 
   try {
-    console.log('📧 Attempting to send order confirmation email:', {
+    const provider = await sendBuyerTransactionalEmail(mailOptions);
+    console.log('Order confirmation email sent', {
       to: buyerEmail,
-      tx_ref: txRef,
-      transactionId: paymentData && paymentData.id ? paymentData.id : null,
-      subject: mailOptions && mailOptions.subject
+      provider,
+      tx_ref: txRef || null,
+      transactionId: paymentData && paymentData.id ? paymentData.id : null
     });
-    const info = await sendBuyerTransactionalEmail(mailOptions);
-    console.log('✅ Order confirmation email sent successfully', {
+  } catch (error) {
+    console.error('Email sending error:', {
       to: buyerEmail,
       tx_ref: txRef || null,
       transactionId: paymentData && paymentData.id ? paymentData.id : null,
-      messageId: info && info.messageId ? info.messageId : null,
-      accepted: info && Array.isArray(info.accepted) ? info.accepted : [],
-      rejected: info && Array.isArray(info.rejected) ? info.rejected : []
+      error: error && error.message ? error.message : error
     });
-  } catch (error) {
     if (txRef) {
       confirmationEmailSentTxRefs.delete(txRef);
     }
-    console.error('❌ Email sending error:', {
-      to: buyerEmail,
-      tx_ref: txRef || null,
-      transactionId: paymentData && paymentData.id ? paymentData.id : null,
-      subject: mailOptions && mailOptions.subject,
-      error: error && error.message ? error.message : String(error),
-      errorStack: error && error.stack ? error.stack.split('\n').slice(0, 3).join(' | ') : 'no stack'
-    });
   }
 }
 
@@ -1434,15 +1859,126 @@ async function sendPaymentNotificationEmail(paymentData) {
   };
 
   try {
-    await sendInternalTransactionalEmail(mailOptions);
+    const provider = await sendInternalTransactionalEmail(mailOptions);
     console.log('Payment notification email sent to internal recipients', {
+      provider,
       recipients: getInternalNotificationRecipients()
     });
   } catch (error) {
-    console.error('Admin notification email error:', error);
+    if (txRef) {
+      internalNotificationSentTxRefs.delete(txRef);
+    }
+    console.error('Admin notification email error:', error && error.message ? error.message : error);
   }
 }
 
+// Send preorder final payment reminder email
+async function sendPreorderReminderEmail(order) {
+  const recipientEmail = extractSingleEmail(order.customerEmail);
+  if (!recipientEmail) {
+    console.error('Reminder email skipped: missing customer email');
+    return;
+  }
+
+  const remainingAmount = Math.round(order.totalAmount * 0.6 * 100) / 100;
+  const dashboardLink = `${process.env.FRONTEND_URL || 'http://localhost:8000'}/orders.html`;
+
+  const mailOptions = {
+    from: EMAIL_FROM,
+    to: recipientEmail,
+    subject: 'NORDLUXE - 7 Days to Your Preorder! Final Payment Due Soon',
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #d19b48;">Your NORDLUXE Preorder is Almost Here! 🎉</h2>
+        
+        <p>Dear ${escapeHtml(order.customerName)},</p>
+        <p>Your luxury NORDLUXE piece will arrive in just 7 days! To ensure timely delivery, we need the final payment.</p>
+
+        <div style="background:#f8f4eb;border:1px solid #e8dcc7;border-radius:12px;padding:16px;margin:16px 0;">
+          <h3 style="color:#6e4b1e;margin-top:0;">⏰ Final Payment Details</h3>
+          <p><strong>Order ID:</strong> ${escapeHtml(order.flutterwaveRef)}</p>
+          <p><strong>Item:</strong> ${order.items && order.items[0] ? escapeHtml(order.items[0].itemName) : 'Your Order'}</p>
+          <p style="font-size:1.1em;"><strong>Remaining Balance (60%):</strong> <span style="color:#d19b48;">${escapeHtml(order.currency)} ${remainingAmount}</span></p>
+          <p style="margin-bottom:0;"><strong>Due Date:</strong> Within 7 days for on-time delivery</p>
+        </div>
+
+        <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:12px;padding:16px;margin:16px 0;">
+          <p style="margin:0;"><strong>🔐 Secure Payment</strong><br>Your payment is processed securely through Flutterwave.</p>
+        </div>
+
+        <p style="text-align:center;margin:20px 0;">
+          <a href="${dashboardLink}" style="display:inline-block;background:#d19b48;color:white;padding:12px 30px;text-decoration:none;border-radius:8px;font-weight:600;">Access Your Dashboard & Pay</a>
+        </p>
+
+        <p>If you have any questions, feel free to contact us.</p>
+        
+        <p style="border-top:1px solid #e8dcc7;padding-top:20px;margin-top:30px;">
+          Best regards,<br>
+          <strong style="color:#d19b48;">NORDLUXE Team</strong><br>
+          Luxury Scandinavian Fashion
+        </p>
+      </div>
+    `
+  };
+
+  try {
+    const provider = await sendTransactionalEmail(mailOptions);
+    console.log('Preorder reminder email sent', { to: recipientEmail, orderId: order.flutterwaveRef, provider });
+  } catch (error) {
+    console.error('Reminder email send error:', error.message);
+  }
+}
+
+// Scheduled task to send reminder emails
+function setupReminderEmailScheduler() {
+  // Run every hour
+  setInterval(() => {
+    checkAndSendReminders();
+  }, 60 * 60 * 1000);
+  
+  // Also run on startup after 5 minutes
+  setTimeout(() => {
+    checkAndSendReminders();
+  }, 5 * 60 * 1000);
+}
+
+async function checkAndSendReminders() {
+  try {
+    const orders = readFallbackOrders();
+    const now = new Date();
+
+    orders.forEach(order => {
+      // Only for pending preorders that haven't paid full amount
+      if (order.status !== 'confirmed' || !order.createdAt) return;
+
+      const orderDate = new Date(order.createdAt);
+      const deliveryDate = new Date(orderDate);
+      deliveryDate.setDate(deliveryDate.getDate() + 20);
+
+      // Calculate days until delivery
+      const daysUntilDelivery = Math.ceil((deliveryDate - now) / (1000 * 60 * 60 * 24));
+
+      // Send reminder if 7 days before delivery and hasn't been reminded yet
+      if (daysUntilDelivery === 7 && !order.reminderEmailSent) {
+        sendPreorderReminderEmail(order);
+        
+        // Mark as reminder sent
+        const index = orders.findIndex(o => o.flutterwaveRef === order.flutterwaveRef);
+        if (index >= 0) {
+          orders[index].reminderEmailSent = true;
+          orders[index].reminderSentAt = new Date().toISOString();
+          writeFallbackOrders(orders);
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Reminder scheduler error:', error.message);
+  }
+}
+
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/../public/index.html");
+});
 // Auth routes
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -1472,20 +2008,24 @@ if (process.env.APPLE_CLIENT_ID && process.env.APPLE_TEAM_ID && process.env.APPL
 app.post('/auth/email/send-otp', async (req, res) => {
   const { email } = req.body;
   try {
-    if (!email) {
+    const normalizedEmail = extractSingleEmail(email);
+
+    if (!normalizedEmail) {
       return res.status(400).json({ success: false, message: 'Email is required' });
     }
 
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    if (!resend && !gmailTransporter) {
       return res.status(500).json({
         success: false,
         message: 'Email service is not configured on server'
       });
     }
 
-    let user = await User.findOne({ email });
+    const users = readUsers();
+    let user = users.find((u) => extractSingleEmail(u.email) === normalizedEmail);
     if (!user) {
-      user = new User({ email, isFirstLogin: true });
+      user = { _id: crypto.randomBytes(12).toString('hex'), email: normalizedEmail, isFirstLogin: true, createdAt: new Date().toISOString() };
+      users.push(user);
     }
 
     // Existing accounts created via password/social login may not have OTP secret yet.
@@ -1493,12 +2033,19 @@ app.post('/auth/email/send-otp', async (req, res) => {
       user.otpSecret = authenticator.generateSecret();
     }
 
-    await user.save();
+    user.otpIssuedAt = Date.now();
+    user.otpAttempts = 0;
+    user.otpLastAttemptAt = null;
+
+    const idx = users.findIndex((u) => extractSingleEmail(u.email) === normalizedEmail);
+    if (idx >= 0) users[idx] = user;
+    writeUsers(users);
 
     const token = authenticator.generate(user.otpSecret);
-    const mailOptions = {
+
+    await sendTransactionalEmail({
       from: EMAIL_FROM,
-      to: email,
+      to: normalizedEmail,
       subject: 'Your NORDLUXE Login OTP',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -1507,9 +2054,7 @@ app.post('/auth/email/send-otp', async (req, res) => {
           <p>This code will expire in 10 minutes.</p>
         </div>
       `
-    };
-
-    await sendTransactionalEmail(mailOptions);
+    });
     res.json({ success: true, message: 'OTP sent to your email' });
   } catch (error) {
     console.error('send-otp error:', error);
@@ -1520,24 +2065,62 @@ app.post('/auth/email/send-otp', async (req, res) => {
 app.post('/auth/email/verify-otp', async (req, res) => {
   const { email, otp } = req.body;
   try {
-    if (!email || !otp) {
+    const normalizedEmail = extractSingleEmail(email);
+    if (!normalizedEmail || !otp) {
       return res.status(400).json({ success: false, message: 'Email and OTP are required' });
     }
 
-    const user = await User.findOne({ email });
+    const users = readUsers();
+    const user = users.find((u) => extractSingleEmail(u.email) === normalizedEmail);
     if (!user) return res.status(400).json({ success: false, message: 'User not found' });
 
     if (!user.otpSecret) {
       return res.status(400).json({ success: false, message: 'No OTP active for this account. Request a new OTP.' });
     }
 
+    const issuedAtMs = Number(user.otpIssuedAt || 0);
+    if (!issuedAtMs || (Date.now() - issuedAtMs) > OTP_TTL_MS) {
+      user.otpSecret = null;
+      user.otpIssuedAt = null;
+      user.otpAttempts = 0;
+      user.otpLastAttemptAt = Date.now();
+      const expiredIdx = users.findIndex((u) => String(u._id) === String(user._id));
+      if (expiredIdx >= 0) {
+        users[expiredIdx] = user;
+        writeUsers(users);
+      }
+      return res.status(400).json({ success: false, message: 'OTP expired. Request a new OTP.' });
+    }
+
+    const attemptsUsed = Number(user.otpAttempts || 0);
+    if (attemptsUsed >= OTP_MAX_ATTEMPTS) {
+      return res.status(429).json({ success: false, message: 'Too many invalid OTP attempts. Request a new OTP.' });
+    }
+
     const isValid = authenticator.verify({ token: otp, secret: user.otpSecret });
-    if (!isValid) return res.status(400).json({ success: false, message: 'Invalid OTP' });
+    if (!isValid) {
+      user.otpAttempts = attemptsUsed + 1;
+      user.otpLastAttemptAt = Date.now();
+      const invalidIdx = users.findIndex((u) => String(u._id) === String(user._id));
+      if (invalidIdx >= 0) {
+        users[invalidIdx] = user;
+        writeUsers(users);
+      }
+      return res.status(400).json({ success: false, message: 'Invalid OTP' });
+    }
+
+    user.otpSecret = null;
+    user.otpIssuedAt = null;
+    user.otpAttempts = 0;
+    user.otpLastAttemptAt = Date.now();
 
     if (user.isFirstLogin) {
       user.isFirstLogin = false;
-      await user.save();
     }
+
+    const uidx = users.findIndex((u) => String(u._id) === String(user._id));
+    if (uidx >= 0) users[uidx] = user;
+    writeUsers(users);
 
     req.login(user, (err) => {
       if (err) return res.status(500).json({ success: false, message: 'Login failed' });
@@ -1570,7 +2153,7 @@ app.post('/auth/password/reset-request', async (req, res) => {
     return res.status(400).json({ success: false, message: 'Email is required' });
   }
 
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+  if (!resend && !gmailTransporter) {
     return res.status(500).json({ success: false, message: 'Email service is not configured on server' });
   }
 
@@ -1628,14 +2211,22 @@ app.post('/auth/password/reset-request', async (req, res) => {
 
 // Password-based auth routes
 app.post('/auth/signup', async (req, res) => {
-  const { email, password, name } = req.body;
+  const { password, name } = req.body;
+  const email = extractSingleEmail(req.body.email);
   try {
-    const existingUser = await User.findOne({ email });
+    if (!email) return res.status(400).json({ success: false, message: 'A valid email address is required.' });
+    if (!password || typeof password !== 'string' || password.length < 8) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters.' });
+    }
+
+    const users = readUsers();
+    const existingUser = users.find((u) => extractSingleEmail(u.email) === email);
     if (existingUser) return res.status(400).json({ success: false, message: 'User already exists' });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ email, password: hashedPassword, name });
-    await user.save();
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const user = { _id: crypto.randomBytes(12).toString('hex'), email, password: hashedPassword, name: normalizeText(name).slice(0, 100), createdAt: new Date().toISOString() };
+    users.push(user);
+    writeUsers(users);
 
     req.login(user, (err) => {
       if (err) return res.status(500).json({ success: false, message: 'Signup failed' });
@@ -1647,9 +2238,15 @@ app.post('/auth/signup', async (req, res) => {
 });
 
 app.post('/auth/signin', async (req, res) => {
-  const { email, password } = req.body;
+  const { password } = req.body;
+  const email = extractSingleEmail(req.body.email);
   try {
-    const user = await User.findOne({ email });
+    if (!email || !password || typeof password !== 'string') {
+      return res.status(400).json({ success: false, message: 'Invalid credentials' });
+    }
+
+    const users = readUsers();
+    const user = users.find((u) => extractSingleEmail(u.email) === email);
     if (!user || !user.password) return res.status(400).json({ success: false, message: 'Invalid credentials' });
 
     const isValid = await bcrypt.compare(password, user.password);
@@ -1674,6 +2271,7 @@ app.get('/api/health', (req, res) => {
     status: 'ok',
     environment: NODE_ENV,
     uptimeSeconds: Math.floor(process.uptime()),
+    startedAt: new Date(serverStartedAt).toISOString(),
     timestamp: new Date().toISOString(),
     shuttingDown: isShuttingDown,
     storage: {
@@ -1833,9 +2431,6 @@ app.post('/api/analytics/event', (req, res) => {
     });
 
     return res.json({ success: true });
-        if (txRef) {
-          internalNotificationSentTxRefs.delete(txRef);
-        }
   } catch (error) {
     console.error('Analytics event error:', error.message);
     return res.status(500).json({ success: false, message: 'Event capture failed' });
@@ -1845,8 +2440,8 @@ app.post('/api/analytics/event', (req, res) => {
 // Admin-only live sessions (full detail per visitor)
 app.get('/api/admin/live-sessions', (req, res) => {
   try {
-    if (req.headers['x-admin-key'] !== process.env.NEWSLETTER_ADMIN_KEY) {
-      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    if (!isAdminRequest(req)) {
+      return rejectUnauthorizedAdmin(res);
     }
     cleanupLiveSessions();
     const sessions = [];
@@ -1878,8 +2473,8 @@ app.get('/api/admin/live-sessions', (req, res) => {
 // Admin customer summary (unique customers from orders)
 app.get('/api/admin/customer-summary', async (req, res) => {
   try {
-    if (req.headers['x-admin-key'] !== process.env.NEWSLETTER_ADMIN_KEY) {
-      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    if (!isAdminRequest(req)) {
+      return rejectUnauthorizedAdmin(res);
     }
     const orders = await getOrdersForQuery({});
     const map = {};
@@ -1908,8 +2503,8 @@ app.get('/api/admin/customer-summary', async (req, res) => {
 // Admin-only live analytics snapshot
 app.get('/api/admin/live-analytics', (req, res) => {
   try {
-    if (req.headers['x-admin-key'] !== process.env.NEWSLETTER_ADMIN_KEY) {
-      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    if (!isAdminRequest(req)) {
+      return rejectUnauthorizedAdmin(res);
     }
 
     const snapshot = buildLiveAnalyticsSnapshot();
@@ -1923,8 +2518,8 @@ app.get('/api/admin/live-analytics', (req, res) => {
 // Admin-only recent site activity feed
 app.get('/api/admin/live-events', (req, res) => {
   try {
-    if (req.headers['x-admin-key'] !== process.env.NEWSLETTER_ADMIN_KEY) {
-      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    if (!isAdminRequest(req)) {
+      return rejectUnauthorizedAdmin(res);
     }
 
     const limit = Math.max(1, Math.min(500, Number(req.query.limit || 120)));
@@ -1960,17 +2555,21 @@ app.post('/api/newsletter/subscribe', async (req, res) => {
 
     const name = normalizeText(rawName).slice(0, 80);
 
-    const existing = await Subscriber.findOne({ email });
+    const subscribers = readSubscribers();
+    const existing = subscribers.find((s) => s.email === email);
     if (existing) {
       if (!existing.active) {
         existing.active = true;
-        await existing.save();
+        const eidx = subscribers.findIndex((s) => s.email === email);
+        if (eidx >= 0) subscribers[eidx] = existing;
+        writeSubscribers(subscribers);
         return res.json({ success: true, message: 'Welcome back! You have been re-subscribed.' });
       }
       return res.json({ success: true, message: 'You are already subscribed.' });
     }
 
-    await Subscriber.create({ email, name });
+    subscribers.push({ email, name, subscribedAt: new Date().toISOString(), active: true });
+    writeSubscribers(subscribers);
 
     // Welcome email to subscriber
     await sendTransactionalEmail({
@@ -2011,7 +2610,12 @@ app.post('/api/newsletter/unsubscribe', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Email required.' });
     }
     const email = rawEmail.toLowerCase().trim();
-    await Subscriber.updateOne({ email }, { active: false });
+    const subscribers = readSubscribers();
+    const sidx = subscribers.findIndex((s) => s.email === email);
+    if (sidx >= 0) {
+      subscribers[sidx].active = false;
+      writeSubscribers(subscribers);
+    }
     res.json({ success: true, message: 'You have been unsubscribed.' });
   } catch (err) {
     console.error('Newsletter unsubscribe error:', err);
@@ -2022,9 +2626,8 @@ app.post('/api/newsletter/unsubscribe', async (req, res) => {
 // Send newsletter — admin only (protect with NEWSLETTER_ADMIN_KEY in .env)
 app.post('/api/newsletter/send', async (req, res) => {
   try {
-    const adminKey = req.headers['x-admin-key'];
-    if (!adminKey || adminKey !== process.env.NEWSLETTER_ADMIN_KEY) {
-      return res.status(403).json({ success: false, message: 'Unauthorized.' });
+    if (!isAdminRequest(req)) {
+      return rejectUnauthorizedAdmin(res);
     }
 
     const { subject, html, text } = req.body;
@@ -2032,15 +2635,15 @@ app.post('/api/newsletter/send', async (req, res) => {
       return res.status(400).json({ success: false, message: 'subject and html are required.' });
     }
 
-    const subscribers = await Subscriber.find({ active: true }).select('email name').lean();
-    if (!subscribers.length) {
+    const allSubscribers = readSubscribers().filter((s) => s.active);
+    if (!allSubscribers.length) {
       return res.json({ success: true, message: 'No active subscribers found.', sent: 0 });
     }
 
     let sent = 0;
     let failed = 0;
 
-    for (const sub of subscribers) {
+    for (const sub of allSubscribers) {
       try {
         const personalizedHtml = html
           .replace(/{{name}}/g, escapeHtml(sub.name || 'there'))
@@ -2050,8 +2653,7 @@ app.post('/api/newsletter/send', async (req, res) => {
           from: EMAIL_FROM,
           to: sub.email,
           subject: subject,
-          html: personalizedHtml,
-          text: text || ''
+          html: personalizedHtml
         });
         sent++;
       } catch (mailErr) {
@@ -2128,22 +2730,44 @@ async function sendStatusUpdateEmail(order, newStatus) {
 // POST /api/orders - Create order (called after successful payment)
 app.post('/api/orders', async (req, res) => {
   try {
-    const { customerEmail, customerName, userId, items, totalAmount, paymentPlan, flutterwaveRef, paymentReference } = req.body;
-    const normalizedCustomerEmail = extractSingleEmail(customerEmail);
+    const { customerEmail, customerName, items, totalAmount, paymentPlan, flutterwaveRef, paymentReference } = req.body;
+
+    // Always prefer authenticated user identity over request body values.
+    const sessionUser = req.user || null;
+    const authenticatedUserId = sessionUser ? String(sessionUser._id || '') : (normalizeText(req.body.userId) || null);
+    const authenticatedEmail = sessionUser ? extractSingleEmail(sessionUser.email) : null;
+
+    // Resolve final email — authenticated session email takes precedence.
+    const resolvedEmail = authenticatedEmail || extractSingleEmail(customerEmail);
+    const normalizedCustomerEmail = resolvedEmail;
     const normalizedCustomerName = normalizeText(customerName);
 
-    if (!normalizedCustomerEmail || !normalizedCustomerName || !items || !totalAmount) {
+    console.log('[POST /api/orders] Creating order', {
+      userId: authenticatedUserId,
+      email: normalizedCustomerEmail
+    });
+
+    if (!normalizedCustomerEmail || !normalizedCustomerName || !Array.isArray(items) || !items.length || !totalAmount) {
       return res.status(400).json({ success: false, message: 'Missing required fields' });
+    }
+
+    const catalogOrderTotal = computeCatalogOrderTotal(items);
+    const requestedTotal = parseMoneyValue(totalAmount);
+    if (catalogOrderTotal === null || requestedTotal === null || Math.abs(catalogOrderTotal - requestedTotal) > 0.01) {
+      return res.status(400).json({ success: false, message: 'Invalid order total for selected items.' });
+    }
+
+    // If a session user exists, block cross-user order creation.
+    if (sessionUser && authenticatedEmail && customerEmail) {
+      const bodyEmail = extractSingleEmail(customerEmail);
+      if (bodyEmail && bodyEmail !== authenticatedEmail) {
+        return res.status(403).json({ success: false, message: 'Order email must match signed-in account email.' });
+      }
     }
 
     let orderCode = generateOrderCode();
     for (let i = 0; i < 5; i++) {
-      let exists = null;
-      if (mongoReady) {
-        exists = await Order.findOne({ orderCode });
-      } else {
-        exists = readFallbackOrders().find((x) => String(x.orderCode || '').toUpperCase() === orderCode);
-      }
+      const exists = await orderCodeExists(orderCode);
       if (!exists) break;
       orderCode = generateOrderCode();
     }
@@ -2152,9 +2776,10 @@ app.post('/api/orders', async (req, res) => {
       customerEmail: normalizedCustomerEmail,
       customerName: normalizedCustomerName,
       orderCode,
-      userId: userId || null,
+      orderAccessToken: createOrderAccessToken(),
+      userId: authenticatedUserId,
       items,
-      totalAmount,
+      totalAmount: catalogOrderTotal,
       paymentPlan: paymentPlan || {},
       flutterwaveRef: flutterwaveRef || null,
       paymentReference: paymentReference || null,
@@ -2178,82 +2803,11 @@ app.post('/api/orders', async (req, res) => {
       }
     };
 
-    let order;
-    if (mongoReady) {
-      const doc = new Order(orderPayload);
-      await doc.save();
-      order = doc.toObject();
-    } else {
-      const all = readFallbackOrders();
-      order = Object.assign({ _id: crypto.randomBytes(12).toString('hex') }, orderPayload);
-      all.unshift(order);
-      writeFallbackOrders(all);
-    }
+    const order = await createStoredOrder(orderPayload);
 
-    // Send confirmation email directly using the real customer email from the request body
-    try {
-      const currencyCode = 'NGN';
-      const itemsHtml = Array.isArray(items) && items.length
-        ? buildOrderItemsTableHtml(items, currencyCode)
-        : '<p style="margin:0;line-height:1.6;color:#7a6a55;"><em>Item details are being finalized. Your payment has been received successfully.</em></p>';
-      const amountValue = parseMoneyValue(totalAmount);
-      const amountHtml = amountValue !== null ? formatEmailCurrency(amountValue, currencyCode) : escapeHtml(String(totalAmount));
-      const isPreorderDeposit = paymentPlan && paymentPlan.type === 'preorder-deposit';
-
-      await sendBuyerTransactionalEmail({
-        from: EMAIL_FROM,
-        to: normalizedCustomerEmail,
-        subject: isPreorderDeposit ? 'NORDLUXE - Preorder Deposit Confirmation' : 'NORDLUXE - Order Confirmation',
-        html: renderEmailLayout({
-          title: isPreorderDeposit ? 'Your Preorder Deposit Has Been Received' : 'Thank You For Your Purchase',
-          subtitle: isPreorderDeposit ? 'Deposit Confirmation' : 'Order Confirmation',
-          preheader: isPreorderDeposit ? 'Your NORDLUXE preorder deposit has been confirmed.' : 'Your NORDLUXE order has been confirmed.',
-          contentHtml: `
-            <p style="margin:0 0 14px;line-height:1.7;">Dear ${escapeHtml(normalizedCustomerName)},</p>
-            <p style="margin:-4px 0 14px;"><span style="display:inline-block;background:#f2e8d8;border:1px solid #d4b87e;border-radius:20px;padding:3px 12px;font-size:11px;color:#6e4b1e;letter-spacing:0.5px;font-weight:700;">Order ${escapeHtml(orderCode)}</span></p>
-            <p style="margin:0 0 14px;line-height:1.7;">${isPreorderDeposit ? 'Your 40% preorder deposit has been successfully processed. Here are your order details:' : 'Your order has been successfully processed. Here are your order details:'}</p>
-            <div style="background:#f8f4eb;border:1px solid #e8dcc7;border-radius:12px;padding:16px;margin:16px 0;">
-              <h3 style="margin:0 0 10px;color:#6e4b1e;">Payment Summary</h3>
-              <p style="margin:0 0 6px;"><strong>Order ID:</strong> ${escapeHtml(orderCode)}</p>
-              <p style="margin:0 0 6px;"><strong>Amount Paid:</strong> ${amountHtml}</p>
-              <p style="margin:0;"><strong>Status:</strong> Confirmed</p>
-            </div>
-            <div style="background:#f8f4eb;border:1px solid #e8dcc7;border-radius:12px;padding:16px;margin:16px 0;">
-              <h3 style="margin:0 0 10px;color:#6e4b1e;">Items Ordered</h3>
-              ${itemsHtml}
-            </div>
-            <p style="margin:0;line-height:1.7;">${isPreorderDeposit ? 'We will contact you when your piece is ready so you can complete the remaining 60% payment before delivery.' : 'You will receive a shipping confirmation email once your order ships.'}</p>
-          `
-        })
-      });
-      console.log('✅ Order confirmation email sent to:', normalizedCustomerEmail);
-    } catch (emailErr) {
-      console.error('❌ Failed to send order confirmation email:', emailErr.message);
-    }
-
-    // Send internal notification to admin
-    try {
-      const amountValue2 = parseMoneyValue(totalAmount);
-      const amountHtml2 = amountValue2 !== null ? formatEmailCurrency(amountValue2, 'NGN') : escapeHtml(String(totalAmount));
-      await sendInternalTransactionalEmail({
-        from: EMAIL_FROM,
-        subject: `New Order: ${orderCode} from ${normalizedCustomerName}`,
-        html: renderEmailLayout({
-          title: 'New Order Received',
-          subtitle: 'Admin Notification',
-          preheader: `New order ${orderCode} placed by ${normalizedCustomerName}`,
-          contentHtml: `
-            <p style="margin:0 0 10px;"><strong>Order ID:</strong> ${escapeHtml(orderCode)}</p>
-            <p style="margin:0 0 10px;"><strong>Customer:</strong> ${escapeHtml(normalizedCustomerName)} (${escapeHtml(normalizedCustomerEmail)})</p>
-            <p style="margin:0 0 10px;"><strong>Total:</strong> ${amountHtml2}</p>
-            ${Array.isArray(items) && items.length ? buildOrderItemsTableHtml(items, 'NGN') : '<p>No item details.</p>'}
-          `
-        })
-      });
-      console.log('✅ Admin notification email sent');
-    } catch (adminEmailErr) {
-      console.error('❌ Failed to send admin notification email:', adminEmailErr.message);
-    }
+    // NOTE: Confirmation email is already sent via sendOrderConfirmationEmail()
+    // which is triggered by payment webhook and /api/verify-payment endpoints.
+    // Do NOT send a second confirmation here to avoid duplicate emails.
 
     res.json({ success: true, order });
   } catch (err) {
@@ -2265,8 +2819,8 @@ app.post('/api/orders', async (req, res) => {
 // GET /api/orders - Get all orders (admin only)
 app.get('/api/orders', async (req, res) => {
   try {
-    if (req.headers['x-admin-key'] !== process.env.NEWSLETTER_ADMIN_KEY) {
-      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    if (!isAdminRequest(req)) {
+      return rejectUnauthorizedAdmin(res);
     }
 
     const orders = await getOrdersForQuery({});
@@ -2295,58 +2849,75 @@ async function findOrderByFlexibleId(orderId) {
         { flutterwaveRef: normalized },
         { flutterwaveRef: upper }
       ]
-    });
-    if (byPaymentRef) return byPaymentRef;
-  } else {
-    const fallbackAll = readFallbackOrders();
-    const byPaymentRef = fallbackAll.find((x) => {
-      const pref = String(x.paymentReference || '');
-      const fref = String(x.flutterwaveRef || '');
-      return pref === normalized || pref.toUpperCase() === upper || fref === normalized || fref.toUpperCase() === upper;
-    });
-    if (byPaymentRef) return byPaymentRef;
+    }).lean();
+    if (byPaymentRef) return normalizeStoredOrder(byPaymentRef);
+
+    if (/^NLX-[A-Z0-9]{8}$/.test(upper)) {
+      const byExactCode = await Order.findOne({ orderCode: upper }).lean();
+      if (byExactCode) return normalizeStoredOrder(byExactCode);
+    }
+
+    if (/^[A-Z0-9]{8}$/.test(upper)) {
+      const byShortCode = await Order.findOne({ orderCode: `NLX-${upper}` }).lean();
+      if (byShortCode) return normalizeStoredOrder(byShortCode);
+    }
+
+    const codeCandidate = upper.startsWith('NLX-') ? upper : `NLX-${upper}`;
+    const byOrderCode = await Order.findOne({ orderCode: codeCandidate }).lean();
+    if (byOrderCode) return normalizeStoredOrder(byOrderCode);
+
+    if (/^[a-fA-F0-9]{24}$/.test(normalized)) {
+      const byRawId = await Order.findById(normalized).lean();
+      if (byRawId) return normalizeStoredOrder(byRawId);
+    }
+
+    const recentOrders = (await Order.find({}).sort({ createdAt: -1 }).limit(5000).lean()).map(normalizeStoredOrder);
+
+    if (/^NLX-[A-Z0-9]{8}$/.test(upper)) {
+      const bareShort = upper.replace(/^NLX-/, '');
+      const byLegacyShort = recentOrders.find((item) => String(item._id || '').slice(-8).toUpperCase() === bareShort);
+      if (byLegacyShort) return byLegacyShort;
+    }
+
+    return recentOrders.find((item) => String(item._id || '').slice(-8).toUpperCase() === upper) || null;
   }
 
+  const fallbackAll = readFallbackOrders();
+
+  const byPaymentRef = fallbackAll.find((x) => {
+    const pref = String(x.paymentReference || '');
+    const fref = String(x.flutterwaveRef || '');
+    return pref === normalized || pref.toUpperCase() === upper || fref === normalized || fref.toUpperCase() === upper;
+  });
+  if (byPaymentRef) return byPaymentRef;
+
   if (/^NLX-[A-Z0-9]{8}$/.test(upper)) {
-    const byExactCode = mongoReady
-      ? await Order.findOne({ orderCode: upper })
-      : readFallbackOrders().find((x) => String(x.orderCode || '').toUpperCase() === upper);
+    const byExactCode = fallbackAll.find((x) => String(x.orderCode || '').toUpperCase() === upper);
     if (byExactCode) return byExactCode;
   }
 
   if (/^[A-Z0-9]{8}$/.test(upper)) {
-    const byShortCode = mongoReady
-      ? await Order.findOne({ orderCode: `NLX-${upper}` })
-      : readFallbackOrders().find((x) => String(x.orderCode || '').toUpperCase() === `NLX-${upper}`);
+    const byShortCode = fallbackAll.find((x) => String(x.orderCode || '').toUpperCase() === `NLX-${upper}`);
     if (byShortCode) return byShortCode;
   }
 
   const codeCandidate = upper.startsWith('NLX-') ? upper : `NLX-${upper}`;
-  const byOrderCode = mongoReady
-    ? await Order.findOne({ orderCode: codeCandidate })
-    : readFallbackOrders().find((x) => String(x.orderCode || '').toUpperCase() === codeCandidate);
+  const byOrderCode = fallbackAll.find((x) => String(x.orderCode || '').toUpperCase() === codeCandidate);
   if (byOrderCode) return byOrderCode;
 
   if (/^NLX-[A-Z0-9]{8}$/.test(upper)) {
     const bareShort = upper.replace(/^NLX-/, '');
-    const recentOrders = mongoReady
-      ? await Order.find().sort({ createdAt: -1 }).limit(5000)
-      : sortByCreatedDesc(readFallbackOrders()).slice(0, 5000);
+    const recentOrders = sortByCreatedDesc(fallbackAll).slice(0, 5000);
     const byLegacyShort = recentOrders.find((item) => item._id.toString().slice(-8).toUpperCase() === bareShort);
     if (byLegacyShort) return byLegacyShort;
   }
 
   if (/^[a-fA-F0-9]{24}$/.test(normalized)) {
-    if (mongoReady) {
-      return Order.findById(normalized);
-    }
-    const byRawId = readFallbackOrders().find((x) => String(x._id || '') === normalized);
+    const byRawId = fallbackAll.find((x) => String(x._id || '') === normalized);
     if (byRawId) return byRawId;
   }
 
-  const recentOrders = mongoReady
-    ? await Order.find().sort({ createdAt: -1 }).limit(5000)
-    : sortByCreatedDesc(readFallbackOrders()).slice(0, 5000);
+  const recentOrders = sortByCreatedDesc(fallbackAll).slice(0, 5000);
   return recentOrders.find((item) => item._id.toString().slice(-8).toUpperCase() === upper) || null;
 }
 
@@ -2357,34 +2928,60 @@ app.get('/api/orders/:orderId', async (req, res) => {
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found' });
     }
-    res.json({ success: true, order });
+
+    const adminRequest = isAdminRequest(req);
+    if (!adminRequest && !isOrderOwnedBySessionUser(order, req) && !canAccessOrderAsGuest(order, req)) {
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+
+    res.json({ success: true, order: adminRequest ? normalizeStoredOrder(order) : sanitizeOrderForClient(order) });
   } catch (err) {
     console.error('Order fetch error:', err);
     res.status(500).json({ success: false, message: 'Could not fetch order' });
   }
 });
 
-// GET /api/users/:userId/orders - Get all orders for a user
+// GET /api/users/:userId/orders - Get all orders for a user (scoped to authenticated user)
 app.get('/api/users/:userId/orders', async (req, res) => {
   try {
-    let query = {};
-    
-    // Support both userId path parameter and email query parameter
-    if (req.params.userId === 'guest' && req.query.email) {
-      const email = String(req.query.email || '').trim();
-      query = { customerEmail: new RegExp(`^${email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') };
-    } else {
-      query = { 
+    const requestedUserId = req.params.userId;
+    const sessionUser = req.user || null;
+
+    if (sessionUser) {
+      const sessionUserId = normalizeUserId(sessionUser._id);
+      const sessionEmail = resolveSessionUserEmail(req);
+
+      if (requestedUserId !== 'guest' && sessionUserId !== requestedUserId) {
+        return res.status(403).json({ success: false, message: 'Forbidden' });
+      }
+
+      const query = {
         $or: [
-          { userId: req.params.userId },
-          { customerEmail: new RegExp(`^${String(req.query.email || '').trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+          { userId: sessionUserId },
+          { customerEmail: new RegExp(`^${sessionEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
         ]
       };
+      const orders = await getOrdersForQuery(query);
+      return res.json({ success: true, orders: orders.map(sanitizeOrderForClient) });
     }
-    
-    const orders = await getOrdersForQuery(query);
-    
-    res.json({ success: true, orders });
+
+    if (requestedUserId === 'guest') {
+      const guestEmail = extractSingleEmail(String(req.query.email || '').trim());
+      const guestToken = extractOrderAccessToken(req);
+      if (!guestEmail || !guestToken) {
+        return res.status(400).json({ success: false, message: 'Email and access token are required.' });
+      }
+
+      const query = {
+        customerEmail: new RegExp(`^${guestEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i'),
+        orderAccessToken: guestToken
+      };
+      const orders = await getOrdersForQuery(query);
+      const allowedOrders = orders.filter((order) => canAccessOrderAsGuest(order, req));
+      return res.json({ success: true, orders: allowedOrders.map(sanitizeOrderForClient) });
+    }
+
+    return res.status(401).json({ success: false, message: 'Authentication required' });
   } catch (err) {
     console.error('User orders fetch error:', err);
     res.status(500).json({ success: false, message: 'Could not fetch orders' });
@@ -2396,9 +2993,8 @@ app.put('/api/orders/:orderId/status', async (req, res) => {
   try {
     const { status, trackingNumber, trackingUrl, shippingCompany, notes, updatedBy, internalNote } = req.body;
 
-    // Verify admin key
-    if (req.headers['x-admin-key'] !== process.env.NEWSLETTER_ADMIN_KEY) {
-      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    if (!isAdminRequest(req)) {
+      return rejectUnauthorizedAdmin(res);
     }
 
     const validStatuses = ['pending', 'confirmed', 'packed', 'dispatched', 'in-transit', 'delivered', 'received'];
@@ -2449,15 +3045,10 @@ app.put('/api/orders/:orderId/status', async (req, res) => {
     }
     if (status === 'delivered' && !order.deliveredAt) order.deliveredAt = new Date();
 
-    if (mongoReady && typeof order.save === 'function') {
-      await order.save();
-    } else {
-      const list = readFallbackOrders();
-      const idx = list.findIndex((x) => String(x._id) === String(order._id));
-      if (idx >= 0) {
-        list[idx] = order;
-        writeFallbackOrders(list);
-      }
+    order.updatedAt = new Date();
+    const savedOrder = await saveStoredOrder(order);
+    if (savedOrder) {
+      order = savedOrder;
     }
 
     // Send status update email
@@ -2487,15 +3078,9 @@ app.put('/api/orders/:orderId/status', async (req, res) => {
       emailSent = await sendStatusUpdateEmail(order, status);
       if (emailSent) {
         order.notificationsSent[notificationKey] = true;
-        if (mongoReady && typeof order.save === 'function') {
-          await order.save();
-        } else {
-          const list = readFallbackOrders();
-          const idx = list.findIndex((x) => String(x._id) === String(order._id));
-          if (idx >= 0) {
-            list[idx] = order;
-            writeFallbackOrders(list);
-          }
+        const notifiedOrder = await saveStoredOrder(order);
+        if (notifiedOrder) {
+          order = notifiedOrder;
         }
       }
     }
@@ -2513,6 +3098,165 @@ app.put('/api/orders/:orderId/status', async (req, res) => {
   }
 });
 
+// ─── Preorder Dashboard Routes ───────────────────────────────────────────────
+
+// Test endpoint
+app.get('/api/test', (req, res) => {
+  if (IS_PRODUCTION) {
+    return res.status(404).json({ success: false, message: 'Not found' });
+  }
+  res.json({ success: true, message: 'Test endpoint works' });
+});
+
+// Get preorder details for dashboard
+app.post('/api/preorder-dashboard', async (req, res) => {
+  const { orderId, email, accessToken } = req.body;
+
+  if (!orderId || !email || !accessToken) {
+    return res.status(400).json({
+      success: false,
+      message: 'Order ID, email, and access token are required'
+    });
+  }
+
+  try {
+    const normalizedEmail = extractSingleEmail(email);
+    const normalizedOrderId = normalizeText(orderId);
+    const normalizedAccessToken = normalizeText(accessToken);
+
+    if (!normalizedEmail || !normalizedOrderId || !normalizedAccessToken) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid preorder dashboard credentials.'
+      });
+    }
+
+    const customerOrder = await findOrderByFlexibleId(normalizedOrderId);
+    if (!customerOrder) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found.'
+      });
+    }
+
+    const orderEmail = extractSingleEmail(customerOrder.customerEmail);
+    if (orderEmail !== normalizedEmail || !safeCompareSecrets(normalizedAccessToken, normalizeText(customerOrder.orderAccessToken))) {
+      return res.status(403).json({
+        success: false,
+        message: 'Invalid preorder dashboard credentials.'
+      });
+    }
+
+    res.json({
+      success: true,
+      masterOrderId: customerOrder.flutterwaveRef,
+      order: {
+        flutterwaveRef: customerOrder.flutterwaveRef,
+        customerEmail: customerOrder.customerEmail,
+        customerName: customerOrder.customerName,
+        items: customerOrder.items.map(item => ({
+          itemName: item.name || item.itemName,
+          quantity: item.quantity || 1,
+          unitPrice: item.finalPrice || item.price || 0
+        })),
+        totalAmount: customerOrder.totalAmount,
+        currency: customerOrder.currency || 'NGN',
+        createdAt: customerOrder.createdAt,
+        status: customerOrder.status || 'pending'
+      }
+    });
+  } catch (error) {
+    console.error('Preorder dashboard error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve order details'
+    });
+  }
+});
+
+// Initiate remaining balance payment (60%)
+app.post('/api/initiate-remaining-payment', async (req, res) => {
+  const { orderId, email, accessToken } = req.body;
+
+  if (!orderId) {
+    return res.status(400).json({
+      success: false,
+      message: 'Order ID is required'
+    });
+  }
+
+  try {
+    const normalizedOrderId = normalizeText(orderId);
+    const order = await findOrderByFlexibleId(normalizedOrderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+    }
+
+    const adminRequest = isAdminRequest(req);
+    const sessionOwner = isOrderOwnedBySessionUser(order, req);
+    const guestEmail = extractSingleEmail(email);
+    const guestToken = normalizeText(accessToken);
+    const guestAuthorized = guestEmail
+      && extractSingleEmail(order.customerEmail) === guestEmail
+      && safeCompareSecrets(guestToken, normalizeText(order.orderAccessToken));
+
+    if (!adminRequest && !sessionOwner && !guestAuthorized) {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden'
+      });
+    }
+
+    const remainingAmount = Math.round(order.totalAmount * 0.6 * 100) / 100;
+    const txRef = `nordluxe-balance-${orderId}-${Date.now()}`;
+
+    const flutterwavePayload = {
+      tx_ref: txRef,
+      amount: remainingAmount,
+      currency: 'NGN',
+      payment_options: 'card,bank,ussd',
+      redirect_url: `${process.env.FRONTEND_URL || 'http://localhost:8000'}/payment-success.html`,
+      customer: {
+        email: order.customerEmail,
+        name: order.customerName,
+        phone: order.customerPhone || ''
+      },
+      meta: {
+        orderId: orderId,
+        paymentType: 'preorder-final',
+        originalOrderTotal: order.totalAmount,
+        finalPaymentAmount: remainingAmount
+      }
+    };
+
+    // Initialize with Flutterwave
+    const fw = new Flutterwave(process.env.FLUTTERWAVE_PUBLIC_KEY, process.env.FLUTTERWAVE_SECRET_KEY);
+    const response = await fw.Charge.card(flutterwavePayload);
+
+    if (response.status === 'success' && response.data.link) {
+      res.json({
+        success: true,
+        paymentLink: response.data.link,
+        txRef: txRef
+      });
+    } else {
+      throw new Error('Failed to generate payment link');
+    }
+  } catch (error) {
+    console.error('Remaining payment initiation error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to initiate payment. Please try again.'
+    });
+  }
+});
+
+// ─── End Preorder Dashboard Routes ───────────────────────────────────────────
+
 // ─── End Order Tracking Routes ───────────────────────────────────────────────
 
 app.use((err, req, res, next) => {
@@ -2527,8 +3271,11 @@ app.use((err, req, res, next) => {
     });
   }
 
-  console.error('Unhandled backend error:', err && err.stack ? err.stack : err);
-  return res.status(500).json({ success: false, message: 'Internal server error' });
+  console.error('Unhandled API error:', err && err.stack ? err.stack : err);
+  return res.status(500).json({
+    success: false,
+    message: 'Internal server error'
+  });
 });
 
 function closeMongoConnection() {
@@ -2561,95 +3308,38 @@ function shutdown(signal, exitCode) {
   hardStopTimer.unref();
 
   if (!server) {
-    closeMongoConnection().finally(() => process.exit(exitCode));
+    closeMongoConnection().finally(() => {
+      process.exit(exitCode);
+    });
     return;
   }
 
   server.close(() => {
-    closeMongoConnection().finally(() => process.exit(exitCode));
+    closeMongoConnection().finally(() => {
+      process.exit(exitCode);
+    });
   });
 }
 
 // Start server
-server = app.listen(PORT, () => {
-  console.log(`NORDLUXE backend server running on port ${PORT}`);
-  console.log(`Webhook URL: http://localhost:${PORT}/api/webhook`);
-});
 
-server.keepAliveTimeout = KEEP_ALIVE_TIMEOUT_MS;
-server.headersTimeout = Math.max(HEADERS_TIMEOUT_MS, KEEP_ALIVE_TIMEOUT_MS + 1000);
+if (require.main === module) {
+  server = app.listen(PORT, () => {
+    console.log(`NORDLUXE API running on http://localhost:${PORT}`);
+  });
 
-process.on('SIGINT', () => shutdown('SIGINT', 0));
-process.on('SIGTERM', () => shutdown('SIGTERM', 0));
-process.on('unhandledRejection', (reason) => {
-  console.error('Unhandled promise rejection:', reason);
-});
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught exception:', error && error.stack ? error.stack : error);
-  shutdown('uncaughtException', 1);
-});
+  server.keepAliveTimeout = KEEP_ALIVE_TIMEOUT_MS;
+  server.headersTimeout = Math.max(HEADERS_TIMEOUT_MS, KEEP_ALIVE_TIMEOUT_MS + 1000);
 
-// Test endpoint for debugging email delivery (development only)
-app.post('/api/test-email', async (req, res) => {
-  const { to, subject, type } = req.body;
-  
-  if (!to || !to.includes('@')) {
-    return res.status(400).json({ error: 'Valid email address required' });
-  }
-
-  try {
-    console.log('Test email endpoint called:', { to, subject, type });
-    
-    if (type === 'order-confirmation') {
-      const testPaymentData = {
-        id: 'test_' + Date.now(),
-        tx_ref: 'TEST_' + Date.now(),
-        amount: 50000,
-        currency: 'NGN',
-        status: 'successful',
-        customer: {
-          email: to,
-          name: 'Test Customer'
-        },
-        meta: {
-          customerEmail: to,
-          paymentType: 'order'
-        }
-      };
-      
-      await sendOrderConfirmationEmail(testPaymentData);
-      return res.json({ 
-        success: true, 
-        message: 'Test order confirmation email sent',
-        to: to 
-      });
-    }
-    
-    if (type === 'generic') {
-      const mailOptions = {
-        from: `NORDLUXE <${process.env.EMAIL_USER || 'nord.luxe01@gmail.com'}>`,
-        to: to,
-        subject: subject || 'Test Email from NORDLUXE',
-        html: `<p>This is a test email from NORDLUXE.</p><p>If you received this, email delivery is working correctly.</p>`
-      };
-      
-      const info = await sendBuyerTransactionalEmail(mailOptions);
-      return res.json({ 
-        success: true, 
-        message: 'Test generic email sent',
-        to: to,
-        messageId: info && info.messageId
-      });
-    }
-    
-    res.status(400).json({ error: 'Unknown email type. Use: order-confirmation, generic' });
-  } catch (error) {
-    console.error('Test email error:', error);
-    res.status(500).json({ 
-      error: 'Failed to send test email',
-      details: error && error.message ? error.message : String(error)
-    });
-  }
-});
+  process.on('SIGINT', () => shutdown('SIGINT', 0));
+  process.on('SIGTERM', () => shutdown('SIGTERM', 0));
+  process.on('unhandledRejection', (reason) => {
+    console.error('Unhandled promise rejection:', reason);
+  });
+  process.on('uncaughtException', (error) => {
+    console.error('Uncaught exception:', error && error.stack ? error.stack : error);
+    shutdown('uncaughtException', 1);
+  });
+}
 
 module.exports = app;

@@ -218,6 +218,130 @@ nav a {
   color: #7e560f;
 }
 
+.order-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2200;
+  padding: 18px;
+}
+
+.order-modal.show {
+  display: flex;
+}
+
+.order-modal-content {
+  width: min(900px, 96vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #e8ddc8;
+  border-radius: 18px;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.3);
+}
+
+.order-modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: linear-gradient(90deg, #111 0%, #2c2c2c 65%, #4a3b20 100%);
+  color: #fff;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+.order-modal-header h3 {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.order-close {
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.order-modal-body {
+  padding: 16px;
+}
+
+.order-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.order-meta-item {
+  background: #fffcf5;
+  border: 1px solid #f1e3c4;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.order-meta-item .label {
+  font-size: 11px;
+  color: #7a642f;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 6px;
+}
+
+.order-meta-item .value {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.order-items-wrap {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.order-item-card {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: 12px;
+  border: 1px solid #eee3cc;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.order-item-card img {
+  width: 84px;
+  height: 84px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #e8ddc8;
+}
+
+.order-item-name {
+  font-weight: 700;
+  margin-bottom: 7px;
+}
+
+.order-item-line {
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.order-item-line strong {
+  color: #7a560f;
+}
+
 @media (max-width: 900px) {
   nav {
     padding: 18px 18px;
@@ -291,6 +415,16 @@ nav a {
   </div>
 </div>
 
+<div id="orderDetailModal" class="order-modal" aria-hidden="true">
+  <div class="order-modal-content" role="dialog" aria-modal="true" aria-labelledby="orderDetailTitle">
+    <div class="order-modal-header">
+      <h3 id="orderDetailTitle">Order Details</h3>
+      <button type="button" class="order-close" id="closeOrderDetailModal" aria-label="Close order details">&times;</button>
+    </div>
+    <div class="order-modal-body" id="orderDetailBody"></div>
+  </div>
+</div>
+
 <script>
 function readJson(key, fallback) {
   try {
@@ -315,6 +449,14 @@ function formatDate(value) {
   return dt.toLocaleString();
 }
 
+function formatNaira(value) {
+  const amount = Number(value);
+  if (!Number.isFinite(amount)) return 'N/A';
+  return `₦${amount.toLocaleString('en-NG', { maximumFractionDigits: 2 })}`;
+}
+
+let profileOrders = [];
+
 function renderList(containerId, items, renderItem, emptyText) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -324,7 +466,9 @@ function renderList(containerId, items, renderItem, emptyText) {
     return;
   }
 
-  container.innerHTML = items.map(renderItem).join('');
+  container.innerHTML = items.map(function (item, index) {
+    return renderItem(item, index);
+  }).join('');
 }
 
 function setProfileOrderIdLabel(orderIdValue) {
@@ -360,7 +504,137 @@ function getTrackingIdFromOrder(order) {
 function getOrderProducts(order) {
   const items = Array.isArray(order && order.items) ? order.items : [];
   if (!items.length) return 'No product details available';
-  return items.map((item) => String((item && item.name) || 'Unnamed Product').trim()).filter(Boolean).join(' • ');
+  return items.map((item) => String((item && (item.name || item.itemName || item.productName)) || 'Unnamed Product').trim()).filter(Boolean).join(' • ');
+}
+
+function parseAmount(value) {
+  if (Number.isFinite(Number(value))) return Number(value);
+  const parsed = String(value || '').replace(/,/g, '').match(/[0-9]+(?:\.[0-9]+)?/);
+  return parsed ? Number(parsed[0]) : NaN;
+}
+
+function getItemImageByName(name) {
+  const key = String(name || '').toLowerCase().trim();
+  const map = {
+    'nordluxe long ascension white': '/assets/images/white%20long.png',
+    'nordluxe short ascension white': '/assets/images/wite%20short.png',
+    'nordluxe long ascension black': '/assets/images/long%20black.png',
+    'nordluxe short ascension black': '/assets/images/black%20short.png',
+    'cloak white': '/assets/images/cloak%20white.png',
+    'cloak black': '/assets/images/cloak%20black.png',
+    'nordluxe full ascension white bundle': '/assets/images/cloak%20white.png',
+    'nordluxe full ascension black bundle': '/assets/images/cloak%20black.png',
+    'full package (white + black) complete collection': '/assets/images/Full%20package.png',
+    'nordluxe hoodie': '/assets/images/ChatGPT Image Feb 1, 2026, 03_16_33 PM.png'
+  };
+  return map[key] || '/assets/images/sa.jpg';
+}
+
+function getItemName(item) {
+  return String((item && (item.itemName || item.name || item.productName)) || 'Unnamed Product').trim();
+}
+
+function getItemSize(item) {
+  const size = item && (item.size || item.selectedSize || item.variantSize || item.variant || item.option);
+  return String(size || 'Not specified').trim();
+}
+
+function getItemQuantity(item) {
+  const qty = Number(item && item.quantity);
+  return Number.isFinite(qty) && qty > 0 ? qty : 1;
+}
+
+function getItemUnitAmount(item) {
+  const candidates = [
+    item && item.unitPrice,
+    item && item.finalPrice,
+    item && item.depositPrice,
+    item && item.price,
+    item && item.preorderPrice,
+    item && item.originalPrice
+  ];
+  for (let i = 0; i < candidates.length; i += 1) {
+    const parsed = parseAmount(candidates[i]);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return NaN;
+}
+
+function showOrderDetails(order) {
+  const modal = document.getElementById('orderDetailModal');
+  const body = document.getElementById('orderDetailBody');
+  if (!modal || !body || !order) return;
+
+  const trackingId = getTrackingIdFromOrder(order) || 'Pending';
+  const createdAt = order.createdAt || order.completedAt || order.at;
+  const status = String(order.status || 'pending').replace(/-/g, ' ');
+  const totalAmount = Number.isFinite(parseAmount(order.totalAmount))
+    ? parseAmount(order.totalAmount)
+    : parseAmount(order.total);
+  const totalLabel = Number.isFinite(totalAmount) ? formatNaira(totalAmount) : (order.totalLabel || 'N/A');
+  const items = Array.isArray(order.items) ? order.items : [];
+
+  const itemsHtml = items.length
+    ? items.map(function (item) {
+        const name = getItemName(item);
+        const size = getItemSize(item);
+        const qty = getItemQuantity(item);
+        const unitAmount = getItemUnitAmount(item);
+        const unitLabel = Number.isFinite(unitAmount) ? formatNaira(unitAmount) : 'N/A';
+        const lineTotal = Number.isFinite(unitAmount) ? formatNaira(unitAmount * qty) : 'N/A';
+        return `<div class="order-item-card"><img src="${getItemImageByName(name)}" alt="${name}"><div><div class="order-item-name">${name}</div><div class="order-item-line"><strong>Size:</strong> ${size}</div><div class="order-item-line"><strong>Quantity:</strong> ${qty}</div><div class="order-item-line"><strong>Unit Price:</strong> ${unitLabel}</div><div class="order-item-line"><strong>Line Total:</strong> ${lineTotal}</div></div></div>`;
+      }).join('')
+    : '<div class="empty">No line items found for this order.</div>';
+
+  body.innerHTML = `
+    <div class="order-meta-grid">
+      <div class="order-meta-item"><div class="label">Order Ref</div><div class="value">${trackingId}</div></div>
+      <div class="order-meta-item"><div class="label">Status</div><div class="value">${status}</div></div>
+      <div class="order-meta-item"><div class="label">Placed On</div><div class="value">${formatDate(createdAt)}</div></div>
+      <div class="order-meta-item"><div class="label">Order Total</div><div class="value">${totalLabel}</div></div>
+    </div>
+    <div class="order-items-wrap">${itemsHtml}</div>
+  `;
+
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeOrderDetails() {
+  const modal = document.getElementById('orderDetailModal');
+  if (!modal) return;
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function bindOrderHistoryClicks() {
+  const list = document.getElementById('orderList');
+  if (!list || list.dataset.bound === 'true') return;
+  list.addEventListener('click', function (event) {
+    const card = event.target.closest('.order-clickable');
+    if (!card) return;
+    const index = Number(card.getAttribute('data-order-index'));
+    if (!Number.isFinite(index) || !profileOrders[index]) return;
+    showOrderDetails(profileOrders[index]);
+  });
+  list.dataset.bound = 'true';
+}
+
+function renderOrderHistory(orders) {
+  profileOrders = Array.isArray(orders) ? orders.slice(0, 25) : [];
+  renderList(
+    'orderList',
+    profileOrders,
+    function (order, index) {
+      const numericTotal = Number.isFinite(Number(order.total)) ? Number(order.total) : Number(order.totalAmount);
+      const total = Number.isFinite(numericTotal) ? formatNaira(numericTotal) : (order.totalLabel || 'N/A');
+      const itemCount = Array.isArray(order.items) ? order.items.length : 0;
+      const trackingId = getTrackingIdFromOrder(order) || 'Pending';
+      const products = getOrderProducts(order);
+      return `<div class="list-item order-clickable" data-order-index="${index}" title="Click to view order details"><div class="item-title"><span class="badge">${total}</span>${itemCount} item(s)</div><div class="item-products">${products}</div><div class="track-id-line">Order Ref: ${trackingId}</div><div class="item-meta">Placed: ${formatDate(order.createdAt || order.completedAt || order.at)}</div></div>`;
+    },
+    'No orders yet. Your completed orders will show here.'
+  );
 }
 
 function initProfile() {
@@ -394,18 +668,7 @@ function initProfile() {
     'No search activity yet. Start exploring collections and products.'
   );
 
-  renderList(
-    'orderList',
-    orders.slice(0, 25),
-    function (order) {
-      const total = typeof order.total === 'number' ? `$${order.total.toFixed(2)}` : (order.totalLabel || 'N/A');
-      const itemCount = Array.isArray(order.items) ? order.items.length : 0;
-      const trackingId = getTrackingIdFromOrder(order) || 'Pending';
-      const products = getOrderProducts(order);
-      return `<div class="list-item"><div class="item-title"><span class="badge">${total}</span>${itemCount} item(s)</div><div class="item-products">${products}</div><div class="track-id-line">Order Ref: ${trackingId}</div><div class="item-meta">Placed: ${formatDate(order.createdAt || order.completedAt || order.at)}</div></div>`;
-    },
-    'No orders yet. Your completed orders will show here.'
-  );
+  renderOrderHistory(orders);
 
   renderList(
     'activityList',
@@ -439,18 +702,7 @@ async function loadOrdersFromServer() {
     setProfileOrderIdLabel(newestOrderId);
     localStorage.setItem('lastOrderId', newestOrderId);
 
-    renderList(
-      'orderList',
-      serverOrders.slice(0, 25),
-      function (order) {
-        const amount = typeof order.totalAmount === 'number' ? `NGN ${order.totalAmount.toLocaleString()}` : 'N/A';
-        const itemCount = Array.isArray(order.items) ? order.items.length : 0;
-        const trackingId = getTrackingIdFromOrder(order) || 'Pending';
-        const products = getOrderProducts(order);
-        return `<div class="list-item"><div class="item-title"><span class="badge">${amount}</span>Order with ${itemCount} item(s)</div><div class="item-products">${products}</div><div class="track-id-line">Order Ref: ${trackingId}</div><div class="item-meta">Status: ${(order.status || 'pending').replace(/-/g, ' ')} • Placed: ${formatDate(order.createdAt)}</div></div>`;
-      },
-      'No orders yet. Your completed orders will show here.'
-    );
+    renderOrderHistory(serverOrders);
   } catch (e) {
     console.log('Order sync skipped:', e && e.message ? e.message : e);
   }
@@ -465,6 +717,15 @@ document.getElementById('clearActivityBtn').addEventListener('click', function (
 window.addEventListener('DOMContentLoaded', async function () {
   if (window.AOS) {
     AOS.init({ duration: 700, once: true });
+  }
+  bindOrderHistoryClicks();
+  const closeBtn = document.getElementById('closeOrderDetailModal');
+  if (closeBtn) closeBtn.addEventListener('click', closeOrderDetails);
+  const modal = document.getElementById('orderDetailModal');
+  if (modal) {
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal) closeOrderDetails();
+    });
   }
   initProfile();
   await loadOrdersFromServer();
