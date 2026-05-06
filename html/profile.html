@@ -687,7 +687,7 @@ async function loadOrdersFromServer() {
   const email = user.email || '';
   if (!email) return;
 
-  const apiBase = (window.NORDLUXE_API_BASE || '').trim() || 'http://localhost:3001';
+  const apiBase = (window.NORDLUXE_API_BASE || '').trim() || window.location.origin;
 
   try {
     const response = await fetch(`${apiBase}/api/users/guest/orders?email=${encodeURIComponent(email)}`);

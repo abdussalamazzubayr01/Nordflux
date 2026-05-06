@@ -1,12 +1,12 @@
 {
   "name": "nordluxe-website",
   "version": "1.0.0",
-  "description": "NORDLUXE - Scandinavian Luxury Fashion Website",
+  "description": "NORDLUXE - Nigerian Luxury Fashion — Lagos",
   "main": "index.js",
   "scripts": {
-    "start": "node assets/js/server.js",
+    "start": "node api/server.js",
     "start:static": "node static-server.js",
-    "dev": "nodemon assets/js/server.js",
+    "dev": "nodemon api/server.js",
     "build": "echo 'Static site - no build needed'",
     "deploy": "bash deploy.sh",
     "security-audit": "bash security-audit.sh",
@@ -18,8 +18,8 @@
   "keywords": [
     "fashion",
     "luxury",
-    "scandinavian",
-    "nordic",
+    "nigerian",
+    "lagos",
     "ecommerce"
   ],
   "author": "NORDLUXE",
@@ -33,11 +33,12 @@
   },
   "homepage": "https://nordluxe.com",
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "body-parser": "^2.2.2",
+    "connect-mongo": "^5.1.0",
     "cors": "^2.8.6",
     "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
@@ -62,5 +63,10 @@
     "express-rate-limit": "^8.3.2",
     "helmet": "^8.1.0",
     "winston": "^3.19.0"
+  },
+  "overrides": {
+    "@tootallnate/once": "^3.0.1",
+    "axios": "^1.16.0",
+    "ip-address": "^10.2.0"
   }
 }

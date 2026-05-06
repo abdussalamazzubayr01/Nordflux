@@ -14,6 +14,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const AppleStrategy = require('passport-apple');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const { authenticator } = require('otplib');
 const bcrypt = require('bcryptjs');
 const admin = require('firebase-admin');
@@ -152,6 +153,12 @@ if (IS_PRODUCTION && !process.env.ALLOWED_ORIGINS) {
   throw new Error('ALLOWED_ORIGINS must be configured in production.');
 }
 
+const mongoConnectionUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+
+if (IS_PRODUCTION && !mongoConnectionUri) {
+  throw new Error('MONGODB_URI or MONGO_URI is required in production for orders, users, subscribers, and sessions.');
+}
+
 function createOptionalRateLimit(config) {
   if (!createRateLimit) {
     return (req, res, next) => next();
@@ -213,6 +220,23 @@ app.use(bodyParser.urlencoded({
   parameterLimit: safeRequestParameterLimit
 }));
 
+app.use(async (req, res, next) => {
+  if (!IS_PRODUCTION) {
+    return next();
+  }
+
+  try {
+    await ensureMongoReady();
+    if (!mongoReady) {
+      return res.status(503).json({ success: false, message: 'Database is unavailable.' });
+    }
+    return next();
+  } catch (error) {
+    console.error('Production database readiness error:', error && error.message ? error.message : error);
+    return res.status(503).json({ success: false, message: 'Database is unavailable.' });
+  }
+});
+
 app.use((req, res, next) => {
   if (isShuttingDown) {
     res.set('Connection', 'close');
@@ -255,11 +279,21 @@ app.use('/assets/images', express.static(path.join(__dirname, '..', 'public', 'i
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
+const sessionStore = mongoConnectionUri
+  ? MongoStore.create({
+      mongoUrl: mongoConnectionUri,
+      collectionName: 'sessions',
+      stringify: false,
+      ttl: Math.ceil(safeSessionMaxAgeMs / 1000)
+    })
+  : undefined;
+
 // Session
 app.use(session({
   secret: process.env.SESSION_SECRET || 'nordluxe-secret',
   resave: false,
   saveUninitialized: false,
+  store: sessionStore,
   proxy: true,
   cookie: {
     httpOnly: true,
@@ -285,7 +319,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     callbackURL: '/auth/google/callback'
   }, async (accessToken, refreshToken, profile, done) => {
     try {
-      const users = readUsers();
+      const users = await readUsers();
       let user = users.find((u) => u.googleId === profile.id);
       if (!user) {
         user = {
@@ -296,7 +330,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           createdAt: new Date().toISOString()
         };
         users.push(user);
-        writeUsers(users);
+        await writeUsers(users);
       }
       return done(null, user);
     } catch (err) {
@@ -314,7 +348,7 @@ if (process.env.APPLE_CLIENT_ID && process.env.APPLE_TEAM_ID && process.env.APPL
     privateKeyLocation: process.env.APPLE_PRIVATE_KEY_PATH
   }, async (accessToken, refreshToken, idToken, profile, done) => {
     try {
-      const users = readUsers();
+      const users = await readUsers();
       let user = users.find((u) => u.appleId === profile.id);
       if (!user) {
         user = {
@@ -325,7 +359,7 @@ if (process.env.APPLE_CLIENT_ID && process.env.APPLE_TEAM_ID && process.env.APPL
           createdAt: new Date().toISOString()
         };
         users.push(user);
-        writeUsers(users);
+        await writeUsers(users);
       }
       return done(null, user);
     } catch (err) {
@@ -340,7 +374,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const users = readUsers();
+    const users = await readUsers();
     const user = users.find((u) => String(u._id) === String(id));
     done(null, user || null);
   } catch (err) {
@@ -379,9 +413,9 @@ const gmailTransporter = hasConfiguredEnvValue(process.env.EMAIL_USER) && hasCon
   : null;
 
 const EMAIL_FROM = process.env.EMAIL_FROM || 'NORDLUXE <noreply@nordluxe.io>';
-const ORDERS_FALLBACK_FILE = path.join(__dirname, '..', '..', 'data', 'orders.json');
-const mongoConnectionUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+const ORDERS_FALLBACK_FILE = path.join(__dirname, '..', 'data', 'orders.json');
 let mongoReady = false;
+let mongoConnectionPromise = Promise.resolve(null);
 
 const LIVE_ACTIVITY_TTL_MS = Number(process.env.LIVE_ACTIVITY_TTL_MS || 120000);
 const liveSessions = new Map();
@@ -391,7 +425,7 @@ const confirmationEmailSentTxRefs = new Set();
 const internalNotificationSentTxRefs = new Set();
 
 if (mongoConnectionUri) {
-  mongoose.connect(mongoConnectionUri)
+  mongoConnectionPromise = mongoose.connect(mongoConnectionUri)
     .then(() => {
       mongoReady = true;
       console.log('MongoDB connected');
@@ -403,6 +437,17 @@ if (mongoConnectionUri) {
     });
 } else {
   console.log('MONGODB_URI or MONGO_URI not set. Using fallback file order store:', ORDERS_FALLBACK_FILE);
+}
+
+async function ensureMongoReady() {
+  if (!mongoConnectionUri) {
+    return false;
+  }
+  if (mongoReady) {
+    return true;
+  }
+  await mongoConnectionPromise;
+  return mongoReady;
 }
 
 const orderSchema = new mongoose.Schema({
@@ -459,6 +504,32 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
 
+const userSchema = new mongoose.Schema({
+  _id: { type: String, default: () => crypto.randomBytes(12).toString('hex') },
+  email: { type: String, unique: true, sparse: true, lowercase: true, trim: true },
+  name: String,
+  password: String,
+  googleId: { type: String, unique: true, sparse: true },
+  appleId: { type: String, unique: true, sparse: true },
+  otpSecret: String,
+  otpIssuedAt: Number,
+  otpAttempts: { type: Number, default: 0 },
+  otpLastAttemptAt: Number,
+  isFirstLogin: { type: Boolean, default: true },
+  createdAt: { type: Date, default: Date.now }
+}, { _id: false });
+
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+
+const subscriberSchema = new mongoose.Schema({
+  email: { type: String, unique: true, lowercase: true, trim: true },
+  name: { type: String, trim: true },
+  subscribedAt: { type: Date, default: Date.now },
+  active: { type: Boolean, default: true }
+});
+
+const Subscriber = mongoose.models.Subscriber || mongoose.model('Subscriber', subscriberSchema);
+
 function parseEmailList(rawValue) {
   return Array.from(new Set(
     String(rawValue || '')
@@ -496,14 +567,14 @@ async function sendTransactionalEmail(mailOptions) {
   if (rawHtml && !hasHtmlDocument) {
     normalized.html = renderEmailLayout({
       title: normalized.subject || 'NORDLUXE Update',
-      subtitle: 'Scandinavian Luxury Fashion',
+      subtitle: 'Lagos, Nigeria — Command Every Room',
       preheader: rawText || 'NORDLUXE update',
       contentHtml: rawHtml
     });
   } else if (!rawHtml && rawText) {
     normalized.html = renderEmailLayout({
       title: normalized.subject || 'NORDLUXE Update',
-      subtitle: 'Scandinavian Luxury Fashion',
+      subtitle: 'Lagos, Nigeria — Command Every Room',
       preheader: rawText,
       contentHtml: `<p style="margin:0;line-height:1.7;">${escapeHtml(rawText).replace(/\n/g, '<br>')}</p>`
     });
@@ -596,10 +667,10 @@ function postJson(url, payload, headers) {
   });
 }
 
-// ─── File-based User Storage ─────────────────────────────────────────────────
+// ─── Local JSON fallback storage. Production uses MongoDB. ───────────────────
 
-const USERS_FILE = path.join(__dirname, '..', '..', 'data', 'users.json');
-const SUBSCRIBERS_FILE = path.join(__dirname, '..', '..', 'data', 'subscribers.json');
+const USERS_FILE = path.join(__dirname, '..', 'data', 'users.json');
+const SUBSCRIBERS_FILE = path.join(__dirname, '..', 'data', 'subscribers.json');
 
 function ensureDataFile(filePath) {
   const dir = path.dirname(filePath);
@@ -607,7 +678,10 @@ function ensureDataFile(filePath) {
   if (!fs.existsSync(filePath)) fs.writeFileSync(filePath, '[]', 'utf8');
 }
 
-function readUsers() {
+async function readUsers() {
+  if (await ensureMongoReady()) {
+    return User.find({}).lean();
+  }
   try {
     ensureDataFile(USERS_FILE);
     const raw = fs.readFileSync(USERS_FILE, 'utf8');
@@ -616,12 +690,22 @@ function readUsers() {
   } catch (err) { return []; }
 }
 
-function writeUsers(users) {
+async function writeUsers(users) {
+  if (await ensureMongoReady()) {
+    await Promise.all((Array.isArray(users) ? users : []).map((user) => {
+      if (!user || !user._id) return Promise.resolve();
+      return User.updateOne({ _id: String(user._id) }, { $set: user }, { upsert: true });
+    }));
+    return;
+  }
   ensureDataFile(USERS_FILE);
   fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf8');
 }
 
-function readSubscribers() {
+async function readSubscribers() {
+  if (await ensureMongoReady()) {
+    return Subscriber.find({}).lean();
+  }
   try {
     ensureDataFile(SUBSCRIBERS_FILE);
     const raw = fs.readFileSync(SUBSCRIBERS_FILE, 'utf8');
@@ -630,7 +714,18 @@ function readSubscribers() {
   } catch (err) { return []; }
 }
 
-function writeSubscribers(subscribers) {
+async function writeSubscribers(subscribers) {
+  if (await ensureMongoReady()) {
+    await Promise.all((Array.isArray(subscribers) ? subscribers : []).map((subscriber) => {
+      if (!subscriber || !subscriber.email) return Promise.resolve();
+      return Subscriber.updateOne(
+        { email: extractSingleEmail(subscriber.email) || subscriber.email },
+        { $set: subscriber },
+        { upsert: true }
+      );
+    }));
+    return;
+  }
   ensureDataFile(SUBSCRIBERS_FILE);
   fs.writeFileSync(SUBSCRIBERS_FILE, JSON.stringify(subscribers, null, 2), 'utf8');
 }
@@ -728,7 +823,7 @@ function resolveOrderItemImageUrl(item) {
 
 function renderEmailLayout(options) {
   const title = escapeHtml(options && options.title ? options.title : 'NORDLUXE Update');
-  const subtitle = escapeHtml(options && options.subtitle ? options.subtitle : 'Scandinavian Luxury Fashion');
+  const subtitle = escapeHtml(options && options.subtitle ? options.subtitle : 'Lagos, Nigeria — Command Every Room');
   const preheader = escapeHtml(options && options.preheader ? options.preheader : 'NORDLUXE order update');
   const contentHtml = options && options.contentHtml ? options.contentHtml : '';
   const logoUrl = resolveAbsoluteAssetUrl('/assets/images/sa.jpg');
@@ -764,7 +859,7 @@ function renderEmailLayout(options) {
                 <tr>
                   <td style="padding:16px 28px;background:#faf7f1;border-top:1px solid #eee2cf;color:#5e513f;font-size:12px;line-height:1.6;">
                     <div style="font-weight:700;color:#6a4a20;">NORDLUXE</div>
-                    <div>Scandinavian Luxury Fashion</div>
+                    <div>Lagos, Nigeria — Command Every Room</div>
                     <div style="margin-top:4px;">© ${year} NORDLUXE. All rights reserved.</div>
                   </td>
                 </tr>
@@ -1377,7 +1472,7 @@ app.post('/api/initiate-payment', async (req, res) => {
       },
       customizations: {
         title: paymentPlan && paymentPlan.type === 'preorder-deposit' ? 'NORDLUXE Preorder Deposit' : 'NORDLUXE Purchase',
-        description: paymentPlan && paymentPlan.type === 'preorder-deposit' ? '40% preorder deposit payment' : 'Luxury Scandinavian Fashion',
+        description: paymentPlan && paymentPlan.type === 'preorder-deposit' ? '40% preorder deposit payment' : 'Nigerian Luxury Fashion — Lagos',
         logo: `${process.env.FRONTEND_URL}/sa.jpg`
       }
     };
@@ -1881,7 +1976,13 @@ async function sendPreorderReminderEmail(order) {
   }
 
   const remainingAmount = Math.round(order.totalAmount * 0.6 * 100) / 100;
-  const dashboardLink = `${process.env.FRONTEND_URL || 'http://localhost:8000'}/orders.html`;
+  const dashboardBase = trimTrailingSlash(process.env.FRONTEND_URL || 'http://localhost:8000');
+  const dashboardParams = new URLSearchParams({
+    orderId: order.orderCode || order.flutterwaveRef || String(order._id || ''),
+    email: extractSingleEmail(order.customerEmail),
+    accessToken: normalizeText(order.orderAccessToken)
+  });
+  const dashboardLink = `${dashboardBase}/orders.html?${dashboardParams.toString()}`;
 
   const mailOptions = {
     from: EMAIL_FROM,
@@ -1915,7 +2016,7 @@ async function sendPreorderReminderEmail(order) {
         <p style="border-top:1px solid #e8dcc7;padding-top:20px;margin-top:30px;">
           Best regards,<br>
           <strong style="color:#d19b48;">NORDLUXE Team</strong><br>
-          Luxury Scandinavian Fashion
+          Nigerian Luxury Fashion — Lagos
         </p>
       </div>
     `
@@ -2021,7 +2122,7 @@ app.post('/auth/email/send-otp', async (req, res) => {
       });
     }
 
-    const users = readUsers();
+    const users = await readUsers();
     let user = users.find((u) => extractSingleEmail(u.email) === normalizedEmail);
     if (!user) {
       user = { _id: crypto.randomBytes(12).toString('hex'), email: normalizedEmail, isFirstLogin: true, createdAt: new Date().toISOString() };
@@ -2039,7 +2140,7 @@ app.post('/auth/email/send-otp', async (req, res) => {
 
     const idx = users.findIndex((u) => extractSingleEmail(u.email) === normalizedEmail);
     if (idx >= 0) users[idx] = user;
-    writeUsers(users);
+    await writeUsers(users);
 
     const token = authenticator.generate(user.otpSecret);
 
@@ -2070,7 +2171,7 @@ app.post('/auth/email/verify-otp', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Email and OTP are required' });
     }
 
-    const users = readUsers();
+    const users = await readUsers();
     const user = users.find((u) => extractSingleEmail(u.email) === normalizedEmail);
     if (!user) return res.status(400).json({ success: false, message: 'User not found' });
 
@@ -2087,7 +2188,7 @@ app.post('/auth/email/verify-otp', async (req, res) => {
       const expiredIdx = users.findIndex((u) => String(u._id) === String(user._id));
       if (expiredIdx >= 0) {
         users[expiredIdx] = user;
-        writeUsers(users);
+        await writeUsers(users);
       }
       return res.status(400).json({ success: false, message: 'OTP expired. Request a new OTP.' });
     }
@@ -2104,7 +2205,7 @@ app.post('/auth/email/verify-otp', async (req, res) => {
       const invalidIdx = users.findIndex((u) => String(u._id) === String(user._id));
       if (invalidIdx >= 0) {
         users[invalidIdx] = user;
-        writeUsers(users);
+        await writeUsers(users);
       }
       return res.status(400).json({ success: false, message: 'Invalid OTP' });
     }
@@ -2120,7 +2221,7 @@ app.post('/auth/email/verify-otp', async (req, res) => {
 
     const uidx = users.findIndex((u) => String(u._id) === String(user._id));
     if (uidx >= 0) users[uidx] = user;
-    writeUsers(users);
+    await writeUsers(users);
 
     req.login(user, (err) => {
       if (err) return res.status(500).json({ success: false, message: 'Login failed' });
@@ -2219,14 +2320,14 @@ app.post('/auth/signup', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Password must be at least 8 characters.' });
     }
 
-    const users = readUsers();
+    const users = await readUsers();
     const existingUser = users.find((u) => extractSingleEmail(u.email) === email);
     if (existingUser) return res.status(400).json({ success: false, message: 'User already exists' });
 
     const hashedPassword = await bcrypt.hash(password, 12);
     const user = { _id: crypto.randomBytes(12).toString('hex'), email, password: hashedPassword, name: normalizeText(name).slice(0, 100), createdAt: new Date().toISOString() };
     users.push(user);
-    writeUsers(users);
+    await writeUsers(users);
 
     req.login(user, (err) => {
       if (err) return res.status(500).json({ success: false, message: 'Signup failed' });
@@ -2245,7 +2346,7 @@ app.post('/auth/signin', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid credentials' });
     }
 
-    const users = readUsers();
+    const users = await readUsers();
     const user = users.find((u) => extractSingleEmail(u.email) === email);
     if (!user || !user.password) return res.status(400).json({ success: false, message: 'Invalid credentials' });
 
@@ -2555,21 +2656,21 @@ app.post('/api/newsletter/subscribe', async (req, res) => {
 
     const name = normalizeText(rawName).slice(0, 80);
 
-    const subscribers = readSubscribers();
+    const subscribers = await readSubscribers();
     const existing = subscribers.find((s) => s.email === email);
     if (existing) {
       if (!existing.active) {
         existing.active = true;
         const eidx = subscribers.findIndex((s) => s.email === email);
         if (eidx >= 0) subscribers[eidx] = existing;
-        writeSubscribers(subscribers);
+        await writeSubscribers(subscribers);
         return res.json({ success: true, message: 'Welcome back! You have been re-subscribed.' });
       }
       return res.json({ success: true, message: 'You are already subscribed.' });
     }
 
     subscribers.push({ email, name, subscribedAt: new Date().toISOString(), active: true });
-    writeSubscribers(subscribers);
+    await writeSubscribers(subscribers);
 
     // Welcome email to subscriber
     await sendTransactionalEmail({
@@ -2610,11 +2711,11 @@ app.post('/api/newsletter/unsubscribe', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Email required.' });
     }
     const email = rawEmail.toLowerCase().trim();
-    const subscribers = readSubscribers();
+    const subscribers = await readSubscribers();
     const sidx = subscribers.findIndex((s) => s.email === email);
     if (sidx >= 0) {
       subscribers[sidx].active = false;
-      writeSubscribers(subscribers);
+      await writeSubscribers(subscribers);
     }
     res.json({ success: true, message: 'You have been unsubscribed.' });
   } catch (err) {
@@ -2635,7 +2736,7 @@ app.post('/api/newsletter/send', async (req, res) => {
       return res.status(400).json({ success: false, message: 'subject and html are required.' });
     }
 
-    const allSubscribers = readSubscribers().filter((s) => s.active);
+    const allSubscribers = (await readSubscribers()).filter((s) => s.active);
     if (!allSubscribers.length) {
       return res.json({ success: true, message: 'No active subscribers found.', sent: 0 });
     }

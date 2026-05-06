@@ -24,7 +24,7 @@ const mailOptions = {
         <p><strong>Order Date:</strong> ${new Date().toLocaleDateString()}</p>
         <p><strong>Order Status:</strong> ✅ Confirmed</p>
         <p><strong>Total Amount:</strong> NGN 50,000</p>
-        <p><strong>Item:</strong> Luxury Scandinavian Fashion Piece</p>
+        <p><strong>Item:</strong> Nigerian Luxury Fashion Piece</p>
       </div>
 
       <div style="background:#f8f4eb;border:1px solid #e8dcc7;border-radius:12px;padding:16px;margin:16px 0;">
@@ -40,7 +40,7 @@ const mailOptions = {
       <p style="margin-top: 30px; border-top: 1px solid #e8dcc7; padding-top: 20px;">
         Best regards,<br>
         <strong style="color: #d19b48;">NORDLUXE Team</strong><br>
-        Luxury Scandinavian Fashion
+        Nigerian Luxury Fashion — Lagos
       </p>
     </div>
   `

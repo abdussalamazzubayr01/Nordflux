@@ -54,7 +54,7 @@
     window.firebaseSignOut = signOut;
 
   window.loginWithGoogle = async function() {
-      const backendBase = window.location.hostname ? `${window.location.protocol}//${window.location.hostname}:3001` : 'http://localhost:3001';
+      const backendBase = (window.NORDLUXE_API_BASE || '').trim() || window.location.origin;
       window.location.href = `${backendBase}/auth/google`;
   };
 
@@ -985,9 +985,9 @@ text-decoration:none;
 
 <div class="hero-content" data-aos="fade-up">
 <h1 data-aos="fade-up" data-aos-delay="200">NORDLUXE</h1>
-<h2 class="hero-subtitle" data-aos="fade-up" data-aos-delay="400">Scandinavian Luxury — Nordic Heritage. Future Wears.</h2>
+<h2 class="hero-subtitle" data-aos="fade-up" data-aos-delay="400">Lagos, Nigeria — Walk In. Own It.</h2>
 <p data-aos="fade-up" data-aos-delay="600">
-Luxury Scandinavian fashion crafted with minimalist elegance and premium materials.
+Nigerian luxury fashion built for those who command every room they enter.
 </p>
 
 <button onclick="scrollToCollection()" data-aos="fade-up" data-aos-delay="800">Explore Collection</button>
@@ -1051,9 +1051,9 @@ Luxury Scandinavian fashion crafted with minimalist elegance and premium materia
 <h2>About NORDLUXE</h2>
 
 <p>
-NORDLUXE is a luxury Scandinavian-inspired fashion house built on minimalism,
-timeless design, and premium craftsmanship. Our mission is to create elegant
-pieces that blend simplicity with bold identity.
+NORDLUXE is a luxury Nigerian fashion house, born in Lagos, built for people
+who walk into any room and make everyone look. Bold identity. Quiet authority.
+Premium presence.
 </p>
 
 </div>

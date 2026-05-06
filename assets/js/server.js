@@ -235,14 +235,14 @@ async function sendTransactionalEmail(mailOptions) {
   if (rawHtml && !hasHtmlDocument) {
     normalized.html = renderEmailLayout({
       title: normalized.subject || 'NORDLUXE Update',
-      subtitle: 'Scandinavian Luxury Fashion',
+      subtitle: 'Lagos, Nigeria — Command Every Room',
       preheader: rawText || 'NORDLUXE update',
       contentHtml: rawHtml
     });
   } else if (!rawHtml && rawText) {
     normalized.html = renderEmailLayout({
       title: normalized.subject || 'NORDLUXE Update',
-      subtitle: 'Scandinavian Luxury Fashion',
+      subtitle: 'Lagos, Nigeria — Command Every Room',
       preheader: rawText,
       contentHtml: `<p style="margin:0;line-height:1.7;">${escapeHtml(rawText).replace(/\n/g, '<br>')}</p>`
     });
@@ -507,7 +507,7 @@ function resolveOrderItemImageUrl(item) {
 
 function renderEmailLayout(options) {
   const title = escapeHtml(options && options.title ? options.title : 'NORDLUXE Update');
-  const subtitle = escapeHtml(options && options.subtitle ? options.subtitle : 'Scandinavian Luxury Fashion');
+  const subtitle = escapeHtml(options && options.subtitle ? options.subtitle : 'Lagos, Nigeria — Command Every Room');
   const preheader = escapeHtml(options && options.preheader ? options.preheader : 'NORDLUXE order update');
   const contentHtml = options && options.contentHtml ? options.contentHtml : '';
   const logoUrl = resolveAbsoluteAssetUrl('/assets/images/sa.jpg');
@@ -543,7 +543,7 @@ function renderEmailLayout(options) {
                 <tr>
                   <td style="padding:16px 28px;background:#faf7f1;border-top:1px solid #eee2cf;color:#5e513f;font-size:12px;line-height:1.6;">
                     <div style="font-weight:700;color:#6a4a20;">NORDLUXE</div>
-                    <div>Scandinavian Luxury Fashion</div>
+                    <div>Lagos, Nigeria — Command Every Room</div>
                     <div style="margin-top:4px;">© ${year} NORDLUXE. All rights reserved.</div>
                   </td>
                 </tr>
@@ -969,7 +969,7 @@ app.post('/api/initiate-payment', async (req, res) => {
       },
       customizations: {
         title: paymentPlan && paymentPlan.type === 'preorder-deposit' ? 'NORDLUXE Preorder Deposit' : 'NORDLUXE Purchase',
-        description: paymentPlan && paymentPlan.type === 'preorder-deposit' ? '40% preorder deposit payment' : 'Luxury Scandinavian Fashion',
+        description: paymentPlan && paymentPlan.type === 'preorder-deposit' ? '40% preorder deposit payment' : 'Nigerian Luxury Fashion — Lagos',
         logo: `${process.env.FRONTEND_URL}/sa.jpg`
       }
     };

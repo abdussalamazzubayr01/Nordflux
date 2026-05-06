@@ -198,12 +198,12 @@
       const protocol = window.location.protocol;
       const candidates = [];
 
-      if (protocol === 'file:' || !host || host === 'localhost' || host === '127.0.0.1') {
-        candidates.push('http://localhost:3001', 'http://127.0.0.1:3001');
-      }
-
       if (window.location.origin && window.location.origin !== 'null') {
         candidates.push(window.location.origin);
+      }
+
+      if (protocol === 'file:' || !host || host === 'localhost' || host === '127.0.0.1') {
+        candidates.push('http://localhost:3001', 'http://127.0.0.1:3001');
       }
 
       return Array.from(new Set(candidates));
