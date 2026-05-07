@@ -7,7 +7,7 @@
     "start": "node api/server.js",
     "start:static": "node static-server.js",
     "dev": "nodemon api/server.js",
-    "build": "echo 'Static site - no build needed'",
+    "build": "node scripts/build-public.js",
     "deploy": "bash deploy.sh",
     "security-audit": "bash security-audit.sh",
     "audit": "npm audit",
