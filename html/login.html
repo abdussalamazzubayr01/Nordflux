@@ -795,7 +795,7 @@ async function handleSignIn(event) {
 
 async function handleForgotPassword() {
   const email = document.getElementById('signinEmail').value.trim();
-  const apiBase = (window.NORDLUXE_API_BASE || '').trim() || window.location.origin;
+  const apiBase = window.location.port === '3001' ? '' : 'http://localhost:3001';
 
   if (!email) {
     showMessage('Enter your email first, then click Forgot Password.', 'error');

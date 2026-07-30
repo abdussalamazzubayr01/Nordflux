@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The page you requested could not be found on NORDLUXE. Return home or browse the collection.">
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="https://www.nordluxe.io/404">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NORDLUXE">
+<meta property="og:title" content="404 | NORDLUXE">
+<meta property="og:description" content="The page you requested could not be found on NORDLUXE.">
+<meta property="og:url" content="https://www.nordluxe.io/404">
+<meta property="og:image" content="https://www.nordluxe.io/assets/images/sa.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="404 | NORDLUXE">
+<meta name="twitter:description" content="The page you requested could not be found on NORDLUXE.">
+<meta name="twitter:image" content="https://www.nordluxe.io/assets/images/sa.jpg">
+<title>404 | NORDLUXE</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=1" sizes="any">
+<link rel="shortcut icon" href="/favicon.svg?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #1f1208;
+  font-family: "Poppins", "Montserrat", sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+.global-main-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, rgba(255, 250, 243, 0.95) 0%, rgba(255, 245, 230, 0.9) 100%);
+  border-bottom: 1px solid rgba(171, 128, 60, 0.34);
+}
+.nav-control-btn,
+#globalSearchBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(171, 128, 60, 0.35);
+  background: #fff8ea;
+  color: #2b1d10;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#globalSearchBtn svg { width: 18px; height: 18px; }
+.logo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: rgba(255, 248, 234, 0.92);
+  border: 1px solid rgba(171, 128, 60, 0.32);
+}
+.logo-mark { width: 34px; height: 34px; object-fit: contain; }
+.nav-links { display: flex; align-items: center; justify-content: flex-end; flex: 1 1 auto; }
+.nav-auth-link {
+  height: 40px;
+  line-height: 1;
+  padding: 0 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  color: #2b1d10;
+  border: 1px solid rgba(171, 128, 60, 0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+.not-found {
+  flex: 1;
+  width: min(940px, 92vw);
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  padding: 52px 0 46px;
+}
+.not-found-card {
+  width: 100%;
+  text-align: center;
+  border: 1px solid rgba(171, 128, 60, 0.28);
+  border-radius: 24px;
+  background: linear-gradient(180deg, #fffdfa 0%, #f8eedc 100%);
+  box-shadow: 0 18px 42px rgba(63, 42, 18, 0.12);
+  padding: clamp(28px, 5vw, 56px);
+}
+.not-found-code {
+  font-family: "Montserrat", sans-serif;
+  font-size: clamp(46px, 9vw, 102px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #ba8537;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.not-found-title {
+  font-family: "Montserrat", sans-serif;
+  font-size: clamp(24px, 4vw, 40px);
+  font-weight: 700;
+  color: #23160b;
+  margin-bottom: 14px;
+}
+.not-found-message {
+  max-width: 640px;
+  margin: 0 auto 28px;
+  color: #4d3a24;
+  line-height: 1.7;
+  font-size: clamp(15px, 2.1vw, 18px);
+}
+.not-found-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+.not-found-btn {
+  text-decoration: none;
+  border-radius: 999px;
+  min-height: 46px;
+  padding: 12px 18px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.not-found-btn:hover { transform: translateY(-2px); }
+.not-found-btn.home {
+  background: #2b1d10;
+  border: 1px solid #2b1d10;
+  color: #fef9ee;
+  box-shadow: 0 12px 24px rgba(24, 16, 8, 0.22);
+}
+.not-found-btn.collection {
+  background: transparent;
+  border: 1px solid rgba(171, 128, 60, 0.6);
+  color: #2b1d10;
+  box-shadow: 0 10px 20px rgba(63, 42, 18, 0.11);
+}
+footer {
+  text-align: center;
+  padding: 38px 16px 34px;
+  background: linear-gradient(180deg, #f8eedc 0%, #efe1c6 100%);
+  border-top: 1px solid #d5c19a;
+}
+.footer-copy {
+  margin-bottom: 16px;
+  color: #4c3a24;
+  font-size: 14px;
+  letter-spacing: 0.6px;
+}
+.policy-pill-grid {
+  width: min(100%, 860px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 14px;
+  padding: 14px;
+  background: #2d241e;
+  border: 1px solid rgba(217, 189, 132, 0.4);
+  border-radius: 28px;
+}
+.policy-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 42px;
+  border-radius: 999px;
+  text-decoration: none;
+  color: #d4af37;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  border: 1px solid rgba(172, 120, 45, 0.35);
+}
+.policy-pill-btn:hover { background: rgba(212, 175, 55, 0.08); }
+@media (max-width: 768px) {
+  .not-found { padding: 34px 0 28px; }
+  .not-found-actions { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .policy-pill-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 22px;
+  }
+  .policy-pill-btn { min-height: 40px; font-size: 11px; }
+}
+</style>
+</head>
+<body>
+<nav class="global-main-nav" aria-label="Main navigation">
+  <div id="globalNavHamburgerLeft" style="display:flex;align-items:center;gap:10px;flex:0 0 96px;min-height:40px;">
+    <button type="button" id="globalHamburgerBtn" class="nav-control-btn" aria-label="Open menu">☰</button>
+    <div id="globalNavSearchAfterLogo" style="display:flex;align-items:center;">
+      <button type="button" id="globalSearchBtn" aria-label="Search products">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.9 14.5h-.74l-.26-.25a6.47 6.47 0 10-.7.7l.25.26v.74L20 21.5 21.5 20l-5.6-5.5zM10.5 15a4.5 4.5 0 110-9 4.5 4.5 0 010 9z"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="logo" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;">
+    <a href="/" class="logo-badge" aria-label="NORDLUXE Home"><img class="logo-mark" src="/assets/images/111.png" alt="NORDLUXE Logo Mark"></a>
+  </div>
+  <div class="nav-links">
+    <div id="globalNavUserRight" style="display:flex;align-items:center;justify-content:flex-end;flex:0 0 96px;min-height:40px;">
+      <div class="nav-auth-actions" style="display:flex;align-items:center;margin:0;padding:0;">
+        <a href="/login" class="nav-auth-link">Login</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="not-found" id="main-content">
+  <section class="not-found-card" aria-labelledby="not-found-title">
+    <p class="not-found-code" aria-hidden="true">404</p>
+    <h1 class="not-found-title" id="not-found-title">Page Not Found</h1>
+    <p class="not-found-message">
+      The page you requested does not exist or may have moved. Use the links below to continue exploring NORDLUXE.
+    </p>
+    <div class="not-found-actions">
+      <a class="not-found-btn home" href="/">Return Home</a>
+      <a class="not-found-btn collection" href="/collections">Browse Collection</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p class="footer-copy">© 2026 NORDLUXE</p>
+  <nav class="policy-pill-grid" data-nordluxe-policies-links="true" aria-label="Policy links">
+    <a href="/payment-policy" class="policy-pill-btn">PAYMENT POLICY</a>
+    <a href="/preorder-policy" class="policy-pill-btn">PRE-ORDER POLICY</a>
+    <a href="/shipping-policy" class="policy-pill-btn">SHIPPING POLICY</a>
+    <a href="/cookie-policy" class="policy-pill-btn">COOKIE POLICY</a>
+  </nav>
+</footer>
+
+<script src="/assets/js/auth-guard.js"></script>
+<script src="/assets/js/site-shell.js" defer></script>
+<script src="/assets/js/site-audio.js" defer></script>
+<script src="/assets/js/site-nav.js"></script>
+</body>
+</html>

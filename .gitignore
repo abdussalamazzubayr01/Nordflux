@@ -112,8 +112,6 @@ Thumbs.db
 *.bak
 *.backup
 *.old
-*.zip
-*.rar
 
 # Security-related
 secrets/

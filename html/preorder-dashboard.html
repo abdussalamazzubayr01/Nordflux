@@ -270,10 +270,6 @@
           <label for="email">Email Address *</label>
           <input type="email" id="email" placeholder="your.email@example.com" required>
         </div>
-        <div class="form-group">
-          <label for="accessToken">Secure Access Code *</label>
-          <input type="text" id="accessToken" placeholder="Use the secure link from your order email" required>
-        </div>
         <button type="submit" class="btn btn-primary" id="accessBtn">🔓 Access Your Orders</button>
         <div id="loginError" class="error hidden"></div>
       </form>
@@ -307,7 +303,12 @@
     const API_BASE = getApiBase();
 
     function getApiBase() {
-      return (window.NORDLUXE_API_BASE || '').trim() || window.location.origin;
+      const candidates = [
+        `http://${window.location.hostname}:3001`,
+        'http://localhost:3001',
+        window.location.origin
+      ];
+      return candidates[0];
     }
 
     function formatNaira(amount) {
@@ -320,9 +321,8 @@
       e.preventDefault();
       const orderId = document.getElementById('orderId').value.trim();
       const email = document.getElementById('email').value.trim();
-      const accessToken = document.getElementById('accessToken').value.trim();
 
-      if (!orderId || !email || !accessToken) {
+      if (!orderId || !email) {
         showLoginError('Please fill in all fields');
         return;
       }
@@ -335,7 +335,7 @@
         const response = await fetch(`${API_BASE}/api/preorder-dashboard`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId, email, accessToken })
+          body: JSON.stringify({ orderId, email })
         });
 
         const data = await response.json();
@@ -347,7 +347,7 @@
         loadDashboard(data.order, data.masterOrderId, email);
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('dashboardSection').classList.remove('hidden');
-        localStorage.setItem('nordluxeSession', JSON.stringify({ orderId, email, accessToken }));
+        localStorage.setItem('nordluxeSession', JSON.stringify({ orderId, email }));
 
       } catch (error) {
         document.getElementById('orderLoading').style.display = 'none';
@@ -478,7 +478,7 @@
         const response = await fetch(`${API_BASE}/api/initiate-remaining-payment`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId: orderId, email: session.email, accessToken: session.accessToken })
+          body: JSON.stringify({ orderId: orderId })
         });
 
         const data = await response.json();
@@ -528,26 +528,10 @@
 
     // Auto-login if session exists
     window.addEventListener('load', () => {
-      const params = new URLSearchParams(window.location.search);
-      const linkedSession = {
-        orderId: params.get('orderId') || '',
-        email: params.get('email') || '',
-        accessToken: params.get('accessToken') || ''
-      };
-      if (linkedSession.orderId && linkedSession.email && linkedSession.accessToken) {
-        localStorage.setItem('nordluxeSession', JSON.stringify(linkedSession));
-        document.getElementById('orderId').value = linkedSession.orderId;
-        document.getElementById('email').value = linkedSession.email;
-        document.getElementById('accessToken').value = linkedSession.accessToken;
-        document.getElementById('loginForm').dispatchEvent(new Event('submit'));
-        return;
-      }
-
       const session = JSON.parse(localStorage.getItem('nordluxeSession'));
       if (session) {
         document.getElementById('orderId').value = session.orderId;
         document.getElementById('email').value = session.email;
-        document.getElementById('accessToken').value = session.accessToken || '';
         document.getElementById('loginForm').dispatchEvent(new Event('submit'));
       }
     });

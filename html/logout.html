@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Logging Out | NORDLUXE</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=1" sizes="any">
+<link rel="shortcut icon" href="/favicon.svg?v=1">
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCLqR3N_V_0U_2bTcchgsDFqjqSTCahxYs",
+    authDomain: "nordluxe-e30a4.firebaseapp.com",
+    projectId: "nordluxe-e30a4",
+    storageBucket: "nordluxe-e30a4.firebasestorage.app",
+    messagingSenderId: "997971219569",
+    appId: "1:997971219569:web:b29fd19a59ec3fb345f7d0"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Sign out from Firebase + clear local storage
+  signOut(auth).finally(() => {
+    localStorage.removeItem('nordluxeUser');
+    localStorage.removeItem('nordluxeLoggedIn');
+    localStorage.removeItem('nordluxeCart');
+    // Redirect to home after brief confirmation
+    setTimeout(() => { window.location.href = '/html/index.html'; }, 2200);
+  });
+</script>
+
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+body{
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background: #fafafa;
+  color: #000000;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.logout-card{
+  background: #ffffff;
+  border: 1px solid #d19b48;
+  border-radius: 20px;
+  padding: 50px 40px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.09);
+}
+
+.logo-wrap{
+  margin-bottom: 28px;
+}
+
+.logo-wrap img{
+  height: 52px;
+}
+
+.spinner{
+  width: 44px;
+  height: 44px;
+  border: 3px solid #f0e0c0;
+  border-top-color: #d19b48;
+  border-radius: 50%;
+  animation: spin 0.85s linear infinite;
+  margin: 0 auto 24px;
+}
+
+@keyframes spin{
+  to { transform: rotate(360deg); }
+}
+
+h1{
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+  color: #000000;
+}
+
+p{
+  font-size: 14px;
+  color: #777;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.home-link{
+  display: inline-block;
+  padding: 12px 28px;
+  background: #000000;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: 1px solid #000000;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.home-link:hover{
+  background: #d19b48;
+  border-color: #d19b48;
+}
+
+@media (max-width: 480px){
+  .logout-card{ padding: 36px 24px; }
+}
+</style>
+</head>
+<body>
+
+<div class="logout-card">
+  <div class="logo-wrap">
+    <a href="/html/index.html">
+      <img src="/assets/images/111.png" alt="NORDLUXE">
+    </a>
+  </div>
+
+  <div class="spinner"></div>
+
+  <h1>Signing You Out</h1>
+  <p>You're being securely logged out of your NORDLUXE account. You'll be redirected shortly.</p>
+
+  <a href="/html/index.html" class="home-link">Return Home Now</a>
+</div>
+
+</body>
+</html>

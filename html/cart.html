@@ -1136,8 +1136,28 @@ async function processOrder(event) {
 
   localStorage.setItem(nordluxeKey('nordluxePendingOrder'), JSON.stringify(pendingOrder));
 
+  let publicKey = '';
+  try {
+    const configRes = await fetch('/api/config');
+    if (configRes.ok) {
+      const configData = await configRes.json();
+      if (configData && configData.flutterwavePublicKey) {
+        publicKey = configData.flutterwavePublicKey;
+      }
+    }
+  } catch (err) {
+    console.warn('Could not fetch Flutterwave public key from /api/config', err);
+  }
+
+  if (!publicKey) {
+    alert('Payment system configuration is incomplete (FLUTTERWAVE_PUBLIC_KEY is missing in .env). Please contact support.');
+    checkoutBtn.textContent = originalText;
+    checkoutBtn.disabled = false;
+    return;
+  }
+
   FlutterwaveCheckout({
-    public_key: 'FLWPUBK_TEST-ebecc44d61b46c6ffacc4d6a0599f680-X',
+    public_key: publicKey,
     tx_ref: tx_ref,
     amount: total,
     currency: 'NGN',

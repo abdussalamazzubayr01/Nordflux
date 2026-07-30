@@ -54,7 +54,7 @@
     window.firebaseSignOut = signOut;
 
   window.loginWithGoogle = async function() {
-      const backendBase = (window.NORDLUXE_API_BASE || '').trim() || window.location.origin;
+      const backendBase = window.location.hostname ? `${window.location.protocol}//${window.location.hostname}:3001` : 'http://localhost:3001';
       window.location.href = `${backendBase}/auth/google`;
   };
 

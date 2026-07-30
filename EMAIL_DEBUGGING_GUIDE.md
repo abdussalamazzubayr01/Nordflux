@@ -16,7 +16,7 @@
 
 ```
 EMAIL_USER=nord.luxe01@gmail.com
-EMAIL_PASS=jmfafapyyjdsikdu
+EMAIL_PASS=your_app_password_here
 ADMIN_EMAIL=nord.luxe01@gmail.com
 ```
 

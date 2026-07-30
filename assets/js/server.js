@@ -1664,6 +1664,14 @@ app.post('/auth/signin', async (req, res) => {
   }
 });
 
+// Public configuration endpoint
+app.get('/api/config', (req, res) => {
+  res.json({
+    success: true,
+    flutterwavePublicKey: process.env.FLUTTERWAVE_PUBLIC_KEY || ''
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   const memoryUsage = process.memoryUsage();

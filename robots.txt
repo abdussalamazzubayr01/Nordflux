@@ -7,5 +7,6 @@ Disallow: /html/cart.html
 Disallow: /html/profile.html
 Disallow: /html/payment-success.html
 Disallow: /html/thank-you.html
+Disallow: /html/shell.html
 
-Sitemap: https://www.nordluxe.io/sitemap.xml
+Sitemap: https://nordluxe.com/sitemap.xml
