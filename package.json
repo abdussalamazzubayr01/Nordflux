@@ -33,7 +33,7 @@
   },
   "homepage": "https://nordluxe.com",
   "engines": {
-    "node": "18.x"
+    "node": "24.x"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
