@@ -2262,10 +2262,16 @@ app.post('/auth/signin', async (req, res) => {
 });
 
 // Public configuration endpoint
-app.get('/api/config', (req, res) => {
+app.get(['/api/config', '/config'], (req, res) => {
+  const publicKey = (
+    process.env.FLUTTERWAVE_PUBLIC_KEY ||
+    process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY ||
+    process.env.PUBLIC_KEY_FLUTTERWAVE ||
+    ''
+  ).trim();
   res.json({
     success: true,
-    flutterwavePublicKey: process.env.FLUTTERWAVE_PUBLIC_KEY || ''
+    flutterwavePublicKey: publicKey
   });
 });
 

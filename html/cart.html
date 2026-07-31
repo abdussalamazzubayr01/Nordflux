@@ -1136,17 +1136,19 @@ async function processOrder(event) {
 
   localStorage.setItem(nordluxeKey('nordluxePendingOrder'), JSON.stringify(pendingOrder));
 
-  let publicKey = '';
-  try {
-    const configRes = await fetch('/api/config');
-    if (configRes.ok) {
-      const configData = await configRes.json();
-      if (configData && configData.flutterwavePublicKey) {
-        publicKey = configData.flutterwavePublicKey;
+  let publicKey = window.FLUTTERWAVE_PUBLIC_KEY || '';
+  if (!publicKey) {
+    try {
+      const configRes = await fetch('/api/config');
+      if (configRes.ok) {
+        const configData = await configRes.json();
+        if (configData && configData.flutterwavePublicKey) {
+          publicKey = String(configData.flutterwavePublicKey).trim();
+        }
       }
+    } catch (err) {
+      console.warn('Could not fetch Flutterwave public key from /api/config', err);
     }
-  } catch (err) {
-    console.warn('Could not fetch Flutterwave public key from /api/config', err);
   }
 
   if (!publicKey) {
