@@ -385,8 +385,9 @@ const gmailTransporter = hasConfiguredEnvValue(process.env.EMAIL_USER) && hasCon
     })
   : null;
 
-const EMAIL_FROM = process.env.EMAIL_FROM || 'NORDLUXE <noreply@nordluxe.io>';
-const ORDERS_FALLBACK_FILE = path.join(__dirname, '..', '..', 'data', 'orders.json');
+const ORDERS_FALLBACK_FILE = (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME)
+  ? path.join('/tmp', 'orders.json')
+  : path.join(__dirname, '..', 'data', 'orders.json');
 const mongoConnectionUri = process.env.MONGODB_URI || process.env.MONGO_URI;
 let mongoReady = false;
 
@@ -997,18 +998,23 @@ function buildOrderItemsTableHtml(items, currencyCode) {
 }
 
 function ensureFallbackStore() {
-  const dir = path.dirname(ORDERS_FALLBACK_FILE);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  if (!fs.existsSync(ORDERS_FALLBACK_FILE)) {
-    fs.writeFileSync(ORDERS_FALLBACK_FILE, '[]', 'utf8');
+  try {
+    const dir = path.dirname(ORDERS_FALLBACK_FILE);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    if (!fs.existsSync(ORDERS_FALLBACK_FILE)) {
+      fs.writeFileSync(ORDERS_FALLBACK_FILE, '[]', 'utf8');
+    }
+  } catch (err) {
+    console.warn('[FALLBACK STORE] Could not initialize fallback file store:', err.message);
   }
 }
 
 function readFallbackOrders() {
   try {
     ensureFallbackStore();
+    if (!fs.existsSync(ORDERS_FALLBACK_FILE)) return [];
     const raw = fs.readFileSync(ORDERS_FALLBACK_FILE, 'utf8');
     const parsed = JSON.parse(raw || '[]');
     return Array.isArray(parsed) ? parsed : [];
@@ -1019,8 +1025,12 @@ function readFallbackOrders() {
 }
 
 function writeFallbackOrders(orders) {
-  ensureFallbackStore();
-  fs.writeFileSync(ORDERS_FALLBACK_FILE, JSON.stringify(orders, null, 2), 'utf8');
+  try {
+    ensureFallbackStore();
+    fs.writeFileSync(ORDERS_FALLBACK_FILE, JSON.stringify(orders, null, 2), 'utf8');
+  } catch (err) {
+    console.warn('[FALLBACK STORE] Could not write fallback orders:', err.message);
+  }
 }
 
 function normalizeStoredOrder(record) {
