@@ -1,7 +1,3 @@
 {
-  "outputDirectory": ".",
-  "rewrites": [
-    { "source": "/api/config", "destination": "/api/config" },
-    { "source": "/api/(.*)", "destination": "/api/server" }
-  ]
+  "outputDirectory": "."
 }
