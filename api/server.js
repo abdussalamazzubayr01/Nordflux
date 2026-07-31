@@ -356,10 +356,17 @@ passport.deserializeUser(async (id, done) => {
 });
 
 // Initialize Flutterwave
-const flw = new Flutterwave(
-  process.env.FLUTTERWAVE_PUBLIC_KEY,
-  process.env.FLUTTERWAVE_SECRET_KEY
-);
+let flw = null;
+try {
+  if (process.env.FLUTTERWAVE_PUBLIC_KEY && process.env.FLUTTERWAVE_SECRET_KEY) {
+    flw = new Flutterwave(
+      process.env.FLUTTERWAVE_PUBLIC_KEY,
+      process.env.FLUTTERWAVE_SECRET_KEY
+    );
+  }
+} catch (err) {
+  console.warn('[WARN] Flutterwave SDK initialization skipped:', err.message);
+}
 
 function hasConfiguredEnvValue(value) {
   const normalized = String(value || '').trim();
