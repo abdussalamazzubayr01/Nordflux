@@ -1,5 +1,10 @@
 const express = require('express');
-const helmet = require('helmet');
+let helmet = null;
+try {
+  helmet = require('helmet');
+} catch (err) {
+  console.warn('[WARN] helmet is not installed. Security headers middleware skipped.');
+}
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const Flutterwave = require('flutterwave-node-v3');
@@ -178,23 +183,25 @@ if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && proc
 // Middleware
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", 'data:', 'https:'],
-      connectSrc: ["'self'"],
-      fontSrc: ["'self'", 'https:'],
-      objectSrc: ["'none'"],
-      frameSrc: ["'none'"],
-      upgradeInsecureRequests: IS_PRODUCTION ? [] : null
-    }
-  },
-  crossOriginEmbedderPolicy: false,
-  hsts: IS_PRODUCTION ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false
-}));
+if (helmet) {
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'", 'https:'],
+        objectSrc: ["'none'"],
+        frameSrc: ["'none'"],
+        upgradeInsecureRequests: IS_PRODUCTION ? [] : null
+      }
+    },
+    crossOriginEmbedderPolicy: false,
+    hsts: IS_PRODUCTION ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false
+  }));
+}
 app.use(cors({
   origin: (origin, callback) => {
     if (isAllowedOrigin(origin)) {
