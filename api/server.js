@@ -221,6 +221,10 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use((req, res, next) => {
+  if (req.url.startsWith('/api/server')) {
+    const stripped = req.url.replace('/api/server', '');
+    req.url = !stripped || stripped === '' ? '/' : (stripped.startsWith('/') ? stripped : '/' + stripped);
+  }
   if (isShuttingDown) {
     res.set('Connection', 'close');
     return res.status(503).json({
@@ -2286,7 +2290,7 @@ app.post('/auth/signin', async (req, res) => {
 });
 
 // Public configuration endpoint
-app.get(['/api/config', '/config'], (req, res) => {
+app.get(['/api/config', '/config', '/api/server/config'], (req, res) => {
   const publicKey = (
     process.env.FLUTTERWAVE_PUBLIC_KEY ||
     process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY ||
